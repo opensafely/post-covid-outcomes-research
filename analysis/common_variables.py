@@ -1,25 +1,8 @@
-from cohortextractor import StudyDefinition, patients, codelist, codelist_from_csv
+from cohortextractor import patients
+from codelists import *
 
-chronic_cardiac_disease_codes = codelist_from_csv(
-    "codelists/opensafely-chronic-cardiac-disease.csv", system="ctv3", column="CTV3ID"
-)
-chronic_liver_disease_codes = codelist_from_csv(
-    "codelists/opensafely-chronic-liver-disease.csv", system="ctv3", column="CTV3ID"
-)
-salbutamol_codes = codelist_from_csv(
-    "codelists/opensafely-asthma-inhaler-salbutamol-medication.csv",
-    system="snomed",
-    column="id",
-)
-systolic_blood_pressure_codes = codelist(["2469."], system="ctv3")
-diastolic_blood_pressure_codes = codelist(["246A."], system="ctv3")
 
-study = StudyDefinition(
-    default_expectations={
-        "date": {"earliest": "1900-01-01", "latest": "today"},
-        "rate": "exponential_increase",
-    },
-    population=patients.all(),
+common_variables = dict(
     age=patients.age_as_of(
         "2020-02-01",
         return_expectations={
