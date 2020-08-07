@@ -6,7 +6,7 @@ from codelists import *
 study = StudyDefinition(
     default_expectations={
         "date": {"earliest": "1900-01-01", "latest": "today"},
-        "rate": "universal",
+        "rate": "exponential_increase",
         "incidence": 0.7,
     },
     population=patients.satisfying(
