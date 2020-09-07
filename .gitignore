@@ -4,3 +4,5 @@ model.log
 __pycache__
 .python-version
 output/*
+analysis/.DS_Store
+.DS_Store
