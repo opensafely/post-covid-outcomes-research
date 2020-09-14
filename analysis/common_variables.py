@@ -4,7 +4,7 @@ from codelists import *
 
 common_variables = dict(
     dvt=patients.with_these_clinical_events(
-        placeholder_codelist, return_first_date_in_period=True, date_format == "YYYY-MM-DD",
+        placeholder_codelist, return_first_date_in_period=True, date_format = "YYYY-MM-DD",
     ),
     pe=patients.with_these_clinical_events(
         placeholder_codelist, return_first_date_in_period=True, include_month=True,
