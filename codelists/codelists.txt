@@ -1,5 +1,8 @@
+opensafely/covid-identification/2020-06-03
 opensafely/diabetes/2020-04-15
 opensafely/ethnicity/2020-04-27
 opensafely/hypertension/2020-04-28
+opensafely/incident-venous-thromboembolic-disease/2020-09-30-draft
 opensafely/smoking-clear/2020-04-29
 opensafely/stroke-updated/2020-06-02
+opensafely/venous-thromboembolic-disease-hospital/2020-10-01-draft

@@ -35,4 +35,24 @@ clear_smoking_codes = codelist_from_csv(
     category_column="Category",
 )
 
+vte_codes_gp = codelist_from_csv(
+    "codelists/opensafely-incident-venous-thromboembolic-disease.csv",
+    system="ctv3",
+    column="CTV3Code",
+    category_column="type",
+)
+
+vte_codes_hospital = codelist_from_csv(
+    "codelists/opensafely-venous-thromboembolic-disease-hospital.csv",
+    system="icd10",
+    column="ICD_code",
+    category_column="type",
+)
+
+covid_codelist = codelist_from_csv(
+    "codelists/opensafely-covid-identification.csv",
+    system="icd10",
+    column="icd10_code",
+)
+
 placeholder_codelist = codelist(["12345"], system="ctv3")
