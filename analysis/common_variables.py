@@ -97,6 +97,13 @@ def common_variable_define(start_date):
             on_or_before=days_before(start_date, 1),
             return_expectations={"incidence": 0.05,},
         ),
+        died_date_ons=patients.died_from_any_cause(
+            on_or_after=start_date,
+            returning="date_of_death",
+            include_month=True,
+            include_day=True,
+            return_expectations={"date": {"earliest": start_date}},
+        ),
         age=patients.age_as_of(
             start_date,
             return_expectations={
