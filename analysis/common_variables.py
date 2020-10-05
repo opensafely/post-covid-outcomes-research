@@ -67,6 +67,27 @@ def common_variable_define(start_date):
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": start_date},},
         ),
+        dvt_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_date,
+            return_expectations={"date": {"earliest": start_date}},
+        ),
+        pe_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_date,
+            return_expectations={"date": {"earliest": start_date}},
+        ),
+        other_vte_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["other"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_date,
+            return_expectations={"date": {"earliest": start_date}},
+        ),
         previous_vte_hospital=patients.admitted_to_hospital(
             with_these_diagnoses=vte_codes_hospital,
             on_or_before=days_before(start_date, 1),
@@ -81,11 +102,18 @@ def common_variable_define(start_date):
         ),
         stroke_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
-            with_these_diagnoses=placeholder_codelist,
+            with_these_diagnoses=stroke_hospital,
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": start_date},},
+        ),
+        stroke_ons=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_date,
+            return_expectations={"date": {"earliest": start_date}},
         ),
         previous_stroke_gp=patients.with_these_clinical_events(
             stroke,
@@ -93,15 +121,14 @@ def common_variable_define(start_date):
             return_expectations={"incidence": 0.05,},
         ),
         previous_stroke_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=placeholder_codelist,
+            with_these_diagnoses=stroke_hospital,
             on_or_before=days_before(start_date, 1),
             return_expectations={"incidence": 0.05,},
         ),
         died_date_ons=patients.died_from_any_cause(
             on_or_after=start_date,
             returning="date_of_death",
-            include_month=True,
-            include_day=True,
+            date_format="YYYY-MM-DD",
             return_expectations={"date": {"earliest": start_date}},
         ),
         age=patients.age_as_of(
