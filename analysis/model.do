@@ -18,7 +18,7 @@
 *  
 ********************************************************************************
 
-import delimited "`c(pwd)'/output/input_covid.csv"
+import delimited "`c(pwd)'/output/input_pneumonia.csv"
 
 
 set more off
@@ -26,13 +26,15 @@ cd  "`c(pwd)'"
 adopath + "`c(pwd)'/analysis/ado"
 
 /*  Pre-analysis data manipulation  */
-
-
-* Program to define
+global group "covid_hosp"
 do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 clear 
 import delimited "`c(pwd)'/output/input_control.csv"
+global group "control_2019"
+do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 clear 
 import delimited "`c(pwd)'/output/input_pneumonia.csv"
+global group "pneumonia_hosp"
+do "`c(pwd)'/analysis/000_cr_define_covariates.do"

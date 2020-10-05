@@ -54,11 +54,22 @@ else {
 }
 
 * Hospitalised with covid
+
+if "$group" == "covid_hosp" {
 gen hospitalised_covid_date = date(hospitalised_covid, "YMD")
 format hospitalised_covid_date %td
 
 drop if hospitalised_covid_date ==.
+drop hospitalised_covid
+}
 
+if "$group" == "pneumonia_hosp" {
+gen hospitalised_pneumonia_date = date(hospitalised_covid, "YMD")
+format hospitalised_pneumonia_date %td
+
+drop if hospitalised_pneumonia_date ==.
+drop hospitalised_covid
+}
 ******************************
 *  Convert strings to dates  *
 ******************************
@@ -342,7 +353,7 @@ drop died_ons_covid_flag_any
 
 
 /*  Binary outcome and survival time  */
-/*
+
 
 * For training and internal evaluation: 
 *   Outcome = COVID-19 death between cohort first and last date
@@ -352,6 +363,10 @@ gen onscoviddeath = died_date_onscovid <= d(8/06/2020)
 gen 	stime = (died_date_onscovid - d(1/03/2020) + 1) if onscoviddeath==1
 replace stime = (d(8/06/2020)       - d(1/03/2020) + 1)	if onscoviddeath==0
 
+
 */
+
+save "data/cohort_$group", replace 
+
 
 
