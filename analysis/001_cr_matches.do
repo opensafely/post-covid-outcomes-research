@@ -18,36 +18,26 @@
 ********************************************************************************
 set seed 1293098 
 
-foreach v in 1/3 {
+forvalues v = 1/3 {
 
 use  "data/cohort_covid_hosp", replace 
-keep patient_id indexdate indexMonth pracid exposed age gender 
+keep patient_id indexdate indexMonth practice_id exposed age gender 
 
-* Match controls in 2020
+* Match pneumonia patients in 2019 
 if `v' == 1 {
-append using "data/cohort_control_2020", keep(patient_id pracid exposed age gender)
-* To prevent duplicate ids in the dummy data
-replace patient_id = _n
-save "data/match_covid_ctrl20", replace
+append using "data/cohort_pneumonia_hosp", keep(patient_id indexdate indexMonth practice_id exposed age gender)
 }
 
 * Match controls in 2019 
-if `v' == 1 {
-append using "data/cohort_control_2020", keep(patient_id pracid exposed age gender)
-* To prevent duplicate ids in the dummy data
-replace patient_id = _n
-save "data/match_covid_ctrl19", replace
+if `v' == 2 {
+append using "data/cohort_control_2019", keep(patient_id practice_id exposed age gender)
+
 }
 
-* Match pneumonia in 2019
-if `v' == 1 {
-append using "data/cohort_control_2020", keep(patient_id pracid indexMonth exposed age gender)
-* To prevent duplicate ids in the dummy data
-replace patient_id = _n
-save "data/match_covid_ctrl19", replace
+* Match pneumonia in 2020
+if `v' == 3 {
+append using "data/cohort_control_2020", keep(patient_id practice_id exposed age gender)
 }
-
-
 
 *frames reset
 
@@ -59,7 +49,15 @@ keep if exposed==0
 frame rename default pool
 
 * need to set number of possible matches
-for num 1/3 : frame tomatch: gen long matchedto_X=.
+* one match for pneumonia and two for controls
+if `v' == 1 {
+for num 1 : frame tomatch: gen long matchedto_X=.
+local numMatch = 1
+}
+else {
+for num 1/2 : frame tomatch: gen long matchedto_X=.
+local numMatch = 2
+}
 
 * sort exposed indexdate
 frame tomatch: sort indexdate 
@@ -71,7 +69,9 @@ noi di "Matching progress out of `totaltomatch':"
 noi di "****************************************"
 * match 2 unexposed patients 
 qui {
-forvalues matchnum = 1/2{
+	
+	
+forvalues matchnum = 1/`numMatch' {
 noi di "Getting match number `matchnum's"
 
 	forvalues i = 1/`totaltomatch' {
@@ -82,11 +82,22 @@ noi di "Getting match number `matchnum's"
 		frame tomatch: scalar idtomatch = patient_id[`i']
 		frame tomatch: scalar TMgender = gender[`i']
 		frame tomatch: scalar TMage = age[`i']
-		frame tomatch: scalar TMpracid = pracid[`i']
+		frame tomatch: scalar TMpractice_id = practice_id[`i']
+		
+		if `v' == 1 {
+		frame tomatch: scalar TMindexMonth = indexMonth[`i']
+		}
 
 		cap frame drop eligiblematches
 		* Age gap +/- 3 years
-		frame put if gender==TMgender & pracid==TMpracid & abs(age-TMage)<=3, into(eligiblematches)
+		if `v' == 1 {
+		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=3 & indexMonth==TMindexMonth, into(eligiblematches)
+		}
+		else {
+		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=3, into(eligiblematches)
+		}
+		
+		
 		frame eligiblematches: cou
 		if r(N)>=1{
 			frame eligiblematches: gen u=uniform()
@@ -105,7 +116,10 @@ noi di "Getting match number `matchnum's"
 
 
 frame change tomatch
-keep patient_id matchedto*
+keep patient_id matchedto* 
 
-save "data/cr_matches", replace
+
+save "data/cr_matches_`v'.dta", replace
+
+frames reset
 }
