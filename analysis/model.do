@@ -1,4 +1,3 @@
-
 ********************************************************************************
 *
 *	Do-file:		model.do
@@ -18,8 +17,7 @@
 *  
 ********************************************************************************
 
-import delimited "`c(pwd)'/output/input_pneumonia.csv"
-
+import delimited "`c(pwd)'/output/input_covid.csv"
 
 set more off
 cd  "`c(pwd)'"
@@ -30,11 +28,17 @@ global group "covid_hosp"
 do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 clear 
-import delimited "`c(pwd)'/output/input_control.csv"
+import delimited "`c(pwd)'/output/input_pneumonia.csv"
+global group "pneumonia_hosp"
+do "`c(pwd)'/analysis/000_cr_define_covariates.do"
+
+clear 
+import delimited "`c(pwd)'/output/input_control_2019.csv"
 global group "control_2019"
 do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 clear 
-import delimited "`c(pwd)'/output/input_pneumonia.csv"
-global group "pneumonia_hosp"
+import delimited "`c(pwd)'/output/input_control_2020.csv"
+global group "control_2020"
 do "`c(pwd)'/analysis/000_cr_define_covariates.do"
+

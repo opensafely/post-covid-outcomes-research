@@ -61,6 +61,14 @@ format hospitalised_covid_date %td
 
 drop if hospitalised_covid_date ==.
 drop hospitalised_covid
+
+* for matching 
+gen exposed = 1
+gen indexdate= hospitalised_covid_date
+format indexdate %td
+gen indexMonth = month(hospitalised_covid_date)
+
+gen yob = 2020 - age
 }
 
 if "$group" == "pneumonia_hosp" {
@@ -69,7 +77,27 @@ format hospitalised_pneumonia_date %td
 
 drop if hospitalised_pneumonia_date ==.
 drop hospitalised_covid
+
+gen indexMonth = month(hospitalised_pneumonia_date)
+gen exposed = 0 
+gen yob = 2019 - age
+
 }
+
+if "$group" == "control_2019" {
+
+* for matching (for 2019 comparison)
+gen exposed = 0 
+gen yob = 2019 - age
+}
+
+if "$group" == "control_2020" {
+
+* for matching (for 2019 comparison)
+gen exposed = 0 
+gen yob = 2019 - age
+}
+
 ******************************
 *  Convert strings to dates  *
 ******************************
@@ -115,6 +143,12 @@ replace bmi = . if !inrange(bmi, 15, 50)
 assert inlist(sex, "M", "F")
 gen male = (sex=="M")
 drop sex
+
+gen gender = male 
+drop male
+label define genderLab 1 "male" 0 "female"
+label values gender genderLab
+label var gender "gender = 0 F, 1 M"
 
 
 * Smoking
@@ -365,6 +399,8 @@ replace stime = (d(8/06/2020)       - d(1/03/2020) + 1)	if onscoviddeath==0
 
 
 */
+* dummy pracid variable
+generate pracid = floor((51)*runiform() + 1)
 
 save "data/cohort_$group", replace 
 
