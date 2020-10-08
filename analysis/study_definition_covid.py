@@ -1,7 +1,9 @@
 from cohortextractor import StudyDefinition, patients, codelist, codelist_from_csv
-from common_variables import common_variables
+from common_variables import common_variable_define
 from codelists import *
 
+start_date = "2020-02-01"
+common_variables = common_variable_define(start_date)
 
 study = StudyDefinition(
     default_expectations={
@@ -23,14 +25,19 @@ study = StudyDefinition(
     ),
     hospitalised_covid=patients.admitted_to_hospital(
         returning="date_admitted",
-        # with_these_diagnoses=covid_codelist,  # optional
-        on_or_after="2020-02-01",
+        with_these_diagnoses=covid_codelist,
+        on_or_after=start_date,
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
-        return_expectations={
-            "date": {"earliest": "2020-03-01"},
-            "category": {"ratios": {"I21": 0.5, "C34": 0.5}},
-        },
+        return_expectations={"date": {"earliest": start_date},},
+    ),
+    discharged_covid=patients.admitted_to_hospital(
+        returning="date_discharged",
+        with_these_diagnoses=covid_codelist,
+        on_or_after=start_date,
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": start_date},},
     ),
     **common_variables
 )
