@@ -17,27 +17,10 @@ study = StudyDefinition(
         AND (age >=18 AND age <= 110)
         AND (sex = "M" OR sex = "F")
         AND imd > 0
-        AND hospitalised_pneumonia
         """,
         has_follow_up=patients.registered_with_one_practice_between(
             "2018-02-01", "2019-02-01"
         ),
-    ),
-    hospitalised_pneumonia=patients.admitted_to_hospital(
-        returning="date_admitted",
-        with_these_diagnoses=pneumonia_codelist,
-        on_or_after=start_date,
-        date_format="YYYY-MM-DD",
-        find_first_match_in_period=True,
-        return_expectations={"date": {"earliest": start_date},},
-    ),
-    discharged_pneumonia=patients.admitted_to_hospital(
-        returning="date_discharged",
-        with_these_diagnoses=pneumonia_codelist,
-        on_or_after=start_date,
-        date_format="YYYY-MM-DD",
-        find_first_match_in_period=True,
-        return_expectations={"date": {"earliest": start_date},},
     ),
     **common_variables
 )
