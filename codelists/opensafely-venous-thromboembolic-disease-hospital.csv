@@ -9,10 +9,10 @@ I802,Phlebitis and thrombophlebitis of other deep vessels of lower extremities,d
 I803,"Phlebitis and thrombophlebitis of lower extremities, unspecified",dvt
 I808,Phlebitis and thrombophlebitis of other sites,dvt
 I809,Phlebitis and thrombophlebitis of unspecified site,dvt
-I81,Portal vein thrombosis,dvt
+I81,Portal vein thrombosis,other
 I82,Other venous embolism and thrombosis,other
 I820,Budd-Chiari syndrome,other
-I821,Thrombophlebitis migrans,other
+I821,Thrombophlebitis migrans,dvt
 I822,Embolism and thrombosis of vena cava,other
 I823,Embolism and thrombosis of renal vein,other
 I828,Embolism and thrombosis of other specified veins,other
