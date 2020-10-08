@@ -16,7 +16,6 @@
 *					do-files. 
 *  
 ********************************************************************************
-
 import delimited "`c(pwd)'/output/input_covid.csv"
 
 set more off

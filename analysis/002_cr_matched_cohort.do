@@ -17,9 +17,9 @@
 *	Note:			
 ********************************************************************************
 *run global
-
+foreach outcome in primary {
 forvalues v = 1/3 {
-use "data/cr_matches_`v'", clear
+use "data/cr_matches_`v'_primary", clear
 reshape long matchedto_, i(patient_id)
 
 rename patient_id setid
@@ -64,15 +64,15 @@ drop if _merge==2
 drop _merge
  }
  
-save "data/cr_matches_long_`v'.dta", replace
+save "data/cr_matches_long_`v'_`outcome'.dta", replace
 *erase "data/cr_matches_`v'.dta"
 }
 
 use "data/cohort_covid_hosp", replace
 
 forvalues v = 1/3 {
-    append using "data/cr_matches_long_`v'.dta"
-	erase "data/cr_matches_long_`v'.dta"
+    append using "data/cr_matches_long_`v'_`outcome'.dta"
+	erase "data/cr_matches_long_`v'_`outcome'.dta"
 }
 replace setid = patient_id if setid ==. 
 sort setid patient_id 
@@ -80,6 +80,11 @@ sort setid patient_id
 bysort setid patient: gen duplicatePatid = _n
 count if duplicatePatid > 1
 drop duplicatePatid
+
+bysort setid: gen numMatches = _n 
+bysort setid: egen totMatches = max(numMatches)
+drop if totMatches == 1
+drop numMatches totMatches
 
 bysort setid: gen indexCovid = indexdate if flag == "covid_hosp"
 egen index2020 = max(indexCovid), by(setid)
@@ -98,4 +103,7 @@ egen nbad = total(indexdate == .) , by(setid)
 drop if nbad
 drop nbad
 
-save "data/cr_matched_cohort", replace 
+sort setid
+order setid patient_id indexdate flag 
+save "data/cr_matched_cohort_`outcome'", replace 
+}

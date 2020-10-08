@@ -62,29 +62,40 @@ format hospitalised_covid_date %td
 drop if hospitalised_covid_date ==.
 drop hospitalised_covid
 
+gen discharged_covid_date = date(discharged_covid, "YMD")
+format discharged_covid_date %td
+
+drop if discharged_covid_date ==.
+drop discharged_covid
+
 * for matching 
 gen exposed = 1
-gen indexdate= hospitalised_covid_date
+gen indexdate= discharged_covid_date
 format indexdate %td
-gen indexMonth = month(hospitalised_covid_date)
+gen indexMonth = month(discharged_covid_date)
 
-gen yob = 2020 - age
 gen flag = "covid_hosp"
 }
 
 if "$group" == "pneumonia_hosp" {
-gen hospitalised_pneumonia_date = date(hospitalised_covid, "YMD")
+gen hospitalised_pneumonia_date = date(hospitalised_pneumonia, "YMD")
 format hospitalised_pneumonia_date %td
 
 drop if hospitalised_pneumonia_date ==.
-drop hospitalised_covid
+drop hospitalised_pneumonia
 
-gen indexdate= hospitalised_pneumonia_date
+gen discharged_pneumonia_date = date(discharged_pneumonia, "YMD")
+format discharged_pneumonia_date %td
+
+drop if discharged_pneumonia_date ==.
+drop discharged_pneumonia
+
+gen indexdate = discharged_pneumonia_date
 format indexdate %td
 
-gen indexMonth = month(hospitalised_pneumonia_date)
+gen indexMonth = month(discharged_pneumonia_date)
 gen exposed = 0 
-gen yob = 2019 - age
+
 gen flag = "pneumonia_hosp"
 
 }
@@ -93,7 +104,7 @@ if "$group" == "control_2019" {
 
 * for matching (for 2019 comparison)
 gen exposed = 0 
-gen yob = 2019 - age
+
 gen flag = "control_2019"
 }
 
@@ -101,7 +112,7 @@ if "$group" == "control_2020" {
 
 * for matching (for 2019 comparison)
 gen exposed = 0 
-gen yob = 2019 - age
+
 gen flag = "control_2020"
 }
 
@@ -110,22 +121,25 @@ gen flag = "control_2020"
 ******************************
 
 * To be added: dates related to outcomes
-foreach var of varlist 	dvt 							///
-						diabetes						///	
-						pe  							///
-						stroke 							///
-						hypertension					///		
-						bmi_date_measured				///
-						{
+foreach var of varlist dvt_gp 				///
+					   pe_gp 				///
+					   other_vte_gp 		///
+					   dvt_hospital			///
+					   pe_hospital 			///
+					   other_vte_hospital 	///
+					   stroke_gp 			///
+					   stroke_hospital  	///
+					   died_date_ons 		///
+					   bmi_date_measured 	///
+					   hypertension 		/// 
+					   diabetes 	{
 	capture confirm string variable `var'
 	if _rc!=0 {
 		assert `var'==.
 		rename `var' `var'_date
 	}
 	else {
-		replace `var' = `var' + "-15"
 		rename `var' `var'_dstr
-		replace `var'_dstr = " " if `var'_dstr == "-15"
 		gen `var'_date = date(`var'_dstr, "YMD") 
 		order `var'_date, after(`var'_dstr)
 		drop `var'_dstr
@@ -160,13 +174,13 @@ label var gender "gender = 0 F, 1 M"
 
 * Smoking
 label define smoke 1 "Never" 2 "Former" 3 "Current" .u "Unknown (.u)"
-gen     smoke = 1  if smoking_status_1=="N"
-replace smoke = 2  if smoking_status_1=="E"
-replace smoke = 3  if smoking_status_1=="S"
-replace smoke = .u if smoking_status_1=="M"
-replace smoke = .u if smoking_status_1==""
+gen     smoke = 1  if smoking_status=="N"
+replace smoke = 2  if smoking_status=="E"
+replace smoke = 3  if smoking_status=="S"
+replace smoke = .u if smoking_status=="M"
+replace smoke = .u if smoking_status==""
 label values smoke smoke
-drop smoking_status_1
+drop smoking_status
 
 
 * Ethnicity (5 category)
@@ -183,7 +197,6 @@ label values ethnicity_5 ethnicity
 
 /*  Geographical location  */
 
-
 * STP 
 rename stp stp_old
 bysort stp_old: gen stp = 1 if _n==1
@@ -191,38 +204,38 @@ replace stp = sum(stp)
 drop stp_old
 
 
-/* Region
+* Region
 rename region region_string
 assert inlist(region_string, 								///
 					"East Midlands", 						///
-					"East",  								///
+					"East of England",  								///
 					"London", 								///
 					"North East", 							///
 					"North West", 							///
 					"South East", 							///
 					"South West",							///
 					"West Midlands", 						///
-					"Yorkshire and The Humber") 
+					"Yorkshire and the Humber") 
 * Nine regions
 gen     region_9 = 1 if region_string=="East Midlands"
-replace region_9 = 2 if region_string=="East"
+replace region_9 = 2 if region_string=="East of England"
 replace region_9 = 3 if region_string=="London"
 replace region_9 = 4 if region_string=="North East"
 replace region_9 = 5 if region_string=="North West"
 replace region_9 = 6 if region_string=="South East"
 replace region_9 = 7 if region_string=="South West"
 replace region_9 = 8 if region_string=="West Midlands"
-replace region_9 = 9 if region_string=="Yorkshire and The Humber"
+replace region_9 = 9 if region_string=="Yorkshire and the Humber"
 
 label define region_9 	1 "East Midlands" 					///
-						2 "East"  							///
+						2 "East of England"   							///
 						3 "London" 							///
 						4 "North East" 						///
 						5 "North West" 						///
 						6 "South East" 						///
 						7 "South West"						///
 						8 "West Midlands" 					///
-						9 "Yorkshire and The Humber"
+						9 "Yorkshire and the Humber"
 label values region_9 region_9
 label var region_9 "Region of England (9 regions)"
 
@@ -239,7 +252,7 @@ label define region_7 	1 "East"							///
 label values region_7 region_7
 label var region_7 "Region of England (7 regions)"
 drop region_string
-*/
+
 
 
 **************************
@@ -365,51 +378,128 @@ label define hba1ccat	0 "<6.5%"  		///
 	drop hba1c_pct hba1c_percentage_1 hba1c_mmol_per_mol_1 
 	
 
-********************************
-*  Outcomes and survival time  *
-********************************
+**************
+*  Outcomes  *
+**************
+/*   Exclusion events */ 
+if "$group" == "covid_hosp" {
+gen exclude_primary = cond(stroke_gp_date <= discharged_covid_date | 		/// 
+						   stroke_hospital_date <= discharged_covid_date | ///
+						   dvt_gp_date <= discharged_covid_date | ///
+						   dvt_hospital_date <= discharged_covid_date | ///
+						   pe_gp_date <= discharged_covid_date | ///
+						   pe_hospital_date <= discharged_covid_date | ///
+						   died_date_ons_date <=  discharged_covid_date | ///
+						   previous_stroke_gp == 1 | ///
+						   previous_stroke_hospital == 1 | ///
+						   previous_vte_gp == 1 | ///
+						   previous_vte_hospital == 1 | ///
+						   previous_stroke_gp == 1  , 1, 0  )
 
-/*
+gen exclude_secondary  = cond(stroke_hospital_date <= discharged_covid_date | ///
+						   dvt_hospital_date <= discharged_covid_date | ///
+						   pe_hospital_date <= discharged_covid_date | ///
+						   died_date_ons_date <=  discharged_covid_date | ///
+						   previous_stroke_hospital == 1 | ///
+						   previous_vte_hospital == 1  , 1, 0  )
+}
+
+if "$group" == "pneumonia_hosp" {
+gen exclude_primary = cond(stroke_gp_date <= discharged_pneumonia_date | 		/// 
+						   stroke_hospital_date <= discharged_pneumonia_date | ///
+						   dvt_gp_date <= discharged_pneumonia_date | ///
+						   dvt_hospital_date <= discharged_pneumonia_date | ///
+						   pe_gp_date <= discharged_pneumonia_date | ///
+						   pe_hospital_date <= discharged_pneumonia_date | ///
+						   died_date_ons_date <=  discharged_pneumonia_date | ///
+						   previous_stroke_gp == 1 | ///
+						   previous_stroke_hospital == 1 | ///
+						   previous_vte_gp == 1 | ///
+						   previous_vte_hospital == 1 | ///
+						   previous_stroke_gp == 1  , 1, 0  )
+
+gen exclude_secondary  = cond(stroke_hospital_date <= discharged_pneumonia_date | ///
+						   dvt_hospital_date <= discharged_pneumonia_date | ///
+						   pe_hospital_date <= discharged_pneumonia_date | ///
+						   died_date_ons_date <=  discharged_pneumonia_date | ///
+						   previous_stroke_hospital == 1 | ///
+						   previous_vte_hospital == 1  , 1, 0  )
+}
+
+
+* Maybe move this all to after matching ...but can exclude all patients with a history of the event as of the start date to  avoid them being matched (likely to reduce the pool of matches and speed up matching )
+
+if "$group" == "control_2019" {
+gen exclude_primary = cond(previous_stroke_gp == 1 | ///
+						   previous_stroke_hospital == 1 | ///
+						   previous_vte_gp == 1 | ///
+						   previous_vte_hospital == 1 | ///
+						   previous_stroke_gp == 1  , 1, 0  )
+
+gen exclude_secondary  = cond(previous_stroke_hospital == 1 | ///
+						   previous_vte_hospital == 1  , 1, 0  )
+	
+}
+
+if "$group" == "control_2020" {
+gen exclude_primary = cond(previous_stroke_gp == 1 | ///
+						   previous_stroke_hospital == 1 | ///
+						   previous_vte_gp == 1 | ///
+						   previous_vte_hospital == 1 | ///
+						   previous_stroke_gp == 1  , 1, 0  )
+
+gen exclude_secondary  = cond(previous_stroke_hospital == 1 | ///
+						   previous_vte_hospital == 1  , 1, 0  )
+	
+}
+
 /*   Outcomes   */
 
-* Format ONS death date
-confirm string variable died_date_ons
-rename died_date_ons died_date_ons_dstr
-gen died_date_ons = date(died_date_ons_dstr, "YMD")
-format died_date_ons %td
-drop died_date_ons_dstr
-
-* Note: There may be deaths recorded after end of our study (8 June)
+* Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
-replace died_date_ons = . if died_date_ons>d(8jun2020)
-
-* Date of Covid death in ONS
-gen died_date_onscovid = died_date_ons if died_ons_covid_flag_any==1
-gen died_date_onsother = died_date_ons if died_ons_covid_flag_any!=1
-drop died_date_ons
-
-* Delete unneeded variables
-drop died_ons_covid_flag_any 
+replace died_date_ons_date = . if died_date_ons_date>td(08oct2020)
 
 
+* stroke dvt pe
+foreach v in stroke dvt pe  {
+if "$group" == "covid_hosp" {
+gen `v'_primary_outcome = cond(`v'_gp_date > discharged_covid_date | 		/// 
+								  `v'_hospital_date > discharged_covid_date | ///
+								  (`v'_ons == 2020 & died_date_ons_date > discharged_covid_date) & ///
+								  died_date_ons_date!= discharged_covid_date, 1, 0)
+								   
+gen `v'_secondary_outcome = cond( `v'_hospital_date > discharged_covid_date |  ///
+								  (`v'_ons == 2020 & died_date_ons_date > discharged_covid_date) & ///
+								  died_date_ons_date!= discharged_covid_date, 1, 0)
+}
+if "$group" == "pneumonia_hosp" {
+gen `v'_primary_outcome = cond(`v'_gp_date > discharged_pneumonia_date | 		/// 
+								  `v'_hospital_date > discharged_pneumonia_date |  ///
+								   (`v'_ons == 2020 & died_date_ons_date > discharged_pneumonia_date) & ///
+								  died_date_ons_date!= discharged_pneumonia_date, 1, 0)
+								  
+								   
+gen `v'_secondary_outcome = cond( `v'_hospital_date > discharged_pneumonia_date |  ///
+								  (`v'_ons == 2020 & died_date_ons_date > discharged_pneumonia_date) & ///
+								  died_date_ons_date!= discharged_pneumonia_date, 1, 0)
+}
 
-/*  Binary outcome and survival time  */
+}
+
+preserve 
+keep if exclude_primary == 0
+drop exclude_primary exclude_secondary
+save "data/cohort_primary_$group", replace 
+restore
+
+preserve 
+keep if exclude_secondary == 0
+drop exclude_secondary exclude_primary
+save "data/cohort_secondary_$group", replace 
+restore
 
 
-* For training and internal evaluation: 
-*   Outcome = COVID-19 death between cohort first and last date
-gen onscoviddeath = died_date_onscovid <= d(8/06/2020)
 
-* Survival time
-gen 	stime = (died_date_onscovid - d(1/03/2020) + 1) if onscoviddeath==1
-replace stime = (d(8/06/2020)       - d(1/03/2020) + 1)	if onscoviddeath==0
-
-
-*/
-* dummy pracid variable
-generate practice_id = floor((51)*runiform() + 1)
-
-save "data/cohort_$group", replace 
 
 
 

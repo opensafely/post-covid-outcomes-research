@@ -2,7 +2,7 @@
 *
 *	Do-file:		000_cr_matches.do
 *
-*	Programmed by:	Krishnan & John 
+*	Programmed by:	John (based on Krishnan) 
 *
 *	Data used:		None
 *
@@ -17,26 +17,25 @@
 *	Note:			
 ********************************************************************************
 set seed 1293098 
-
+foreach outcome in primary {
 forvalues v = 1/3 {
-
-use  "data/cohort_covid_hosp", replace 
+use  "data/cohort_`outcome'_covid_hosp", replace 
 keep patient_id indexdate indexMonth practice_id exposed age gender 
 
 * Match pneumonia patients in 2019 
 if `v' == 1 {
-append using "data/cohort_pneumonia_hosp", keep(patient_id indexdate indexMonth practice_id exposed age gender)
+append using "data/cohort_`outcome'_pneumonia_hosp", keep(patient_id indexdate indexMonth practice_id exposed age gender )
 }
 
 * Match controls in 2019 
 if `v' == 2 {
-append using "data/cohort_control_2019", keep(patient_id practice_id exposed age gender)
+append using "data/cohort_`outcome'_control_2019", keep(patient_id practice_id exposed age gender dvt_gp_date pe_gp_date other_vte_gp_date dvt_hospital_date pe_hospital_date other_vte_hospital_date dvt_ons pe_ons other_vte_ons stroke_gp_date stroke_hospital_date stroke_ons died_date_ons_date)
 
 }
 
 * Match pneumonia in 2020
 if `v' == 3 {
-append using "data/cohort_control_2020", keep(patient_id practice_id exposed age gender)
+append using "data/cohort_`outcome'_control_2020", keep(patient_id practice_id exposed age gender dvt_gp_date pe_gp_date other_vte_gp_date dvt_hospital_date pe_hospital_date other_vte_hospital_date dvt_ons pe_ons other_vte_ons stroke_gp_date stroke_hospital_date stroke_ons died_date_ons_date)
 }
 
 *frames reset
@@ -83,6 +82,8 @@ noi di "Getting match number `matchnum's"
 		frame tomatch: scalar TMgender = gender[`i']
 		frame tomatch: scalar TMage = age[`i']
 		frame tomatch: scalar TMpractice_id = practice_id[`i']
+		frame tomatch: global TMindexdate = indexdate[`i']
+		di $TMindexdate
 		
 		if `v' == 1 {
 		frame tomatch: scalar TMindexMonth = indexMonth[`i']
@@ -99,11 +100,39 @@ noi di "Getting match number `matchnum's"
 		
 		
 		frame eligiblematches: cou
-		if r(N)>=1{
+		if r(N)>=1 {
 			frame eligiblematches: gen u=uniform()
 			frame eligiblematches: gen agediff=abs(age-TMage)
 			frame eligiblematches: sort agediff u
-			frame eligiblematches: scalar selectedmatch = patient_id[1]
+			
+		if `v'  == 3  {	
+			* At the covid/pneumonia patients indexdate check matches against exclusion criteria 
+			frame eligiblematches: replace indexdate = $TMindexdate if indexdate == .
+			frame eligiblematches: format indexdate %td
+		
+				if "`outcome'" == "primary" {
+			frame eligiblematches: gen exclude_primary = cond(stroke_gp_date <= indexdate | 		/// 
+						   stroke_hospital_date <= indexdate | ///
+						   dvt_gp_date <= indexdate | ///
+						   dvt_hospital_date <= indexdate| ///
+						   pe_gp_date <= indexdate | ///
+						   pe_hospital_date <= indexdate | ///
+						   died_date_ons_date <=  indexdate , 1, 0  )
+						   
+			frame eligiblematches: drop if exclude_primary == 1			   
+												}
+				if "`outcome'" == "secondary" {
+			frame eligiblematches: gen exclude_secondary  = cond(stroke_hospital_date <= indexdate | ///
+						   dvt_hospital_date <= indexdate | ///
+						   pe_hospital_date <= indexdate | ///
+						   died_date_ons_date <=  indexdate , 1, 0  )
+						   
+		     frame eligiblematches: drop if exclude_secondary == 1		
+													}		
+			}
+						   
+			frame eligiblematches: scalar selectedmatch = patient_id[1] 
+		
 		}
 		else scalar selectedmatch = -999
 
@@ -119,7 +148,9 @@ frame change tomatch
 keep patient_id matchedto* 
 
 
-save "data/cr_matches_`v'.dta", replace
+save "data/cr_matches_`v'_`outcome'.dta", replace
 
 frames reset
+}
+
 }
