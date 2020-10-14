@@ -51,7 +51,6 @@ erase "data/cr_matches_control_2020_`outcome'.dta"
 use "data/cr_matched_cohort_control_2019_`outcome'", replace 
 
 append using "data/cr_matches_long_control_2020_`outcome'.dta"
-erase "data/cr_matches_long_control_2020_`outcome'.dta"
 
 bysort setid: egen eligibleMatchFound = max(matchedFlag)
 keep if eligibleMatchFound == 1

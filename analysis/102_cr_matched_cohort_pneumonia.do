@@ -51,7 +51,6 @@ erase "data/cr_matches_pneumonia_`outcome'.dta"
 use "data/cohort_`outcome'_covid_hosp", replace
 
 append using "data/cr_matches_long_pneumonia_`outcome'.dta"
-erase "data/cr_matches_long_pneumonia_`outcome'.dta"
 
 replace setid = patient_id if setid ==. 
 sort setid patient_id 
@@ -67,5 +66,5 @@ drop duplicatePatid
 
 sort setid
 order setid patient_id indexdate flag 
-save "data/cr_matched_cohort_pneumonia_`outcome'", replace 
+save "data/cr_matched_cohort_`outcome'", replace 
 }

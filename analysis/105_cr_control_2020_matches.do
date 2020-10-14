@@ -21,7 +21,7 @@ set seed 12938
 
 foreach outcome in primary {
 
-use  "data/cr_matched_cohort_control_2019_`outcome'", replace 
+use  "data/cr_matched_cohort_`outcome'", replace 
 keep if flag == "covid_hosp"
 keep patient_id indexdate indexMonth practice_id exposed age gender setid
 

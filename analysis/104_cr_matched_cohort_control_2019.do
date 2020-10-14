@@ -51,7 +51,6 @@ erase "data/cr_matches_control_2019_`outcome'.dta"
 use "data/cr_matched_cohort_pneumonia_`outcome'", replace 
 
 append using "data/cr_matches_long_control_2019_`outcome'.dta"
-erase "data/cr_matches_long_control_2019_`outcome'.dta"
 
 bysort setid: egen eligibleMatchFound = max(matchedFlag)
 keep if eligibleMatchFound == 1
@@ -74,5 +73,5 @@ order setid patient_id indexdate flag
 
 
 
-save "data/cr_matched_cohort_control_2019_`outcome'", replace 
+save "data/cr_matched_cohort_`outcome'", replace 
 }
