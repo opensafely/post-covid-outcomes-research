@@ -44,7 +44,7 @@ L414z,Postnatal deep vein thrombosis NOS,CTV3_Children,1,dvt
 L417.,Obstetric cerebral venous thrombosis,CTV3_Children,1,dvt
 L4170,Cerebral venous thrombosis in pregnancy,CTV3_Children,1,dvt
 L4171,Cerebral venous thrombosis in the puerperium,CTV3_Children,1,dvt
-L43..,Obstetric pulmonary embolism,CTV3Map_Code_And_Term,1,dvt
+L43..,Obstetric pulmonary embolism,CTV3Map_Code_And_Term,1,pe
 L432.,Obstetric blood-clot pulmonary embolism,CTV3Map_Code_And_Term,1,pe
 L4320,Obstetric blood-clot pulmonary embolism unspecified,CTV3_Children,1,pe
 L4321,Obstetric blood-clot pulmonary embolism - delivered,CTV3_Children,1,pe
@@ -66,11 +66,11 @@ L43z3,Obstetric pulmonary embolism NOS with antenatal complication,CTV3_Children
 L43z4,Obstetric pulmonary embolism NOS with postnatal complication,CTV3_Children,1,pe
 Lyu64,[X]Other obstetric embolism,CTV3_Children,1,pe
 SP122,Postoperative deep vein thrombosis,CTV3Map_Code_And_Term,1,dvt
-X00Dj,Cerebral venous thrombosis of sagittal sinus,CTV3_Children,1,dvt
-X00Dk,Cerebral venous thrombosis of straight sinus,CTV3_Children,1,dvt
-X00Dl,Cerebral venous thrombosis of sigmoid sinus,CTV3_Children,1,dvt
-X00Dm,Cerebral venous thrombosis of cortical vein,CTV3_Children,1,dvt
-X012b,Operation for pulmonary embolism,High_Level_SNOMED,1,dvt
+X00Dj,Cerebral venous thrombosis of sagittal sinus,CTV3_Children,1,other
+X00Dk,Cerebral venous thrombosis of straight sinus,CTV3_Children,1,other
+X00Dl,Cerebral venous thrombosis of sigmoid sinus,CTV3_Children,1,other
+X00Dm,Cerebral venous thrombosis of cortical vein,CTV3_Children,1,other
+X012b,Operation for pulmonary embolism,High_Level_SNOMED,1,pe
 X012d,Transluminal fragmentation of pulmonary embolus,High_Level_SNOMED,1,pe
 X202x,Pulmonary thromboembolism,CTV3_Children,1,pe
 X202y,Acute massive pulmonary embolism,CTV3_Children,1,pe
