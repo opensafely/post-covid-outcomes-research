@@ -116,7 +116,7 @@ forvalues reportMatch = 1/`numMatch' {
 	local perC = round(100*`r(N)'/ `totaltomatch', 0.1)
 noi di "Out of `totaltomatch' patients, `r(N)' (`perC' %) received `reportMatch' match"
 }
-else `r(N)'==. {
+else {
 	local perC = round(100*5/ `totaltomatch', 0.1)
 noi di "Out of `totaltomatch' patients, <5 (`perC' %) received `reportMatch' match"
 
