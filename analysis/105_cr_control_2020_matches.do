@@ -82,7 +82,7 @@ noi di "Getting match number `matchnum's"
 	
 		* Matching criteria:
 		* Gender, practice, age within 3 yrs, index month 
-		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=1, into(eligiblematches)
+		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)==0, into(eligiblematches)
 
 		frame eligiblematches: cou
 		if r(N)>=1 {
