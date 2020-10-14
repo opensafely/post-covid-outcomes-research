@@ -131,10 +131,17 @@ noi di "****************************************"
 noi di "Matching Report:"
 noi di "****************************************"
 
+
 forvalues reportMatch = 1/`numMatch' {
-   qui count if matchedto_`reportMatch' != -999
+   qui safecount if matchedto_`reportMatch' != -999
+   if `r(N)'!=. {
 	local perC = round(100*`r(N)'/ `totaltomatch', 0.1)
 noi di "Out of `totaltomatch' patients, `r(N)' (`perC' %) received `reportMatch' match"
+}
+else `r(N)'==. {
+	local perC = round(100*5/ `totaltomatch', 0.1)
+noi di "Out of `totaltomatch' patients, <5 (`perC' %) received `reportMatch' match"
+
 }
 
 global numMatches `r(N)'	

@@ -19,7 +19,7 @@
 
 
 di "STARTING COUNT FROM IMPORT:"
-noi count
+noi safecount
 
 * Age: Exclude children and implausibly old people
 qui summ age // Should be no missing ages
