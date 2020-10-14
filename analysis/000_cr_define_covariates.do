@@ -157,7 +157,6 @@ replace bmi = . if !inrange(bmi, 15, 50)
 *  Recode variables  *
 **********************
 
-
 /*  Demographics  */
 
 * Sex
@@ -393,8 +392,7 @@ gen exclude_primary = cond(stroke_gp_date <= discharged_covid_date | 		///
 						   previous_stroke_gp == 1 | ///
 						   previous_stroke_hospital == 1 | ///
 						   previous_vte_gp == 1 | ///
-						   previous_vte_hospital == 1 | ///
-						   previous_stroke_gp == 1  , 1, 0  )
+						   previous_vte_hospital == 1, 1, 0  )
 
 gen exclude_secondary  = cond(stroke_hospital_date <= discharged_covid_date | ///
 						   dvt_hospital_date <= discharged_covid_date | ///
@@ -415,8 +413,7 @@ gen exclude_primary = cond(stroke_gp_date <= discharged_pneumonia_date | 		///
 						   previous_stroke_gp == 1 | ///
 						   previous_stroke_hospital == 1 | ///
 						   previous_vte_gp == 1 | ///
-						   previous_vte_hospital == 1 | ///
-						   previous_stroke_gp == 1  , 1, 0  )
+						   previous_vte_hospital == 1, 1, 0  )
 
 gen exclude_secondary  = cond(stroke_hospital_date <= discharged_pneumonia_date | ///
 						   dvt_hospital_date <= discharged_pneumonia_date | ///
@@ -433,8 +430,7 @@ if "$group" == "control_2019" {
 gen exclude_primary = cond(previous_stroke_gp == 1 | ///
 						   previous_stroke_hospital == 1 | ///
 						   previous_vte_gp == 1 | ///
-						   previous_vte_hospital == 1 | ///
-						   previous_stroke_gp == 1  , 1, 0  )
+						   previous_vte_hospital == 1 , 1, 0  )
 
 gen exclude_secondary  = cond(previous_stroke_hospital == 1 | ///
 						   previous_vte_hospital == 1  , 1, 0  )
@@ -445,8 +441,7 @@ if "$group" == "control_2020" {
 gen exclude_primary = cond(previous_stroke_gp == 1 | ///
 						   previous_stroke_hospital == 1 | ///
 						   previous_vte_gp == 1 | ///
-						   previous_vte_hospital == 1 | ///
-						   previous_stroke_gp == 1  , 1, 0  )
+						   previous_vte_hospital == 1 , 1, 0  )
 
 gen exclude_secondary  = cond(previous_stroke_hospital == 1 | ///
 						   previous_vte_hospital == 1  , 1, 0  )
@@ -458,33 +453,6 @@ gen exclude_secondary  = cond(previous_stroke_hospital == 1 | ///
 * Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
 replace died_date_ons_date = . if died_date_ons_date>td(08oct2020)
-
-
-* stroke dvt pe
-foreach v in stroke dvt pe  {
-if "$group" == "covid_hosp" {
-gen `v'_primary_outcome = cond(`v'_gp_date > discharged_covid_date | 		/// 
-								  `v'_hospital_date > discharged_covid_date | ///
-								  (`v'_ons == 2020 & died_date_ons_date > discharged_covid_date) & ///
-								  died_date_ons_date!= discharged_covid_date, 1, 0)
-								   
-gen `v'_secondary_outcome = cond( `v'_hospital_date > discharged_covid_date |  ///
-								  (`v'_ons == 2020 & died_date_ons_date > discharged_covid_date) & ///
-								  died_date_ons_date!= discharged_covid_date, 1, 0)
-}
-if "$group" == "pneumonia_hosp" {
-gen `v'_primary_outcome = cond(`v'_gp_date > discharged_pneumonia_date | 		/// 
-								  `v'_hospital_date > discharged_pneumonia_date |  ///
-								   (`v'_ons == 2020 & died_date_ons_date > discharged_pneumonia_date) & ///
-								  died_date_ons_date!= discharged_pneumonia_date, 1, 0)
-								  
-								   
-gen `v'_secondary_outcome = cond( `v'_hospital_date > discharged_pneumonia_date |  ///
-								  (`v'_ons == 2020 & died_date_ons_date > discharged_pneumonia_date) & ///
-								  died_date_ons_date!= discharged_pneumonia_date, 1, 0)
-}
-
-}
 
 preserve 
 keep if exclude_primary == 0
