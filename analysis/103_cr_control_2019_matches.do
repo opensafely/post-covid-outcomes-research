@@ -139,15 +139,17 @@ forvalues reportMatch = 1/`numMatch' {
    if `r(N)'!=. {
 	local perC = round(100*`r(N)'/ `totaltomatch', 0.1)
 noi di "Out of `totaltomatch' patients, `r(N)' (`perC' %) received `reportMatch' match"
+	global matchFlag1 = 1
 }
 else  {
 	local perC = round(100*5/ `totaltomatch', 0.1)
 noi di "Out of `totaltomatch' patients, <5 (`perC' %) received `reportMatch' match"
+	global matchFlag1 = 0
 
 }
 
 }
-global numMatches `r(N)'	
+
 
 save "data/cr_matches_control_2019_`outcome'", replace
 frames reset
