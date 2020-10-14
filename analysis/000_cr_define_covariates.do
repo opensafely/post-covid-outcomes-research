@@ -66,6 +66,7 @@ gen discharged_covid_date = date(discharged_covid, "YMD")
 format discharged_covid_date %td
 
 drop if discharged_covid_date ==.
+drop if discharged_covid_date > $dataEndDate
 drop discharged_covid
 
 * for matching 
@@ -89,6 +90,8 @@ format discharged_pneumonia_date %td
 
 drop if discharged_pneumonia_date ==.
 drop discharged_pneumonia
+
+drop if discharged_pneumonia_date > $dataEndDate - 365.25
 
 gen indexdate = discharged_pneumonia_date
 format indexdate %td

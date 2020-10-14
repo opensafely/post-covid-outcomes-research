@@ -57,6 +57,8 @@ di `r(ub)'
  replace agecat = 0 if agecat==.
 stptime , by(agecat) // no return list
 stptime if agecat==1 // gives same
+
+strate if agecat == 1
  
  
 }

@@ -52,6 +52,8 @@ frame tomatch: sort indexdate
 frame tomatch: qui cou
 local totaltomatch = r(N)
 
+noi di ""
+noi di "****************************************"
 noi di "Matching progress out of `totaltomatch':"
 noi di "****************************************"
 * match 2 unexposed patients 
@@ -80,7 +82,7 @@ noi di "Getting match number `matchnum's"
 	
 		* Matching criteria:
 		* Gender, practice, age within 3 yrs, index month 
-		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=3, into(eligiblematches)
+		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=1, into(eligiblematches)
 
 		frame eligiblematches: cou
 		if r(N)>=1 {
@@ -124,6 +126,18 @@ noi di "Getting match number `matchnum's"
 
 frame change tomatch
 keep patient_id matchedto* 
+ noi di ""
+noi di "****************************************"
+noi di "Matching Report:"
+noi di "****************************************"
+
+forvalues reportMatch = 1/`numMatch' {
+   qui count if matchedto_`reportMatch' != -999
+	local perC = round(100*`r(N)'/ `totaltomatch', 0.1)
+noi di "Out of `totaltomatch' patients, `r(N)' (`perC' %) received `reportMatch' match"
+}
+
+global numMatches `r(N)'	
 
 save "data/cr_matches_control_2020_`outcome'", replace
 frames reset

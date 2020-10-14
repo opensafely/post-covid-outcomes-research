@@ -1,3 +1,4 @@
+
 ********************************************************************************
 *
 *	Do-file:		000_cr_matches.do
@@ -42,8 +43,8 @@ frame rename default pool
 * Set number of possible matches - Two pneumonia patients *
 ***********************************************************
 
-for num 1/2 : frame tomatch: gen long matchedto_X=.
-local numMatch = 2
+for num 1 : frame tomatch: gen long matchedto_X=.
+local numMatch = 1
 
 * sort exposed indexdate
 frame tomatch: sort indexdate 
@@ -51,12 +52,15 @@ frame tomatch: sort indexdate
 frame tomatch: qui cou
 local totaltomatch = r(N)
 
+noi di ""
+noi di "****************************************"
 noi di "Matching progress out of `totaltomatch':"
 noi di "****************************************"
 * match 2 unexposed patients 
 qui {
 	
 forvalues matchnum = 1/`numMatch' {
+
 noi di "Getting match number `matchnum's"
 
 	forvalues i = 1/`totaltomatch' {
@@ -79,7 +83,7 @@ noi di "Getting match number `matchnum's"
 	
 		* Matching criteria:
 		* Gender, practice, age within 3 yrs, index month 
-		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=5 & indexMonth==TMindexMonth, into(eligiblematches)
+		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)<=1 & indexMonth==TMindexMonth, into(eligiblematches)
 
 		frame eligiblematches: cou
 		if r(N)>=1 {
@@ -87,28 +91,7 @@ noi di "Getting match number `matchnum's"
 			frame eligiblematches: gen agediff=abs(age-TMage)
 			frame eligiblematches: sort agediff u
 			   
-			frame eligiblematches: scalar selectedmatch = patient_id[1] 
-			
-				if "`outcome'" == "primary" {
-			frame eligiblematches: gen exclude_primary = cond(stroke_gp_date <= indexdate | 		/// 
-						   stroke_hospital_date <= indexdate | ///
-						   dvt_gp_date <= indexdate | ///
-						   dvt_hospital_date <= indexdate| ///
-						   pe_gp_date <= indexdate | ///
-						   pe_hospital_date <= indexdate | ///
-						   died_date_ons_date <=  indexdate , 1, 0  )
-						   
-			frame eligiblematches: drop if exclude_primary == 1			   
-												}
-				if "`outcome'" == "secondary" {
-			frame eligiblematches: gen exclude_secondary  = cond(stroke_hospital_date <= indexdate | ///
-						   dvt_hospital_date <= indexdate | ///
-						   pe_hospital_date <= indexdate | ///
-						   died_date_ons_date <=  indexdate , 1, 0  )
-						   
-		     frame eligiblematches: drop if exclude_secondary == 1		
-													}		
-		
+			frame eligiblematches: scalar selectedmatch = patient_id[1]		
 		
 		}
 		else scalar selectedmatch = -999
@@ -122,7 +105,19 @@ noi di "Getting match number `matchnum's"
 
 frame change tomatch
 keep patient_id matchedto* 
+ noi di ""
+noi di "****************************************"
+noi di "Matching Report:"
+noi di "****************************************"
 
+forvalues reportMatch = 1/`numMatch' {
+   qui count if matchedto_`reportMatch' != -999
+	local perC = round(100*`r(N)'/ `totaltomatch', 0.1)
+noi di "Out of `totaltomatch' patients, `r(N)' (`perC' %) received `reportMatch' match"
+}
+	
+	global numMatches `r(N)'	
+	
 save "data/cr_matches_pneumonia_`outcome'", replace
 frames reset
 }

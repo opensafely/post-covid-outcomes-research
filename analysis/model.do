@@ -18,6 +18,9 @@
 ********************************************************************************
 import delimited "`c(pwd)'/output/input_covid.csv"
 
+********** INSERT DATA END DATE ************
+global dataEndDate td(01Sep2020)
+
 set more off
 cd  "`c(pwd)'"
 adopath + "`c(pwd)'/analysis/ado"
@@ -44,8 +47,14 @@ do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 /* Matching */
 do "`c(pwd)'/analysis/101_cr_pneumonia_matches.do" 
+if $numMatches > 0 {
 do "`c(pwd)'/analysis/102_cr_matched_cohort_pneumonia.do" 
+}
 do "`c(pwd)'/analysis/103_cr_control_2019_matches.do" 
+if $numMatches > 0 {
 do "`c(pwd)'/analysis/104_cr_matched_cohort_control_2019.do"
+}
 do "`c(pwd)'/analysis/105_cr_control_2020_matches.do" 
+if $numMatches > 0 {
 do "`c(pwd)'/analysis/106_cr_matched_cohort_control_2020.do" 
+}
