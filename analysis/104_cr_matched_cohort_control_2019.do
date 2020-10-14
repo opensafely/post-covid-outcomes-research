@@ -48,7 +48,7 @@ gen matchedFlag = 1
 save "data/cr_matches_long_control_2019_`outcome'.dta", replace
 erase "data/cr_matches_control_2019_`outcome'.dta"
 
-use "data/cr_matched_cohort_pneumonia_`outcome'", replace 
+use "cr_matched_cohort_`outcome'", replace 
 
 append using "data/cr_matches_long_control_2019_`outcome'.dta"
 
