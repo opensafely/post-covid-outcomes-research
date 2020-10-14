@@ -143,9 +143,12 @@ else  {
 noi di "Out of `totaltomatch' patients, <5 (`perC' %) received `reportMatch' match"
 
 }
+}
+
 
 global numMatches `r(N)'	
 
 save "data/cr_matches_control_2020_`outcome'", replace
 frames reset
+
 }
