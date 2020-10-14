@@ -61,7 +61,7 @@ keep if eligibleMatchFound == 1
 drop matchedFlag eligibleMatchFound
 
 bysort setid patient: gen duplicatePatid = _n
-count if duplicatePatid > 1
+safecount if duplicatePatid > 1
 drop if duplicatePatid > 1
 drop duplicatePatid
 
