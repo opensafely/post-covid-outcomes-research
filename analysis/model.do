@@ -51,9 +51,12 @@ if $matchFlag == 1 {
 do "`c(pwd)'/analysis/102_cr_matched_cohort_pneumonia.do" 
 do "`c(pwd)'/analysis/103_cr_control_2019_matches.do" 
 }
+
 if $matchFlag1 == 1 {
 do "`c(pwd)'/analysis/104_cr_matched_cohort_control_2019.do"
 do "`c(pwd)'/analysis/105_cr_control_2020_matches.do" 
+}
+
 if $matchFlag2 == 1 {
 do "`c(pwd)'/analysis/106_cr_matched_cohort_control_2020.do" 
 }
