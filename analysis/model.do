@@ -47,16 +47,25 @@ do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 /* Matching */
 do "`c(pwd)'/analysis/101_cr_pneumonia_matches.do" 
-if $matchFlag == 1 {
+if $matchFlag == 0 {
+noi di "Low percentage of pneumonia patients matched " 
+}
+else{
 do "`c(pwd)'/analysis/102_cr_matched_cohort_pneumonia.do" 
 do "`c(pwd)'/analysis/103_cr_control_2019_matches.do" 
 }
 
-if $matchFlag1 == 1 {
+if $matchFlag1 == 0 {
+noi di "Low percentage of controls in 2019 matched" 
+}
+else {
 do "`c(pwd)'/analysis/104_cr_matched_cohort_control_2019.do"
 do "`c(pwd)'/analysis/105_cr_control_2020_matches.do" 
 }
 
-if $matchFlag2 == 1 {
+if $matchFlag2 == 0 {
+noi di "Low percentage of controls in 2020 matched" 
+}
+else {
 do "`c(pwd)'/analysis/106_cr_matched_cohort_control_2020.do" 
 }

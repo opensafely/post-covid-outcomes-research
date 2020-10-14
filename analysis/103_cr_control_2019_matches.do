@@ -150,7 +150,6 @@ noi di "Out of `totaltomatch' patients, <5 (`perC' %) received `reportMatch' mat
 
 }
 
-
 save "data/cr_matches_control_2019_`outcome'", replace
 frames reset
 }
