@@ -65,6 +65,7 @@ if `r(N)'==0 {
 	global noMatchFlag = 1 
 }
 else {
+	global noMatchFlag = 0
 drop matchedFlag eligibleMatchFound
 
 bysort setid patient: gen duplicatePatid = _n
