@@ -57,6 +57,14 @@ sort setid patient_id
 
 bysort setid: egen eligibleMatchFound = max(matchedFlag)
 keep if eligibleMatchFound == 1
+safecount
+
+if `r(N)'==0 {
+	
+	noi di "No pneumonia patients matched" 
+	global noMatchFlag = 1 
+}
+else {
 drop matchedFlag eligibleMatchFound
 
 bysort setid patient: gen duplicatePatid = _n
@@ -67,4 +75,6 @@ drop duplicatePatid
 sort setid
 order setid patient_id indexdate flag 
 save "data/cr_matched_cohort_`outcome'", replace 
+
+}
 }

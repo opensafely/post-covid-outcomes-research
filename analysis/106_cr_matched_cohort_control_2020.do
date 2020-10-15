@@ -54,6 +54,14 @@ append using "data/cr_matches_long_control_2020_`outcome'.dta"
 
 bysort setid: egen eligibleMatchFound = max(matchedFlag)
 keep if eligibleMatchFound == 1
+safecount
+if `r(N)'==0 {
+	
+	noi di "No control 2019 patients matched" 
+	global noMatchFlag2 = 1 
+	
+}
+else {
 drop matchedFlag eligibleMatchFound
 
 bysort setid patient: gen duplicatePatid = _n
@@ -74,4 +82,6 @@ order setid patient_id indexdate flag
 
 
 save "data/cr_matched_cohort_`outcome'", replace 
+
+}
 }

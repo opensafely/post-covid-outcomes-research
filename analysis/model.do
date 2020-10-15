@@ -16,6 +16,7 @@
 *					do-files. 
 *  
 ********************************************************************************
+clear
 import delimited "`c(pwd)'/output/input_covid.csv"
 
 ********** INSERT DATA END DATE ************
@@ -47,25 +48,28 @@ do "`c(pwd)'/analysis/000_cr_define_covariates.do"
 
 /* Matching */
 do "`c(pwd)'/analysis/101_cr_pneumonia_matches.do" 
-if $matchFlag == 0 {
-noi di "Low percentage of pneumonia patients matched " 
-}
-else{
 do "`c(pwd)'/analysis/102_cr_matched_cohort_pneumonia.do" 
-do "`c(pwd)'/analysis/103_cr_control_2019_matches.do" 
-}
 
-if $matchFlag1 == 0 {
-noi di "Low percentage of controls in 2019 matched" 
+if $noMatchFlag == 1 {
+	
+	noi di "No peneumonia patients matched"
 }
 else {
-do "`c(pwd)'/analysis/104_cr_matched_cohort_control_2019.do"
-do "`c(pwd)'/analysis/105_cr_control_2020_matches.do" 
+	do "`c(pwd)'/analysis/103_cr_control_2019_matches.do" 
+	do "`c(pwd)'/analysis/104_cr_matched_cohort_control_2019.do"
+		
+		if $noMatchFlag1 == 1 {
+			noi di "No 2019 control patients matched"
+								}
+		
+		else {
+		do "`c(pwd)'/analysis/105_cr_control_2020_matches.do" 
+		do "`c(pwd)'/analysis/106_cr_matched_cohort_control_2020.do" 
+				}
+			
+				if $noMatchFlag1 == 1 {
+					noi di "No 2020 control patients matched"
+										}
 }
 
-if $matchFlag2 == 0 {
-noi di "Low percentage of controls in 2020 matched" 
-}
-else {
-do "`c(pwd)'/analysis/106_cr_matched_cohort_control_2020.do" 
-}
+
