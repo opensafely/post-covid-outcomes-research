@@ -262,10 +262,10 @@ def common_variable_define(start_date):
                     "ratios": {
                         "North East": 0.1,
                         "North West": 0.1,
-                        "Yorkshire and the Humber": 0.1,
+                        "Yorkshire and The Humber": 0.1,
                         "East Midlands": 0.1,
                         "West Midlands": 0.1,
-                        "East of England": 0.1,
+                        "East": 0.1,
                         "London": 0.2,
                         "South East": 0.2,
                     },

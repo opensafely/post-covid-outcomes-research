@@ -210,14 +210,14 @@ drop stp_old
 rename region region_string
 assert inlist(region_string, 								///
 					"East Midlands", 						///
-					"East of England",  								///
+					"East",  								///
 					"London", 								///
 					"North East", 							///
 					"North West", 							///
 					"South East", 							///
 					"South West",							///
 					"West Midlands", 						///
-					"Yorkshire and the Humber") 
+					"Yorkshire and The Humber") 
 * Nine regions
 gen     region_9 = 1 if region_string=="East Midlands"
 replace region_9 = 2 if region_string=="East of England"
