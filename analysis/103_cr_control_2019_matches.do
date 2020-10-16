@@ -17,13 +17,17 @@
 *
 *	Note:			
 ********************************************************************************
+* Open a log file
+capture log close
+log using "output/103_cr_control_2019_matches", text replace
+
 set seed 12938
 
 foreach outcome in primary {
 
 use  "data/cr_matched_cohort_`outcome'", replace 
 keep if flag == "pneumonia_hosp"
-keep patient_id indexdate indexMonth practice_id exposed age gender setid
+keep patient_id indexdate indexMonth practice_id exposed age gender setid stp
 replace exposed = 1
 replace patient_id = setid
 * Load control patients in 2019 
@@ -31,7 +35,7 @@ append using "data/cohort_`outcome'_control_2019", keep(patient_id practice_id e
 														stroke_hospital_date stroke_gp_date ///
 														dvt_hospital_date dvt_gp_date /// 
 														pe_hospital_date pe_gp_date /// 
-														died_date_ons_date)
+														died_date_ons_date stp)
 														
 **********************************
 * Separate exposed and unexposed *
@@ -74,6 +78,7 @@ noi di "Getting match number `matchnum's"
 		frame tomatch: scalar TMage = age[`i']
 		frame tomatch: scalar TMpractice_id = practice_id[`i']
 		frame tomatch: global TMindexdate = indexdate[`i']
+		frame tomatch: global TMstp = stp[`i']
 		di $TMindexdate
 		
 		frame tomatch: scalar TMindexMonth = indexMonth[`i']
@@ -82,8 +87,8 @@ noi di "Getting match number `matchnum's"
 		cap frame drop eligiblematches
 	
 		* Matching criteria:
-		* Gender, practice, age within 3 yrs, index month 
-		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)==0, into(eligiblematches)
+		* Gender, stp, age +/- 1 yr
+		frame put if gender==TMgender & stp=="$TMstp" & abs(age-TMage)==1, into(eligiblematches)
 
 		frame eligiblematches: cou
 		if r(N)>=1 {
@@ -153,3 +158,5 @@ noi di "Out of `totaltomatch' patients, <5 (`perC' %) received `reportMatch' mat
 save "data/cr_matches_control_2019_`outcome'", replace
 frames reset
 }
+
+log close

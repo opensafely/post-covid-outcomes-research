@@ -17,19 +17,23 @@
 *
 *	Note:			
 ********************************************************************************
+* Open a log file
+capture log close
+log using "output/101_cr_peumonia_matches", text replace
+
 set seed 12938
 
 foreach outcome in primary {
 
 use  "data/cohort_`outcome'_covid_hosp", replace 
-keep patient_id indexdate indexMonth practice_id exposed age gender 
+keep patient_id indexdate indexMonth practice_id exposed age gender stp
 
 * Load pneumonia patients in 2019 
 append using "data/cohort_`outcome'_pneumonia_hosp" , keep(patient_id indexdate indexMonth practice_id exposed age gender ///
 														stroke_hospital_date stroke_gp_date ///
 														dvt_hospital_date dvt_gp_date /// 
 														pe_hospital_date pe_gp_date /// 
-														died_date_ons_date)
+														died_date_ons_date stp)
 														
 
 **********************************
@@ -74,6 +78,7 @@ noi di "Getting match number `matchnum's"
 		frame tomatch: scalar TMage = age[`i']
 		frame tomatch: scalar TMpractice_id = practice_id[`i']
 		frame tomatch: global TMindexdate = indexdate[`i']
+		frame tomatch: global TMstp = stp[`i']
 		di $TMindexdate
 		
 		frame tomatch: scalar TMindexMonth = indexMonth[`i']
@@ -82,8 +87,8 @@ noi di "Getting match number `matchnum's"
 		cap frame drop eligiblematches
 	
 		* Matching criteria:
-		* Gender, practice, age within 3 yrs, index month 
-		frame put if gender==TMgender & practice_id==TMpractice_id & abs(age-TMage)==0 & indexMonth==TMindexMonth, into(eligiblematches)
+		* Gender, stp, age +/- 1 yr, index month 
+		frame put if gender==TMgender & stp=="$TMstp" & abs(age-TMage)==1 & indexMonth==TMindexMonth, into(eligiblematches)
 
 		frame eligiblematches: cou
 		if r(N)>=1 {
@@ -128,3 +133,5 @@ save "data/cr_matches_pneumonia_`outcome'", replace
 frames reset
 
 }
+
+log close

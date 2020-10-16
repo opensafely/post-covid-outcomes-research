@@ -17,6 +17,10 @@
 *	Note:			
 ********************************************************************************
 *run global
+* Open a log file
+capture log close
+log using "output/102_cr_matched_cohort_pneumonia", text replace
+
 foreach outcome in primary {
 
 use "data/cr_matches_pneumonia_`outcome'", clear
@@ -79,3 +83,5 @@ save "data/cr_matched_cohort_`outcome'", replace
 
 }
 }
+
+log close

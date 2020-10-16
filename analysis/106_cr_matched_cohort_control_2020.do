@@ -16,7 +16,11 @@
 *
 *	Note:			
 ********************************************************************************
-*run global
+
+* Open a log file
+capture log close
+log using "output/106_cr_matched_cohort_control_2020", text replace
+
 foreach outcome in primary {
 
 use "data/cr_matches_control_2020_`outcome'", clear
@@ -86,3 +90,5 @@ save "data/cr_matched_cohort_`outcome'", replace
 
 }
 }
+
+log close

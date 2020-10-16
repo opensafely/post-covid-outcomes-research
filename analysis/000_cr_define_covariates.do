@@ -199,13 +199,6 @@ label values ethnicity_5 ethnicity
 
 /*  Geographical location  */
 
-* STP 
-rename stp stp_old
-bysort stp_old: gen stp = 1 if _n==1
-replace stp = sum(stp)
-drop stp_old
-
-
 * Region
 rename region region_string
 assert inlist(region_string, 								///

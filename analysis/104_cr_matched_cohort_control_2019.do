@@ -16,7 +16,11 @@
 *
 *	Note:			
 ********************************************************************************
-*run global
+
+* Open a log file
+capture log close
+log using "output/104_cr_matched_cohort_control_2019", text replace
+
 foreach outcome in primary {
 
 use "data/cr_matches_control_2019_`outcome'", clear
@@ -83,3 +87,5 @@ order setid patient_id indexdate flag
 
 save "data/cr_matched_cohort_`outcome'", replace 
 }
+
+log close

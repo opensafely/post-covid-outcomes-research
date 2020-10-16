@@ -16,7 +16,6 @@
 *					do-files. 
 *  
 ********************************************************************************
-clear
 import delimited "`c(pwd)'/output/input_covid.csv"
 
 ********** INSERT DATA END DATE ************
@@ -72,4 +71,4 @@ else {
 										}
 }
 
-
+do "`c(pwd)'/analysis/107_match_summary.do"
