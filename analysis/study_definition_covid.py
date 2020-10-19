@@ -31,7 +31,7 @@ study = StudyDefinition(
         find_first_match_in_period=True,
         return_expectations={"date": {"earliest": start_date},},
     ),
-    discharged_covid=patients.admitted_to_hospital(
+    discharged=patients.admitted_to_hospital(
         returning="date_discharged",
         with_these_diagnoses=covid_codelist,
         on_or_after=start_date,
