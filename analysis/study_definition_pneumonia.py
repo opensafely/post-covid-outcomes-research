@@ -29,15 +29,15 @@ study = StudyDefinition(
         on_or_after=start_date,
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
-        return_expectations={"date": {"earliest": start_date},},
+        return_expectations={"date": {"earliest": start_date}, "incidence": 1,},
     ),
-    discharged=patients.admitted_to_hospital(
+    indexdate=patients.admitted_to_hospital(
         returning="date_discharged",
         with_these_diagnoses=pneumonia_codelist,
         on_or_after=start_date,
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
-        return_expectations={"date": {"earliest": start_date},},
+        return_expectations={"date": {"earliest": start_date}, "incidence": 1,},
     ),
     **common_variables
 )
