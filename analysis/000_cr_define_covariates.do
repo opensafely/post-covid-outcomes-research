@@ -213,24 +213,24 @@ assert inlist(region_string, 								///
 					"Yorkshire and The Humber") 
 * Nine regions
 gen     region_9 = 1 if region_string=="East Midlands"
-replace region_9 = 2 if region_string=="East of England"
+replace region_9 = 2 if region_string=="East"
 replace region_9 = 3 if region_string=="London"
 replace region_9 = 4 if region_string=="North East"
 replace region_9 = 5 if region_string=="North West"
 replace region_9 = 6 if region_string=="South East"
 replace region_9 = 7 if region_string=="South West"
 replace region_9 = 8 if region_string=="West Midlands"
-replace region_9 = 9 if region_string=="Yorkshire and the Humber"
+replace region_9 = 9 if region_string=="Yorkshire and The Humber"
 
 label define region_9 	1 "East Midlands" 					///
-						2 "East of England"   							///
+						2 "East"   							///
 						3 "London" 							///
 						4 "North East" 						///
 						5 "North West" 						///
 						6 "South East" 						///
 						7 "South West"						///
 						8 "West Midlands" 					///
-						9 "Yorkshire and the Humber"
+						9 "Yorkshire and The Humber"
 label values region_9 region_9
 label var region_9 "Region of England (9 regions)"
 
