@@ -88,7 +88,7 @@ noi di "Getting match number `matchnum's"
 	
 		* Matching criteria:
 		* Gender, stp, age +/- 1 yr, index month 
-		frame put if gender==TMgender & stp=="$TMstp" & abs(age-TMage)==1 & indexMonth==TMindexMonth, into(eligiblematches)
+		frame put if gender==TMgender & stp=="$TMstp" & abs(age-TMage)<=1 & indexMonth==TMindexMonth, into(eligiblematches)
 
 		frame eligiblematches: cou
 		if r(N)>=1 {
