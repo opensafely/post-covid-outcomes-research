@@ -113,8 +113,13 @@ def date_exclusions(df1, date_exclusion_variables, df2, index_date):
     to where there are exclusion variables that occur before the index date.
     """
     exclusions = pd.Series(data=False, index=df1.index)
-    for var in date_exclusion_variables:
-        variable_bool = df1[var] < df2[index_date]
+    for exclusion_var, before_after in date_exclusion_variables.items():
+        if before_after == "before":
+            variable_bool = df1[exclusion_var] <= df2[index_date]
+        elif before_after == "after":
+            variable_bool = df1[exclusion_var] > df2[index_date]
+        else:
+            raise Exception(f"Date exclusion type '{exclusion_var}' invalid")
         exclusions = exclusions | variable_bool
     return exclusions
 
