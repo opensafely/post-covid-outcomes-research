@@ -141,6 +141,23 @@ def pick_matches(match_dict, matched_rows, case_row):
     return matched_rows.index
 
 
+def get_date_offset(offset_str):
+    if offset_str == "no_offset":
+        offset = None
+    else:
+        length = int(offset_str.split("_")[0])
+        unit = offset_str.split("_")[1]
+        if (unit == "year") or (unit == "years"):
+            offset = pd.DateOffset(years=length)
+        elif (unit == "month") or (unit == "months"):
+            offset = pd.DateOffset(months=length)
+        elif (unit == "day") or (unit == "days"):
+            offset = pd.DateOffset(days=length)
+        else:
+            raise Exception(f"Date offset '{unit}' not implemented")
+    return offset
+
+
 def match(match_dict):
     """
     Wrapper function that calls functions to:
@@ -158,12 +175,16 @@ def match(match_dict):
     ## Import_data
     cases, matches = import_csvs(match_dict)
 
+    if "index_date_variable" in match_dict:
+        index_date_var = match_dict["index_date_variable"]
+
+    if "replace_match_index_date_with_case" in match_dict:
+        offset_str = match_dict["replace_match_index_date_with_case"]
+        date_offset = get_date_offset(offset_str)
+
     if "date_exclusion_variables" in match_dict:
         case_exclusions = date_exclusions(
-            cases,
-            match_dict["date_exclusion_variables"],
-            cases,
-            match_dict["index_date_variable"],
+            cases, match_dict["date_exclusion_variables"], cases, index_date_var,
         )
         cases = cases.loc[~case_exclusions]
 
@@ -174,13 +195,13 @@ def match(match_dict):
         )
         matched_rows = matches.loc[eligible_matches]
 
-        ## Index date based match exclusions
+        ## Index date based match exclusions (faster to do this after get_eligible_matches)
         if "date_exclusion_variables" in match_dict:
             exclusions = date_exclusions(
                 matched_rows,
                 match_dict["date_exclusion_variables"],
                 case_row,
-                match_dict["index_date_variable"],
+                index_date_var,
             )
             matched_rows = matched_rows.loc[~exclusions]
 
@@ -190,18 +211,28 @@ def match(match_dict):
 
         ## Label matches with case ID
         matches.loc[matched_rows, "set_id"] = case_id
+        ## Only if there are matches
         if len(matches.loc[matched_rows, "set_id"]) > 0:
             cases.loc[case_id, "set_id"] = case_id
 
         ## Set index_date of the match where needed
         if "replace_match_index_date_with_case" in match_dict:
-            matches.loc[matched_rows, match_dict["index_date_variable"]] = case_row[
-                match_dict["index_date_variable"]
-            ]
+            if offset_str == "no_offset":
+                matches.loc[matched_rows, index_date_var] = case_row[index_date_var]
+            elif offset_str.split("_")[2] == "earlier":
+                matches.loc[matched_rows, index_date_var] = (
+                    case_row[index_date_var] - date_offset
+                )
+            elif offset_str.split("_")[2] == "later":
+                matches.loc[matched_rows, index_date_var] = (
+                    case_row[index_date_var] + date_offset
+                )
 
+    ## Drop unmatched cases/matches
     matched_cases = cases.loc[cases["set_id"] != -9]
     matched_matches = matches.loc[matches["set_id"] != -9]
 
+    ## Write to csvs
     matched_cases.to_csv(
         os.path.join(
             "..",
