@@ -21,12 +21,16 @@ def import_csvs(match_dict):
         index_col="patient_id",
     )
 
+    ## Drop cases from match population
+    matches = matches.drop(cases.index)
+
     cases["set_id"] = -9
     matches["set_id"] = -9
     matches["randomise"] = 1
     random.seed(999)
     matches["randomise"] = matches["randomise"].apply(lambda x: x * random.random())
 
+    ## Set data types for matching variables
     month_only = []
     for var, match_type in match_dict["match_variables"].items():
         if match_type == "category":
@@ -42,7 +46,6 @@ def import_csvs(match_dict):
     for var in month_only:
         del match_dict["match_variables"][var]
         match_dict["match_variables"][f"{var}_m"] = "category"
-    print(match_dict["match_variables"])
 
     ## Format exclusion variables as dates
     if "date_exclusion_variables" in match_dict:
