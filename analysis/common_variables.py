@@ -34,7 +34,9 @@ def common_variable_define(start_date):
         ),
         previous_vte_gp=patients.with_these_clinical_events(
             vte_codes_gp,
-            on_or_before=days_before(start_date, 1),
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
             return_expectations={"incidence": 0.05,},
         ),
         dvt_hospital=patients.admitted_to_hospital(
@@ -90,7 +92,9 @@ def common_variable_define(start_date):
         ),
         previous_vte_hospital=patients.admitted_to_hospital(
             with_these_diagnoses=vte_codes_hospital,
-            on_or_before=days_before(start_date, 1),
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
             return_expectations={"incidence": 0.05,},
         ),
         stroke_gp=patients.with_these_clinical_events(
@@ -117,12 +121,16 @@ def common_variable_define(start_date):
         ),
         previous_stroke_gp=patients.with_these_clinical_events(
             stroke,
-            on_or_before=days_before(start_date, 1),
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
             return_expectations={"incidence": 0.05,},
         ),
         previous_stroke_hospital=patients.admitted_to_hospital(
             with_these_diagnoses=stroke_hospital,
-            on_or_before=days_before(start_date, 1),
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
             return_expectations={"incidence": 0.05,},
         ),
         died_date_ons=patients.died_from_any_cause(
