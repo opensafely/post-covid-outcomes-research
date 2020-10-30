@@ -3,7 +3,6 @@ import copy
 import random
 from datetime import datetime
 import pandas as pd
-from tqdm import tqdm
 
 
 def import_csvs(match_dict):
@@ -101,7 +100,7 @@ def pre_calculate_indices(cases, matches, match_variables):
 def get_eligible_matches(case_row, matches, match_variables, indices):
     """
     Loops over the match_variables and combines the boolean indices
-    from get_bool_index into a single bool index. Also removes previously
+    from pre_calculate_indices into a single bool index. Also removes previously
     matched patients.
     """
     eligible_matches = pd.Series(data=True, index=matches.index)
@@ -131,19 +130,21 @@ def date_exclusions(df1, date_exclusion_variables, df2, index_date):
     return exclusions
 
 
-def pick_matches(match_dict, matched_rows, case_row):
+def greedily_pick_matches(match_dict, matched_rows, case_row):
     """
-    Cuts the eligible_matches list to the number of matches specified
-    in the match_dict. It sorts on either just a random variable, or if
-    age is specifed as a match variable, sorts on the difference in age
-    between the case and the match, to get closer matches.
+    Cuts the eligible_matches list to the number of matches specified in
+    the match_dict. This is a greedy matching method, so if closest_match_columns
+    are specified, it sorts on those variables to get the closest available matches
+    for that case. It always also sorts on random variable.
     """
-    if "age" in match_dict["match_variables"]:
-        matched_rows["age_delta"] = abs(matched_rows["age"] - case_row["age"])
-        matched_rows = matched_rows.sort_values(["age_delta", "randomise"])
-    else:
-        matched_rows = matched_rows.sort_values("randomise")
+    sort_columns = []
+    if "closest_match_columns" in match_dict:
+        for var in match_dict["closest_match_columns"]:
+            matched_rows[f"{var}_delta"] = abs(matched_rows[var] - case_row[var])
+            sort_columns.append(f"{var}_delta")
 
+    sort_columns.append("randomise")
+    matched_rows = matched_rows.sort_values(sort_columns)
     matched_rows = matched_rows.head(match_dict["matches_per_case"])
     return matched_rows.index
 
@@ -223,7 +224,7 @@ def match(match_dict):
             matched_rows = matched_rows.loc[~exclusions]
 
         ## Pick random matches
-        matched_rows = pick_matches(match_dict, matched_rows, case_row)
+        matched_rows = greedily_pick_matches(match_dict, matched_rows, case_row)
 
         ## Label matches with case ID
         matches.loc[matched_rows, "set_id"] = case_id

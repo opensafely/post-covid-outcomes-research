@@ -10,6 +10,7 @@ pneumonia = {
         "stp": "category",
         "indexdate": "month_only",
     },
+    "closest_match_columns": ["age"],
     "index_date_variable": "indexdate",
     "date_exclusion_variables": {
         "died_date_ons": "before",
@@ -26,7 +27,12 @@ control_2019 = {
     "case_csv": "input_covid",
     "match_csv": "input_control_2019",
     "matches_per_case": 2,
-    "match_variables": {"sex": "category", "age": 1, "stp": "category",},
+    "match_variables": {
+        "sex": "category",
+        "age": 1,
+        "stp": "category",
+    },
+    "closest_match_columns": ["age"],
     "replace_match_index_date_with_case": "1_year_earlier",
     "index_date_variable": "indexdate",
     "date_exclusion_variables": {
@@ -44,7 +50,12 @@ control_2020 = {
     "case_csv": "input_covid",
     "match_csv": "input_control_2020",
     "matches_per_case": 2,
-    "match_variables": {"sex": "category", "age": 1, "stp": "category",},
+    "match_variables": {
+        "sex": "category",
+        "age": 1,
+        "stp": "category",
+    },
+    "closest_match_columns": ["age"],
     "replace_match_index_date_with_case": "no_offset",
     "index_date_variable": "indexdate",
     "date_exclusion_variables": {
