@@ -181,6 +181,20 @@ def match(match_dict):
     - set the index date of the match as that of the case (where desired)
     - save the results as a csv
     """
+    report_path = os.path.join(
+        "..",
+        "output",
+        f"matching_report_{match_dict['match_csv']}.txt",
+    )
+
+    def matching_report(text_to_write, erase=False):
+        if erase and os.path.isfile(report_path):
+            os.remove(report_path)
+        with open(report_path, "a") as txt:
+            for line in text_to_write:
+                txt.writelines(f"{line}\n")
+            txt.writelines("\n")
+
     matching_report(
         [f"Matching started at: {datetime.now()}"],
         erase=True,
@@ -317,14 +331,7 @@ def match(match_dict):
         os.path.join("..", "output", f"{match_dict['match_csv']}_matched.csv")
     )
 
-    return open(
-        os.path.join(
-            "..",
-            "output",
-            "matching_report.txt",
-        ),
-        "r",
-    ).read()
+    print(open(report_path).read())
 
 
 def compare_populations(matched_cases, matched_matches, match_dict):
@@ -341,17 +348,3 @@ def compare_populations(matched_cases, matched_matches, match_dict):
                 ]
             )
     return scalar_comparisons
-
-
-def matching_report(text_to_write, erase=False):
-    report_path = os.path.join(
-        "..",
-        "output",
-        "matching_report.txt",
-    )
-    if erase:
-        os.remove(report_path)
-    with open(report_path, "a") as txt:
-        for line in text_to_write:
-            txt.writelines(f"{line}\n")
-        txt.writelines("\n")
