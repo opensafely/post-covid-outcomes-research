@@ -8,8 +8,7 @@ import pandas as pd
 def import_csvs(match_dict):
     """
     Imports the two csvs specified under case_csv and match_csv.
-    Also adds some variables ready for matching and sets the correct data
-    types for the matching variables.
+    Also sets the correct data types for the matching variables.
     """
     cases = pd.read_csv(
         os.path.join("..", "output", f"{match_dict['case_csv']}.csv"),
@@ -19,15 +18,6 @@ def import_csvs(match_dict):
         os.path.join("..", "output", f"{match_dict['match_csv']}.csv"),
         index_col="patient_id",
     )
-
-    ## Drop cases from match population
-    matches = matches.drop(cases.index)
-
-    cases["set_id"] = -9
-    matches["set_id"] = -9
-    matches["randomise"] = 1
-    random.seed(999)
-    matches["randomise"] = matches["randomise"].apply(lambda x: x * random.random())
 
     ## Set data types for matching variables
     month_only = []
@@ -62,6 +52,15 @@ def import_csvs(match_dict):
     return cases, matches
 
 
+def add_variables(cases, matches):
+    cases["set_id"] = cases.index
+    matches["set_id"] = -9
+    matches["randomise"] = 1
+    random.seed(999)
+    matches["randomise"] = matches["randomise"].apply(lambda x: x * random.random())
+    return cases, matches
+
+
 def get_bool_index(match_type, value, match_var, matches):
     """
     Compares the value in the given case variable to the variable in
@@ -72,8 +71,6 @@ def get_bool_index(match_type, value, match_var, matches):
         bool_index = matches[match_var] == value
     elif isinstance(match_type, int):
         bool_index = abs(matches[match_var] - value) <= match_type
-    # elif match_type == "month_only":
-    #     bool_index = matches[f"{match_var}_m"] == value
     else:
         raise Exception(f"Matching type '{match_type}' not yet implemented")
     return bool_index
@@ -184,9 +181,19 @@ def match(match_dict):
     - set the index date of the match as that of the case (where desired)
     - save the results as a csv
     """
+    ## Deep copy match_dict
+    match_dict = copy.deepcopy(match_dict)
 
     ## Import_data
     cases, matches = import_csvs(match_dict)
+
+    ## Drop cases from match population
+    ## WARNING - this will cause issues in dummy data where population
+    ## sizes are the same, as the indices will be identical.
+    matches = matches.drop(cases.index)
+
+    ## Add set_id and randomise variables
+    cases, matches = add_variables(cases, matches)
 
     indices = pre_calculate_indices(cases, matches, match_dict["match_variables"])
 
@@ -228,9 +235,6 @@ def match(match_dict):
 
         ## Label matches with case ID
         matches.loc[matched_rows, "set_id"] = case_id
-        ## And cases only if there are matches
-        if len(matches.loc[matched_rows, "set_id"]) > 0:
-            cases.loc[case_id, "set_id"] = case_id
 
         ## Set index_date of the match where needed
         if "replace_match_index_date_with_case" in match_dict:
@@ -244,6 +248,9 @@ def match(match_dict):
                 matches.loc[matched_rows, index_date_var] = (
                     case_row[index_date_var] + date_offset
                 )
+
+        ## Report number of matches for each case
+        cases.loc[case_id, "match_counts"] = len(matched_rows)
 
     ## Drop unmatched cases/matches
     matched_cases = cases.loc[cases["set_id"] != -9]
