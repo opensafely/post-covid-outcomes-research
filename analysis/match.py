@@ -259,6 +259,9 @@ def match(match_dict):
             ]
         )
 
+    ## Sort cases by index date
+    cases = cases.sort_values(index_date_var)
+
     for case_id, case_row in cases.iterrows():
         ## Get eligible matches
         eligible_matches = get_eligible_matches(
