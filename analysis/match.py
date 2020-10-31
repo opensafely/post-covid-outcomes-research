@@ -181,21 +181,45 @@ def match(match_dict):
     - set the index date of the match as that of the case (where desired)
     - save the results as a csv
     """
+    matching_report(
+        [f"Matching started at: {datetime.now()}"],
+        erase=True,
+    )
+
     ## Deep copy match_dict
     match_dict = copy.deepcopy(match_dict)
 
     ## Import_data
     cases, matches = import_csvs(match_dict)
 
+    matching_report(
+        [
+            "CSV import:",
+            f"Completed {datetime.now()}",
+            f"Cases    {len(cases)}",
+            f"Matches  {len(matches)}",
+        ],
+    )
+
     ## Drop cases from match population
     ## WARNING - this will cause issues in dummy data where population
     ## sizes are the same, as the indices will be identical.
     matches = matches.drop(cases.index)
 
+    matching_report(
+        [
+            "Dropping cases from matches:",
+            f"Completed {datetime.now()}",
+            f"Cases    {len(cases)}",
+            f"Matches  {len(matches)}",
+        ]
+    )
+
     ## Add set_id and randomise variables
     cases, matches = add_variables(cases, matches)
 
     indices = pre_calculate_indices(cases, matches, match_dict["match_variables"])
+    matching_report([f"Completed pre-calculating indices at {datetime.now()}"])
 
     if "index_date_variable" in match_dict:
         index_date_var = match_dict["index_date_variable"]
@@ -212,6 +236,14 @@ def match(match_dict):
             index_date_var,
         )
         cases = cases.loc[~case_exclusions]
+        matching_report(
+            [
+                "Date exclusions for cases:",
+                f"Completed {datetime.now()}",
+                f"Cases    {len(cases)}",
+                f"Matches  {len(matches)}",
+            ]
+        )
 
     for case_id, case_row in cases.iterrows():
         ## Get eligible matches
@@ -233,8 +265,13 @@ def match(match_dict):
         ## Pick random matches
         matched_rows = greedily_pick_matches(match_dict, matched_rows, case_row)
 
-        ## Label matches with case ID
-        matches.loc[matched_rows, "set_id"] = case_id
+        ## Report number of matches for each case
+        num_matches = len(matched_rows)
+        cases.loc[case_id, "match_counts"] = num_matches
+
+        ## Label matches with case ID if there are enough
+        if num_matches == match_dict["matches_per_case"]:
+            matches.loc[matched_rows, "set_id"] = case_id
 
         ## Set index_date of the match where needed
         if "replace_match_index_date_with_case" in match_dict:
@@ -249,12 +286,24 @@ def match(match_dict):
                     case_row[index_date_var] + date_offset
                 )
 
-        ## Report number of matches for each case
-        cases.loc[case_id, "match_counts"] = len(matched_rows)
-
     ## Drop unmatched cases/matches
-    matched_cases = cases.loc[cases["set_id"] != -9]
+    matched_cases = cases.loc[cases["match_counts"] == match_dict["matches_per_case"]]
     matched_matches = matches.loc[matches["set_id"] != -9]
+
+    ## Describe population differences (returns empty list if no closest_match variables are specified)
+    scalar_comparisons = compare_populations(matched_cases, matched_matches, match_dict)
+
+    matching_report(
+        [
+            "After matching:",
+            f"Completed {datetime.now()}",
+            f"Cases    {len(matched_cases)}",
+            f"Matches  {len(matched_matches)}\n",
+            "Number of available matches per case:",
+            cases["match_counts"].value_counts().to_string(),
+        ]
+        + scalar_comparisons
+    )
 
     ## Write to csvs
     matched_cases.to_csv(
@@ -268,4 +317,41 @@ def match(match_dict):
         os.path.join("..", "output", f"{match_dict['match_csv']}_matched.csv")
     )
 
-    return matched_matches
+    return open(
+        os.path.join(
+            "..",
+            "output",
+            "matching_report.txt",
+        ),
+        "r",
+    ).read()
+
+
+def compare_populations(matched_cases, matched_matches, match_dict):
+    scalar_comparisons = []
+    if "closest_match_columns" in match_dict:
+        for var in match_dict["closest_match_columns"]:
+            scalar_comparisons.extend(
+                [
+                    f"\n{var} comparison:",
+                    "Cases:",
+                    matched_cases[var].describe().to_string(),
+                    "Matches:",
+                    matched_matches[var].describe().to_string(),
+                ]
+            )
+    return scalar_comparisons
+
+
+def matching_report(text_to_write, erase=False):
+    report_path = os.path.join(
+        "..",
+        "output",
+        "matching_report.txt",
+    )
+    if erase:
+        os.remove(report_path)
+    with open(report_path, "a") as txt:
+        for line in text_to_write:
+            txt.writelines(f"{line}\n")
+        txt.writelines("\n")
