@@ -217,7 +217,7 @@ def match(match_dict):
     ## Drop cases from match population
     ## WARNING - this will cause issues in dummy data where population
     ## sizes are the same, as the indices will be identical.
-    matches = matches.drop(cases.index)
+    matches = matches.drop(cases.index, errors="ignore")
 
     matching_report(
         [
