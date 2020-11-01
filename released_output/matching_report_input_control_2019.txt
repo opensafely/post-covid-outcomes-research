@@ -1,0 +1,48 @@
+Matching started at: 2020-11-01 12:21:53.176004
+
+CSV import:
+Completed 2020-11-01 12:36:00.767620
+Cases    35061
+Matches  17063130
+
+Dropping cases from matches:
+Completed 2020-11-01 12:36:00.794312
+Cases    35061
+Matches  17063130
+
+Completed pre-calculating indices at 2020-11-01 12:36:36.963653
+
+Date exclusions for cases:
+Completed 2020-11-01 12:36:37.002753
+Cases    20055
+Matches  17063130
+
+After matching:
+Completed 2020-11-01 19:01:35.780003
+Cases    20050
+Matches  40100
+
+Number of available matches per case:
+2.0    20050
+0.0        5
+
+age comparison:
+Cases:
+count    20050.000000
+mean        64.790873
+std         18.447108
+min         18.000000
+25%         52.000000
+50%         67.000000
+75%         80.000000
+max        104.000000
+Matches:
+count    40100.000000
+mean        64.790898
+std         18.446933
+min         18.000000
+25%         52.000000
+50%         67.000000
+75%         80.000000
+max        105.000000
+
