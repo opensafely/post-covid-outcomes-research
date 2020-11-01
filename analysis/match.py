@@ -11,11 +11,11 @@ def import_csvs(match_dict):
     Also sets the correct data types for the matching variables.
     """
     cases = pd.read_csv(
-        os.path.join("..", "output", f"{match_dict['case_csv']}.csv"),
+        os.path.join("output", f"{match_dict['case_csv']}.csv"),
         index_col="patient_id",
     )
     matches = pd.read_csv(
-        os.path.join("..", "output", f"{match_dict['match_csv']}.csv"),
+        os.path.join("output", f"{match_dict['match_csv']}.csv"),
         index_col="patient_id",
     )
 
@@ -182,7 +182,6 @@ def match(match_dict):
     - save the results as a csv
     """
     report_path = os.path.join(
-        "..",
         "output",
         f"matching_report_{match_dict['match_csv']}.txt",
     )
@@ -325,13 +324,12 @@ def match(match_dict):
     ## Write to csvs
     matched_cases.to_csv(
         os.path.join(
-            "..",
             "output",
             f"{match_dict['case_csv']}_matched_{match_dict['match_csv']}.csv",
         )
     )
     matched_matches.to_csv(
-        os.path.join("..", "output", f"{match_dict['match_csv']}_matched.csv")
+        os.path.join("output", f"{match_dict['match_csv']}_matched.csv")
     )
 
     print(open(report_path).read())
