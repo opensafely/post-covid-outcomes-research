@@ -19,7 +19,7 @@
 import delimited "`c(pwd)'/output/input_covid.csv"
 
 ********** INSERT DATA END DATE ************
-global dataEndDate td(01Sep2020)
+global dataEndDate td(01oct2020)
 
 set more off
 cd  "`c(pwd)'"
@@ -27,13 +27,26 @@ adopath + "`c(pwd)'/analysis/ado"
 
 /*  Pre-analysis data manipulation  */
 global group "covid_hosp"
-do "`c(pwd)'/analysis/000_cr_define_covariates.do"
+do "`c(pwd)'/analysis/000_cr_define_covariates_simple_rates.do"
 
 clear 
 import delimited "`c(pwd)'/output/input_pneumonia.csv"
 global group "pneumonia_hosp"
-do "`c(pwd)'/analysis/000_cr_define_covariates.do"
+do "`c(pwd)'/analysis/000_cr_define_covariates_simple_rates.do"
 
+
+/* Simple Rates */ 
+global group "covid_hosp"
+do "`c(pwd)'/analysis/201_cr_simple_rates.do"
+
+global group "pneumonia_hosp"
+do "`c(pwd)'/analysis/201_cr_simple_rates.do"
+
+
+
+
+
+/*
 clear 
 import delimited "`c(pwd)'/output/input_control_2019.csv"
 global group "control_2019"
@@ -72,3 +85,4 @@ else {
 }
 
 do "`c(pwd)'/analysis/107_match_summary.do"
+*/
