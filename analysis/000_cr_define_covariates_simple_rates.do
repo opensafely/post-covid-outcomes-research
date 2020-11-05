@@ -89,7 +89,7 @@ format discharged_pneumonia_date %td
 drop if discharged_pneumonia_date ==.
 drop discharged_pneumonia
 
-drop if discharged_pneumonia_date > $dataEndDate - 365.25
+drop if hospitalised_pneumonia_date > $dataEndDate - 365.25
 
 gen indexdate = discharged_pneumonia_date
 format indexdate %td
@@ -101,21 +101,6 @@ gen flag = "pneumonia_hosp"
 
 }
 
-if "$group" == "control_2019" {
-
-* for matching (for 2019 comparison)
-gen exposed = 0 
-
-gen flag = "control_2019"
-}
-
-if "$group" == "control_2020" {
-
-* for matching (for 2019 comparison)
-gen exposed = 0 
-
-gen flag = "control_2020"
-}
 
 ******************************
 *  Convert strings to dates  *
@@ -386,86 +371,43 @@ if "$group" == "covid_hosp" {
 drop if died_date_ons <= hospitalised_covid_date 
 
 * Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(stroke_gp <= hospitalised_covid_date | 		/// 
-						   stroke_hospital <= hospitalised_covid_date , 1, 0  )
+gen hist_stroke = cond(stroke_gp < hospitalised_covid_date | 		/// 
+						   stroke_hospital < hospitalised_covid_date , 1, 0  )
 
-gen hist_dvt = cond(dvt_gp <= hospitalised_covid_date | ///
-						   dvt_hospital <= hospitalised_covid_date , 1, 0  )
+gen hist_dvt = cond(dvt_gp < hospitalised_covid_date | ///
+						   dvt_hospital < hospitalised_covid_date , 1, 0  )
 						   
-gen hist_pe = cond(pe_gp <= hospitalised_covid_date | ///
-						   pe_hospital <= hospitalised_covid_date , 1, 0  )
+gen hist_pe = cond(pe_gp < hospitalised_covid_date | ///
+						   pe_hospital < hospitalised_covid_date , 1, 0  )
 						   
 * Define outcome 
+foreach out in stroke dvt pe {
+
 * in-hosital
-gen stroke_in_hosp = cond( (stroke_hospital >= hospitalised_covid_date & stroke_hospital <= discharged_covid_date) | ///
-							(stroke_ons == 2020 & hospitalised_covid_date >= died_date_ons &  died_date_ons <= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
+gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_covid_date & `out'_hospital <= discharged_covid_date) | ///
+							(`out'_ons == 2020 & hospitalised_covid_date >= died_date_ons &  died_date_ons <= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
 
-gen stroke_in_hosp_end_date = min(stroke_hospital, died_date_ons_date, td(01oct2020), discharged_covid_date)
-format %td stroke_in_hosp_end_date 
+gen `out'_in_hosp_end_date = min(`out'_hospital, died_date_ons_date, td(01oct2020), discharged_covid_date)
+format %td `out'_in_hosp_end_date 
 
-gen dvt_in_hosp = cond( (dvt_hospital >= hospitalised_covid_date & dvt_hospital <= discharged_covid_date) | ///
-							(dvt_ons == 2020 & hospitalised_covid_date >= died_date_ons &  died_date_ons <= discharged_covid_date & died_date_ons_date!=. ), 1, 0  )
+* post-hospital (hosp + ons)
+gen `out'_post_hosp = cond( `out'_hospital >= discharged_covid_date  | ///
+							(`out'_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
 
-gen dvt_in_hosp_end_date = min(dvt_hospital, died_date_ons_date, td(01oct2020),  discharged_covid_date)
-format %td dvt_in_hosp_end_date 
+gen `out'_post_hosp_end_date = min(`out'_hospital, died_date_ons_date, td(01oct2020))
+format %td `out'_post_hosp_end_date 
 
-gen pe_in_hosp = cond( (pe_hospital >= hospitalised_covid_date & pe_hospital <= discharged_covid_date) | ///
-							(pe_ons == 2020 & hospitalised_covid_date >= died_date_ons &  died_date_ons <= discharged_covid_date & died_date_ons_date!=. ), 1, 0  )
+* post-hospital (+ primary care)
 							
-gen pe_in_hosp_end_date = min(pe_hospital, died_date_ons_date, td(01oct2020),  discharged_covid_date)
-format %td pe_in_hosp_end_date 
-																				
-									
-* post-hospital
+gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_covid_date  | ///
+							`out'_gp >= discharged_covid_date  | ///
+							(`out'_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. )  , 1, 0  )
 
-							
-gen stroke_post_hosp = cond( stroke_hospital >= discharged_covid_date  | ///
-							(stroke_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
+gen `out'_post_hosp_gp_end_date = min(`out'_gp, `out'_hospital, died_date_ons_date, td(01oct2020))
+format %td `out'_post_hosp_gp_end_date 
 
-gen stroke_post_hosp_end_date = min(stroke_hospital, died_date_ons_date, td(01oct2020))
-format %td stroke_post_hosp_end_date 
-							
-gen dvt_post_hosp = cond( dvt_hospital >= discharged_covid_date  | ///
-							(dvt_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
-
-gen dvt_post_hosp_end_date = min(dvt_hospital, died_date_ons_date, td(01oct2020))
-format %td dvt_post_hosp_end_date 
-							
-
-gen pe_post_hosp = cond( pe_hospital >= discharged_covid_date  | ///
-							(pe_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen pe_post_hosp_end_date = min(pe_hospital, died_date_ons_date, td(01oct2020))
-format %td pe_post_hosp_end_date 
-							
-* + primary care
-							
-gen stroke_post_hosp_gp = cond( stroke_hospital >= discharged_covid_date  | ///
-							stroke_gp >= discharged_covid_date  | ///
-							(stroke_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. )  , 1, 0  )
-
-gen stroke_post_hosp_gp_end_date = min(stroke_gp, stroke_hospital, died_date_ons_date, td(01oct2020))
-format %td stroke_post_hosp_gp_end_date 
-
-							
-gen dvt_post_hosp_gp = cond( dvt_hospital >= discharged_covid_date  | ///
-							dvt_gp >= discharged_covid_date  | ///
-							(dvt_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen dvt_post_hosp_gp_end_date = min(dvt_gp, dvt_hospital, died_date_ons_date, td(01oct2020))
-format %td dvt_post_hosp_gp_end_date 
-
-		
-gen pe_post_hosp_gp = cond( pe_hospital >= discharged_covid_date  | ///
-							pe_gp >= discharged_covid_date  | ///	
-							(pe_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
-
-							
-gen pe_post_hosp_gp_end_date = min(pe_gp, pe_hospital, died_date_ons_date, td(01oct2020))
-format %td pe_post_hosp_gp_end_date 
-
-
-					
+}
+										
 }
 
 if "$group" == "pneumonia_hosp" {
@@ -476,79 +418,43 @@ drop if died_date_ons <= hospitalised_pneumonia_date
 drop if hospitalised_pneumonia_date >= td(01oct2019)
 
 * Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(stroke_gp <= hospitalised_pneumonia_date | 		/// 
-						   stroke_hospital<= hospitalised_pneumonia_date , 1, 0  )
+gen hist_stroke = cond(stroke_gp < hospitalised_pneumonia_date | 		/// 
+						   stroke_hospital< hospitalised_pneumonia_date , 1, 0  )
 							  
-gen hist_dvt = cond(dvt_gp <= hospitalised_pneumonia_date | ///
-						   dvt_hospital <= hospitalised_pneumonia_date , 1, 0  )
+gen hist_dvt = cond(dvt_gp < hospitalised_pneumonia_date | ///
+						   dvt_hospital < hospitalised_pneumonia_date , 1, 0  )
 						   
-gen hist_pe = cond(	pe_gp <= hospitalised_pneumonia_date | ///
-						   pe_hospital <= hospitalised_pneumonia_date , 1, 0  )
+gen hist_pe = cond(	pe_gp < hospitalised_pneumonia_date | ///
+						   pe_hospital < hospitalised_pneumonia_date , 1, 0  )
 						   
 * Define outcome 
-* in hosital
-gen stroke_in_hosp = cond( (stroke_hospital >= hospitalised_pneumonia_date & stroke_hospital <= discharged_pneumonia_date) | ///
-							(stroke_ons == 2020 & hospitalised_pneumonia_date >= died_date_ons &  died_date_ons <= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen stroke_in_hosp_end_date = min(stroke_hospital, died_date_ons_date, td(01oct2020), discharged_pneumonia_date)
-format %td stroke_in_hosp_end_date 
+foreach out in stroke dvt pe {
 
-gen dvt_in_hosp = cond( (dvt_hospital >= hospitalised_pneumonia_date & dvt_hospital <= discharged_pneumonia_date) | ///
-							(dvt_ons == 2020 & hospitalised_pneumonia_date >= died_date_ons &  died_date_ons <= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
+* in-hosital
+gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_pneumonia_date & `out'_hospital <= discharged_pneumonia_date) | ///
+							(`out'_ons == 2020 & hospitalised_pneumonia_date >= died_date_ons &  died_date_ons <= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
 
-gen dvt_in_hosp_end_date = min(dvt_hospital, died_date_ons_date, td(01oct2020),  discharged_pneumonia_date)
-format %td dvt_in_hosp_end_date 
-							
-gen pe_in_hosp = cond( (pe_hospital >= hospitalised_pneumonia_date & pe_hospital <= discharged_pneumonia_date) | ///
-							(pe_ons == 2020 & hospitalised_pneumonia_date >= died_date_ons &  died_date_ons <= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
+gen `out'_in_hosp_end_date = min(`out'_hospital, died_date_ons_date, td(01oct2020), discharged_pneumonia_date)
+format %td `out'_in_hosp_end_date 
 
-gen pe_in_hosp_end_date = min(pe_hospital, died_date_ons_date, td(01oct2020),  discharged_pneumonia_date)
-format %td pe_in_hosp_end_date 
+* post-hospital (hosp + ons)
+gen `out'_post_hosp = cond( `out'_hospital >= discharged_pneumonia_date  | ///
+							(`out'_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
 
-* post-hospital
-							
-gen stroke_post_hosp = cond( stroke_hospital >= discharged_pneumonia_date  | ///
-							(stroke_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen stroke_post_hosp_end_date = min(stroke_hospital, died_date_ons_date, td(01oct2020))
-format %td stroke_post_hosp_end_date 
-							
-gen dvt_post_hosp = cond( dvt_hospital >= discharged_pneumonia_date  | ///
-							(dvt_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen dvt_post_hosp_end_date = min(dvt_hospital, died_date_ons_date, td(01oct2020))
-format %td dvt_post_hosp_end_date 
-							
-gen pe_post_hosp = cond( pe_hospital >= discharged_pneumonia_date  | ///
-							(pe_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen pe_post_hosp_end_date = min(pe_hospital, died_date_ons_date, td(01oct2020))
-format %td pe_post_hosp_end_date 
+gen `out'_post_hosp_end_date = min(`out'_hospital, died_date_ons_date, td(01oct2020))
+format %td `out'_post_hosp_end_date 
 
+* post-hospital (+ primary care)
+							
+gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_pneumonia_date  | ///
+							`out'_gp >= discharged_pneumonia_date  | ///
+							(`out'_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. )  , 1, 0  )
 
-* + primary care
-gen stroke_post_hosp_gp = cond( stroke_hospital >= discharged_pneumonia_date  | ///
-							stroke_gp >= discharged_pneumonia_date  | ///
-							(stroke_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. )  , 1, 0  )
+gen `out'_post_hosp_gp_end_date = min(`out'_gp, `out'_hospital, died_date_ons_date, td(01oct2020))
+format %td `out'_post_hosp_gp_end_date 
 
-gen stroke_post_hosp_gp_end_date = min(stroke_gp, stroke_hospital, died_date_ons_date, td(01oct2020))
-format %td stroke_post_hosp_gp_end_date 
-							
-gen dvt_post_hosp_gp = cond( dvt_hospital >= discharged_pneumonia_date  | ///
-							dvt_gp >= discharged_pneumonia_date  | ///
-							(dvt_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen dvt_post_hosp_gp_end_date = min(dvt_gp, dvt_hospital, died_date_ons_date, td(01oct2020))
-format %td dvt_post_hosp_gp_end_date 
-							
-gen pe_post_hosp_gp = cond( pe_hospital >= discharged_pneumonia_date  | ///
-							pe_gp >= discharged_pneumonia_date  | ///	
-							(pe_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-							
-gen pe_post_hosp_gp_end_date = min(pe_gp, pe_hospital, died_date_ons_date, td(01oct2020))
-format %td pe_post_hosp_gp_end_date 
-
-						   
+}
+		   
 }
 
 save "data/cohort_rates_$group", replace 

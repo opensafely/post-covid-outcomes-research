@@ -63,7 +63,7 @@ stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_covid_
 }
 
 if "$group" == "pneumonia_hosp" {
-stset `v'_`a'_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(discharged_pneumonia_date)
+stset `v'_`a'_end_date , id(patient_id) failure(`v'_in_hosp) enter(discharged_pneumonia_date)
 }
 
 foreach c in hist_`v' {
