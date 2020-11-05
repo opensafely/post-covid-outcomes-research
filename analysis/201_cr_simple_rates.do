@@ -21,11 +21,19 @@
 use "data/cohort_rates_$group", replace 
 
 tempname measures
-	postfile `measures' str12(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
+	postfile `measures' str13(group) str12(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
 
 foreach v in  stroke dvt pe {
 
+if "$group" == "covid_hosp" {
 stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_covid_date)
+}
+
+if "$group" == "pneumonia_hosp" {
+stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_pneumonia_date)
+}
+
+
 
 foreach c in hist_`v' {
 qui levelsof `c' , local(cats) 
@@ -34,7 +42,7 @@ foreach l of local cats {
 stptime if `c'==`l' 
 
 			* Save measures
-			post `measures' ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') ///
+			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') ///
 							(`r(failures)') (`r(rate)') 							///
 							(`r(lb)') (`r(ub))') 	
 
@@ -43,8 +51,13 @@ stptime if `c'==`l'
 
 foreach a in post_hosp post_hosp_gp {
 
+if "$group" == "covid_hosp" {
 stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_covid_date)
+}
 
+if "$group" == "pneumonia_hosp" {
+stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(discharged_pneumonia_date)
+}
 
 foreach c in hist_`v' {
 qui levelsof `c' , local(cats) 
@@ -53,7 +66,7 @@ foreach l of local cats {
 stptime if `c'==`l' 
 
 			* Save measures
-			post `measures' ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)') ///
+			post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)') ///
 							(`r(failures)') (`r(rate)') 							///
 							(`r(lb)') (`r(ub))') 	
 
@@ -63,6 +76,10 @@ stptime if `c'==`l'
 
 							
 }
+}
+
+
+
 }
 
 postclose `measures'
