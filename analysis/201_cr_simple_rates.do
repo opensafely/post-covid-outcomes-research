@@ -26,7 +26,7 @@ tempname measures
 foreach v in stroke dvt pe {
 
 noi di "Starting analysis for $group: `v' Outcome ..." 
-noi di "stset in hospital" 
+noi di "$group: stset in hospital" 
 if "$group" == "covid_hosp" {
 stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_covid_date)
 }
@@ -41,7 +41,7 @@ foreach c in hist_`v' {
 qui levelsof `c' , local(cats) 
 di `cats'
 foreach l of local cats {
-noi di "Calculate rate for variable `c' and level `l'" 
+noi di "$group: Calculate rate for variable `c' and level `l'" 
 
 stptime if `c'==`l' 
 
@@ -56,7 +56,7 @@ stptime if `c'==`l'
 
 foreach a in post_hosp post_hosp_gp {
 
-noi di "stset in `a'" 
+noi di "$group: stset in `a'" 
 
 if "$group" == "covid_hosp" {
 stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_covid_date)
@@ -70,7 +70,7 @@ foreach c in hist_`v' {
 qui levelsof `c' , local(cats) 
 di `cats'
 foreach l of local cats {
-noi di "Calculate rate for variable `c' and level `l'" 
+noi di "$group: Calculate rate for variable `c' and level `l'" 
 
 stptime if `c'==`l' 
 

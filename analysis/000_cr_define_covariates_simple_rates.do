@@ -419,7 +419,7 @@ drop if hospitalised_pneumonia_date >= td(01oct2019)
 
 * Define history of dvt/pe/stroke at admission
 gen hist_stroke = cond(stroke_gp < hospitalised_pneumonia_date | 		/// 
-						   stroke_hospital< hospitalised_pneumonia_date , 1, 0  )
+						   stroke_hospital < hospitalised_pneumonia_date , 1, 0  )
 							  
 gen hist_dvt = cond(dvt_gp < hospitalised_pneumonia_date | ///
 						   dvt_hospital < hospitalised_pneumonia_date , 1, 0  )
