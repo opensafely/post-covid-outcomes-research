@@ -80,7 +80,7 @@ stptime if `c'==`l'
 
 
 
-}
+
 
 postclose `measures'
 
