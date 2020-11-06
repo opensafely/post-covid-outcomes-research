@@ -377,11 +377,11 @@ if "$group" == "covid_hosp" {
 drop if died_date_ons <= hospitalised_covid_date 
 
 * Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(previous_stroke_gp == 1  | 		/// 
-						   previous_stroke_hospital == 1 , 1, 0  )
+gen hist_stroke = cond(previous_stroke_gp < hospitalised_covid_date | ///
+						   previous_stroke_hospital < hospitalised_covid_date , 1, 0   )
 
-gen hist_dvt = cond(previous_vte_gp == 1 | ///
-						   previous_vte_hospital == 1 , 1, 0  )
+gen hist_dvt = cond(previous_vte_gp < hospitalised_covid_date | ///
+						   previous_vte_hospital < hospitalised_covid_date , 1, 0  )
 						   
 gen hist_pe = cond(previous_vte_gp < hospitalised_covid_date | ///
 						   previous_vte_hospital < hospitalised_covid_date , 1, 0  )
