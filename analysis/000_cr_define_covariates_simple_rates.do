@@ -118,7 +118,7 @@ foreach var of varlist dvt_gp 				///
 					   died_date_ons 		///
 					   bmi_date_measured 	///
 					   hypertension 		/// 
-					   diabetes 	{
+					   diabetes 			  {
 	capture confirm string variable `var'
 	if _rc!=0 {
 		assert `var'==.
@@ -356,6 +356,12 @@ label define hba1ccat	0 "<6.5%"  		///
 	drop hba1c_pct hba1c_percentage_1 hba1c_mmol_per_mol_1 
 	
 
+* Hist vars
+replace previous_stroke_gp = 0 if previous_stroke_gp ==.
+replace previous_stroke_hospital = 0 if previous_stroke_hospital ==.
+replace previous_vte_gp = 0 if previous_vte_gp ==.
+replace previous_vte_hospital = 0 if previous_vte_hospital ==.
+
 **************
 *  Outcomes  *
 **************
@@ -371,11 +377,11 @@ if "$group" == "covid_hosp" {
 drop if died_date_ons <= hospitalised_covid_date 
 
 * Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(previous_stroke_gp < hospitalised_covid_date | 		/// 
-						   previous_stroke_hospital < hospitalised_covid_date , 1, 0  )
+gen hist_stroke = cond(previous_stroke_gp == 1  | 		/// 
+						   previous_stroke_hospital == 1 , 1, 0  )
 
-gen hist_dvt = cond(previous_vte_gp < hospitalised_covid_date | ///
-						   previous_vte_hospital < hospitalised_covid_date , 1, 0  )
+gen hist_dvt = cond(previous_vte_gp == 1 | ///
+						   previous_vte_hospital == 1 , 1, 0  )
 						   
 gen hist_pe = cond(previous_vte_gp < hospitalised_covid_date | ///
 						   previous_vte_hospital < hospitalised_covid_date , 1, 0  )
