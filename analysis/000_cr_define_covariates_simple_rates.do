@@ -118,8 +118,13 @@ foreach var of varlist dvt_gp 				///
 					   died_date_ons 		///
 					   bmi_date_measured 	///
 					   hypertension 		/// 
-					   diabetes 			  {
-	capture confirm string variable `var'
+					   diabetes 			///
+					   previous_stroke_gp   ///
+					   previous_stroke_hospital /// 
+					   previous_vte_gp   ///
+					   previous_vte_hospital {
+
+capture confirm string variable `var'
 	if _rc!=0 {
 		assert `var'==.
 		rename `var' `var'_date
@@ -354,13 +359,6 @@ label define hba1ccat	0 "<6.5%"  		///
 	
 	* Delete unneeded variables
 	drop hba1c_pct hba1c_percentage_1 hba1c_mmol_per_mol_1 
-	
-
-* Hist vars
-replace previous_stroke_gp = 0 if previous_stroke_gp ==.
-replace previous_stroke_hospital = 0 if previous_stroke_hospital ==.
-replace previous_vte_gp = 0 if previous_vte_gp ==.
-replace previous_vte_hospital = 0 if previous_vte_hospital ==.
 
 **************
 *  Outcomes  *
