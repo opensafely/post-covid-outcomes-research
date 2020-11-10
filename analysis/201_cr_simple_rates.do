@@ -87,9 +87,9 @@ stptime if `c'==`l'
 }
 }
 
-
-
-
-
 postclose `measures'
 
+* Change postfiles to csv
+use "data/rates_summary_$group", replace
+export delimited using "data/rates_summary_$group.csv", replace
+erase "data/rates_summary_$group.dta"

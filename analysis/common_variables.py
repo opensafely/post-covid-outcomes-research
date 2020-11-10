@@ -49,7 +49,7 @@ def common_variable_define(start_date):
         previous_pe_hospital=patients.admitted_to_hospital(
             with_these_diagnoses=filter_codes_by_category(
                 vte_codes_hospital, include=["pe"]
-            ),,
+            ),
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
