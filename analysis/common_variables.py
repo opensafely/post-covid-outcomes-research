@@ -39,6 +39,38 @@ def common_variable_define(start_date):
             find_first_match_in_period=True,
             return_expectations={"incidence": 0.05,},
         ),
+		previous_pe_gp=patients.with_these_clinical_events(
+           filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={"incidence": 0.05,},
+        ),
+        previous_pe_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),,
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={"incidence": 0.05,},
+        ),
+		previous_dvt_gp=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={"incidence": 0.05,},
+        ),
+        previous_dvt_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={"incidence": 0.05,},
+        ),
         dvt_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
             with_these_diagnoses=filter_codes_by_category(
