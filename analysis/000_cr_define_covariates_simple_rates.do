@@ -65,8 +65,8 @@ gen discharged_covid_date = date(discharged_covid, "YMD")
 format discharged_covid_date %td
 
 drop if discharged_covid_date ==.
-drop if discharged_covid_date > $dataEndDate
-drop discharged_covid
+
+drop if hospitalised_covid_date > $dataEndDate
 
 * for matching 
 gen exposed = 1
@@ -87,7 +87,6 @@ gen discharged_pneumonia_date = date(discharged_pneumonia, "YMD")
 format discharged_pneumonia_date %td
 
 drop if discharged_pneumonia_date ==.
-drop discharged_pneumonia
 
 drop if hospitalised_pneumonia_date > $dataEndDate - 365.25
 
@@ -372,7 +371,7 @@ replace died_date_ons_date = . if died_date_ons_date>td(01oct2020)
 if "$group" == "covid_hosp" {
 
 * Exclude those have died
-drop if died_date_ons <= hospitalised_covid_date 
+drop if died_date_ons < hospitalised_covid_date 
 
 * Define history of dvt/pe/stroke at admission
 gen hist_stroke = cond(previous_stroke_gp < hospitalised_covid_date | ///
@@ -423,19 +422,19 @@ replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1
 
 if "$group" == "pneumonia_hosp" {
 * Exclude those have died
-drop if died_date_ons <= hospitalised_pneumonia_date 
+drop if died_date_ons < hospitalised_pneumonia_date 
 
 * drop if hospitalised later than the latest person in 2020
 drop if hospitalised_pneumonia_date >= td(01oct2019)
 
 * Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(stroke_gp < hospitalised_pneumonia_date | 		/// 
+gen hist_stroke = cond(previous_stroke_gp < hospitalised_pneumonia_date | 		/// 
 						   stroke_hospital < hospitalised_pneumonia_date , 1, 0  )
 							  
-gen hist_dvt = cond(dvt_gp < hospitalised_pneumonia_date | ///
+gen hist_dvt = cond(previous_dvt_gp < hospitalised_pneumonia_date | ///
 						   dvt_hospital < hospitalised_pneumonia_date , 1, 0  )
 						   
-gen hist_pe = cond(	pe_gp < hospitalised_pneumonia_date | ///
+gen hist_pe = cond(previous_pe_gp < hospitalised_pneumonia_date | ///
 						   pe_hospital < hospitalised_pneumonia_date , 1, 0  )
 						   
 * Define outcome 
