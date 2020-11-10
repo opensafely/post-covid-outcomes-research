@@ -120,8 +120,12 @@ foreach var of varlist dvt_gp 				///
 					   diabetes 			///
 					   previous_stroke_gp   ///
 					   previous_stroke_hospital /// 
-					   previous_vte_gp   ///
-					   previous_vte_hospital {
+					   previous_vte_gp   	///
+					   previous_vte_hospital ///
+					   previous_dvt_gp 		/// 
+					   previous_dvt_hospital /// 
+					   previous_pe_gp 		 /// 
+					   previous_pe_hospital  {
 
 capture confirm string variable `var'
 	if _rc!=0 {
