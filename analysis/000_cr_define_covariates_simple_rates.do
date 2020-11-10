@@ -310,8 +310,6 @@ label values imd imd
 
 
 
-
-
 ***************************
 *  Grouped comorbidities  *
 ***************************
@@ -431,10 +429,10 @@ drop if hospitalised_pneumonia_date >= td(01oct2019)
 gen hist_stroke = cond(previous_stroke_gp < hospitalised_pneumonia_date | 		/// 
 						   stroke_hospital < hospitalised_pneumonia_date , 1, 0  )
 							  
-gen hist_dvt = cond(previous_dvt_gp < hospitalised_pneumonia_date | ///
+gen hist_dvt = cond(previous_vte_gp < hospitalised_pneumonia_date | ///
 						   dvt_hospital < hospitalised_pneumonia_date , 1, 0  )
 						   
-gen hist_pe = cond(previous_pe_gp < hospitalised_pneumonia_date | ///
+gen hist_pe = cond(previous_vte_gp < hospitalised_pneumonia_date | ///
 						   pe_hospital < hospitalised_pneumonia_date , 1, 0  )
 						   
 * Define outcome 
