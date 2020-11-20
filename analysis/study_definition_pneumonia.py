@@ -18,6 +18,7 @@ study = StudyDefinition(
         AND (sex = "M" OR sex = "F")
         AND imd > 0
         AND hospitalised_pneumonia
+		AND stp != ""
         """,
         has_follow_up=patients.registered_with_one_practice_between(
             "2018-02-01", "2019-02-01"

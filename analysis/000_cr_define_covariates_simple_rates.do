@@ -21,38 +21,6 @@
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
 
-* Age: Exclude children and implausibly old people
-qui summ age // Should be no missing ages
-noi di "DROPPING AGE>105:" 
-drop if age>105
-noi di "DROPPING AGE<18:" 
-drop if age<18
-assert inrange(age, 18, 105)
-
-* Age: Exclude those with implausible ages
-assert age<.
-noi di "DROPPING AGE<105:" 
-drop if age>105
-
-* Sex: Exclude categories other than M and F
-assert inlist(sex, "M", "F", "I", "U")
-noi di "DROPPING GENDER NOT M/F:" 
-drop if inlist(sex, "I", "U")
-
-* STP
-noi di "DROPPING IF STP MISSING:"
-drop if stp==""
-
-* IMD 
-noi di "DROPPING IF NO IMD" 
-capture confirm string var imd 
-if _rc==0 {
-	drop if imd==""
-}
-else {
-	drop if imd>=.
-}
-
 * Hospitalised with covid
 
 if "$group" == "covid_hosp" {
