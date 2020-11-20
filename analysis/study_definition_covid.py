@@ -17,7 +17,7 @@ study = StudyDefinition(
         AND (age >=18 AND age <= 110)
         AND (sex = "M" OR sex = "F")
         AND imd > 0
-        AND hospitalised_covid
+        AND exposure_hospitalisation
 		AND NOT stp = ""
         """,
         has_follow_up=patients.registered_with_one_practice_between(
