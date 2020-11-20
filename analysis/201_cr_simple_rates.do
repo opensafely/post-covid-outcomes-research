@@ -19,8 +19,6 @@
 
 
 use "data/cohort_rates_$group", replace 
-rename discharged_covid_date discharged_expo_date
-rename hospitalised_covid_date  hospitalised_expo_date
 
 tempname measures
 	postfile `measures' str13(group) str12(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
