@@ -42,7 +42,7 @@ gen indexdate= discharged_expo_date
 format indexdate %td
 gen indexMonth = month(discharged_expo_date)
 
-gen flag = "covid_hosp"
+gen flag = "$group"
 
 
 ******************************
