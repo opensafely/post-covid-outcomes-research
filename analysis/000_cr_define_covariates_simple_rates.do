@@ -24,9 +24,9 @@ noi safecount
 * Hospitalised with exposure (expo -> covid or pneumonia)
 
 gen hospitalised_expo_date = date(exposure_hospitalisation, "YMD")
-format hospitalised_ex_date %td
+format hospitalised_expo_date %td
 
-drop if hospitalised_ex_date ==.
+drop if hospitalised_expo_date ==.
 
 gen discharged_expo_date = date(exposure_discharge, "YMD")
 format discharged_expo_date %td

@@ -18,7 +18,7 @@ study = StudyDefinition(
         AND (sex = "M" OR sex = "F")
         AND imd > 0
         AND hospitalised_covid
-		AND NOTE stp = ""
+		AND NOT stp = ""
         """,
         has_follow_up=patients.registered_with_one_practice_between(
             "2019-02-01", "2020-02-01"
