@@ -18,13 +18,13 @@ study = StudyDefinition(
         AND (sex = "M" OR sex = "F")
         AND imd > 0
         AND hospitalised_pneumonia
-		AND stp != ""
+		AND NOT stp = ""
         """,
         has_follow_up=patients.registered_with_one_practice_between(
             "2018-02-01", "2019-02-01"
         ),
     ),
-    hospitalised_pneumonia=patients.admitted_to_hospital(
+    exposure_hospitalisation=patients.admitted_to_hospital(
         returning="date_admitted",
         with_these_diagnoses=pneumonia_codelist,
         on_or_after=start_date,
@@ -32,7 +32,7 @@ study = StudyDefinition(
         find_first_match_in_period=True,
         return_expectations={"date": {"earliest": start_date},},
     ),
-    discharged_pneumonia=patients.admitted_to_hospital(
+    exposure_discharge=patients.admitted_to_hospital(
         returning="date_discharged",
         with_these_diagnoses=pneumonia_codelist,
         on_or_after=start_date,

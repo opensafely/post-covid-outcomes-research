@@ -21,55 +21,28 @@
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
 
-* Hospitalised with covid
+* Hospitalised with exposure (expo -> covid or pneumonia)
 
-if "$group" == "covid_hosp" {
-gen hospitalised_covid_date = date(hospitalised_covid, "YMD")
-format hospitalised_covid_date %td
+gen hospitalised_expo_date = date(exposure_hospitalisation, "YMD")
+format hospitalised_ex_date %td
 
-drop if hospitalised_covid_date ==.
+drop if hospitalised_ex_date ==.
 
-gen discharged_covid_date = date(discharged_covid, "YMD")
-format discharged_covid_date %td
+gen discharged_expo_date = date(exposure_discharge, "YMD")
+format discharged_expo_date %td
 
-drop if discharged_covid_date ==.
+drop if discharged_expo_date ==.
 
-drop if discharged_covid_date > $dataEndDate
+drop if discharged_expo_date > $dataEndDate
 
-drop if discharged_covid_date < hospitalised_covid_date
+drop if discharged_expo_date < hospitalised_expo_date
 * for matching 
 gen exposed = 1
-gen indexdate= discharged_covid_date
+gen indexdate= discharged_expo_date
 format indexdate %td
-gen indexMonth = month(discharged_covid_date)
+gen indexMonth = month(discharged_expo_date)
 
 gen flag = "covid_hosp"
-}
-
-if "$group" == "pneumonia_hosp" {
-gen hospitalised_pneumonia_date = date(hospitalised_pneumonia, "YMD")
-format hospitalised_pneumonia_date %td
-
-drop if hospitalised_pneumonia_date ==.
-
-gen discharged_pneumonia_date = date(discharged_pneumonia, "YMD")
-format discharged_pneumonia_date %td
-
-drop if discharged_pneumonia_date ==.
-
-drop if discharged_pneumonia_date > $dataEndDate - 365.25
-
-drop if discharged_pneumonia_date < hospitalised_pneumonia_date
-
-gen indexdate = discharged_pneumonia_date
-format indexdate %td
-
-gen indexMonth = month(discharged_pneumonia_date)
-gen exposed = 0 
-
-gen flag = "pneumonia_hosp"
-
-}
 
 
 ******************************
@@ -148,15 +121,14 @@ drop smoking_status
 
 
 * Ethnicity (5 category)
-rename ethnicity ethnicity_5
-replace ethnicity_5 = .u if ethnicity_5==.
-label define ethnicity 	1 "White"  								///
+replace ethnicity = .u if ethnicity==.
+label define ethnicity_lab 	1 "White"  								///
 						2 "Mixed" 								///
 						3 "Asian or Asian British"				///
 						4 "Black"  								///
 						5 "Other"								///
 						.u "Unknown"
-label values ethnicity_5 ethnicity
+label values ethnicity ethnicity_lab
 
 
 /*  Geographical location  */
@@ -340,126 +312,62 @@ label define hba1ccat	0 "<6.5%"  		///
 replace died_date_ons_date = . if died_date_ons_date>td(01oct2020)
 
 
-/*   Exclusion events */ 
-if "$group" == "covid_hosp" {
-
 * Exclude those have died
-drop if died_date_ons < hospitalised_covid_date 
+drop if died_date_ons < hospitalised_expo_date 
 
 * Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(previous_stroke_gp < hospitalised_covid_date | ///
-						   previous_stroke_hospital < hospitalised_covid_date , 1, 0   )
+gen hist_stroke = cond(previous_stroke_gp < hospitalised_expo_date | ///
+						   previous_stroke_hospital < hospitalised_expo_date , 1, 0   )
 
-gen hist_dvt = cond(previous_dvt_gp < hospitalised_covid_date | ///
-						   previous_dvt_hospital < hospitalised_covid_date , 1, 0  )
+gen hist_dvt = cond(previous_dvt_gp < hospitalised_expo_date | ///
+						   previous_dvt_hospital < hospitalised_expo_date , 1, 0  )
 						   
-gen hist_pe = cond(previous_pe_gp < hospitalised_covid_date | ///
-						   previous_pe_hospital < hospitalised_covid_date , 1, 0  )
+gen hist_pe = cond(previous_pe_gp < hospitalised_expo_date | ///
+						   previous_pe_hospital < hospitalised_expo_date , 1, 0  )
 						   
 * Define outcome 
 foreach out in stroke dvt pe {
 
-* in-hosital
-gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_covid_date & `out'_hospital <= discharged_covid_date & `out'_hospital != .) | ///
-							(`out'_ons == 2020 & hospitalised_covid_date >= died_date_ons &  died_date_ons <= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
+	* in-hosital
+	gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .) | ///
+							(`out'_ons == 2020 & hospitalised_expo_date >= died_date_ons &  died_date_ons <= discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-gen `out'_in_hosp_end_date =  td(01oct2020)
-replace `out'_in_hosp_end_date = `out'_hospital if `out'_hospital >= hospitalised_covid_date & `out'_hospital <= discharged_covid_date & `out'_hospital != .
-replace `out'_in_hosp_end_date = died_date_ons if `out'_ons == 2020 & hospitalised_covid_date >= died_date_ons &  died_date_ons <= discharged_covid_date & died_date_ons_date!=. 
-format %td `out'_in_hosp_end_date 
+	gen `out'_in_hosp_end_date =  td(01oct2020)
+	replace `out'_in_hosp_end_date = `out'_hospital if `out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .
+	replace `out'_in_hosp_end_date = died_date_ons if `out'_ons == 2020 & hospitalised_expo_date >= died_date_ons &  died_date_ons <= discharged_expo_date & died_date_ons_date!=. 
+	format %td `out'_in_hosp_end_date 
 
-replace `out'_in_hosp_end_date = `out'_in_hosp_end_date + 1 
+	replace `out'_in_hosp_end_date = `out'_in_hosp_end_date + 1 
 
-* post-hospital (hosp + ons)
-gen `out'_post_hosp = cond( `out'_hospital >= discharged_covid_date & `out'_hospital != . | ///
-							(`out'_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. ) , 1, 0  )
+	* post-hospital (hosp + ons)
+	gen `out'_post_hosp = cond( `out'_hospital >= discharged_expo_date & `out'_hospital != . | ///
+							(`out'_ons == 2020 &  died_date_ons >= discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-gen `out'_post_hosp_end_date = td(01oct2020) 
-replace  `out'_post_hosp_end_date = `out'_hospital if `out'_hospital >= discharged_covid_date & `out'_hospital != .
-replace `out'_post_hosp_end_date = died_date_ons_date if `out'_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. 
-format %td `out'_post_hosp_end_date 
+	gen `out'_post_hosp_end_date = td(01oct2020) 
+	replace  `out'_post_hosp_end_date = `out'_hospital if `out'_hospital >= discharged_expo_date & `out'_hospital != .
+	replace `out'_post_hosp_end_date = died_date_ons_date if `out'_ons == 2020 &  died_date_ons >= discharged_expo_date & died_date_ons_date!=. 
+	format %td `out'_post_hosp_end_date 
 
-replace `out'_post_hosp_end_date = `out'_post_hosp_end_date + 1 
+	replace `out'_post_hosp_end_date = `out'_post_hosp_end_date + 1 
 
-* post-hospital (+ primary care)
+	* post-hospital (+ primary care)
 							
-gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_covid_date  & `out'_hospital != . | ///
-							`out'_gp >= discharged_covid_date & `out'_gp != . | ///
-							(`out'_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. )  , 1, 0  )
+	gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_expo_date  & `out'_hospital != . | ///
+							`out'_gp >= discharged_expo_date & `out'_gp != . | ///
+							(`out'_ons == 2020 &  died_date_ons >= discharged_expo_date & died_date_ons_date!=. )  , 1, 0  )
 
-gen `out'_post_hosp_gp_end_date = td(01oct2020) 
-replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital >= discharged_covid_date & `out'_hospital != .
-replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp >= discharged_covid_date & `out'_gp != .
-replace `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons == 2020 &  died_date_ons >= discharged_covid_date & died_date_ons_date!=. 
-format %td `out'_post_hosp_gp_end_date 
+	gen `out'_post_hosp_gp_end_date = td(01oct2020) 
+	replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital >= discharged_expo_date & `out'_hospital != .
+	replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp >= discharged_expo_date & `out'_gp != .
+	replace `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons == 2020 &  died_date_ons >= discharged_expo_date & died_date_ons_date!=. 
+	format %td `out'_post_hosp_gp_end_date 
 
-format %td `out'_post_hosp_gp_end_date 
+	format %td `out'_post_hosp_gp_end_date 
 
-replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
+	replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
 
 }
 										
-}
-
-if "$group" == "pneumonia_hosp" {
-* Exclude those have died
-drop if died_date_ons < hospitalised_pneumonia_date 
-
-* drop if hospitalised later than the latest person in 2020
-drop if hospitalised_pneumonia_date >= td(01oct2019)
-
-* Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(previous_stroke_gp < hospitalised_pneumonia_date | 		/// 
-						   previous_stroke_hospital < hospitalised_pneumonia_date , 1, 0  )
-							  
-gen hist_dvt = cond(previous_dvt_gp < hospitalised_pneumonia_date | ///
-						   previous_dvt_hospital < hospitalised_pneumonia_date , 1, 0  )
-						   
-gen hist_pe = cond(previous_pe_gp < hospitalised_pneumonia_date | ///
-						   previous_pe_hospital < hospitalised_pneumonia_date , 1, 0  )
-						   
-* Define outcome 
-foreach out in stroke dvt pe {
-
-* in-hosital
-gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_pneumonia_date & `out'_hospital <= discharged_pneumonia_date & `out'_hospital != .) | ///
-							(`out'_ons == 2020 & hospitalised_pneumonia_date >= died_date_ons &  died_date_ons <= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-
-gen `out'_in_hosp_end_date =  td(01oct2020)
-replace `out'_in_hosp_end_date = `out'_hospital if `out'_hospital >= hospitalised_pneumonia_date & `out'_hospital <= discharged_pneumonia_date & `out'_hospital != .
-replace `out'_in_hosp_end_date = died_date_ons if `out'_ons == 2020 & hospitalised_pneumonia_date >= died_date_ons &  died_date_ons <= discharged_pneumonia_date & died_date_ons_date!=. 
-format %td `out'_in_hosp_end_date 
-
-replace `out'_in_hosp_end_date = `out'_in_hosp_end_date + 1 
-
-* post-hospital (hosp + ons)
-gen `out'_post_hosp = cond( `out'_hospital >= discharged_pneumonia_date  & `out'_hospital != . | ///
-							(`out'_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. ) , 1, 0  )
-
-gen `out'_post_hosp_end_date = td(01oct2020) 
-replace  `out'_post_hosp_end_date = `out'_hospital if `out'_hospital >= discharged_pneumonia_date & `out'_hospital != .
-replace `out'_post_hosp_end_date = died_date_ons_date if `out'_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. 
-format %td `out'_post_hosp_end_date 
-
-
-replace `out'_post_hosp_end_date = `out'_post_hosp_end_date + 1 
-
-* post-hospital (+ primary care)
-							
-gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_pneumonia_date & `out'_hospital != .  | ///
-							`out'_gp >= discharged_pneumonia_date & `out'_gp != .  | ///
-							(`out'_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. )  , 1, 0  )
-
-gen      `out'_post_hosp_gp_end_date = td(01oct2020) 
-replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital >= discharged_pneumonia_date & `out'_hospital != .
-replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp >= discharged_pneumonia_date & `out'_gp != .
-replace  `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons == 2020 &  died_date_ons >= discharged_pneumonia_date & died_date_ons_date!=. 
-format %td `out'_post_hosp_gp_end_date 
-
-replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
-}
-		   
-}
 
 save "data/cohort_rates_$group", replace 
 
