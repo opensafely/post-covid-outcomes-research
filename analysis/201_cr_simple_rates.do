@@ -25,66 +25,57 @@ tempname measures
 
 foreach v in stroke dvt pe {
 
-noi di "Starting analysis for $group: `v' Outcome ..." 
-noi di "$group: stset in hospital" 
-if "$group" == "covid_hosp" {
-stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_covid_date)
-}
+	noi di "Starting analysis for $group: `v' Outcome ..." 
+	noi di "$group: stset in hospital" 
+	if "$group" == "covid_hosp" {
+		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_covid_date)
+	}
 
-if "$group" == "pneumonia_hosp" {
-stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_pneumonia_date)
-}
+	if "$group" == "pneumonia_hosp" {
+		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_pneumonia_date)
+	}
 
+	foreach c in hist_`v' {
+		qui levelsof `c' , local(cats) 
+		di `cats'
+		foreach l of local cats {
+			noi di "$group: Calculate rate for variable `c' and level `l'" 
 
-
-foreach c in hist_`v' {
-qui levelsof `c' , local(cats) 
-di `cats'
-foreach l of local cats {
-noi di "$group: Calculate rate for variable `c' and level `l'" 
-
-stptime if `c'==`l' 
-
-
+			stptime if `c'==`l' 
 			* Save measures
-			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') ///
-							(`r(failures)') (`r(rate)') 							///
+			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') 	///
+							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))') 	
+		}
+	}
 
-}
-}
+	foreach a in post_hosp post_hosp_gp {
 
-foreach a in post_hosp post_hosp_gp {
+		noi di "$group: stset in `a'" 
 
-noi di "$group: stset in `a'" 
+		if "$group" == "covid_hosp" {
+			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_covid_date)
+		}
 
-if "$group" == "covid_hosp" {
-stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_covid_date)
-}
+		if "$group" == "pneumonia_hosp" {
+			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_pneumonia_date)
+		}
 
-if "$group" == "pneumonia_hosp" {
-stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_pneumonia_date)
-}
+		foreach c in hist_`v' {
+			qui levelsof `c' , local(cats) 
+			di `cats'
+			foreach l of local cats {
+				noi di "$group: Calculate rate for variable `c' and level `l'" 
 
-foreach c in hist_`v' {
-qui levelsof `c' , local(cats) 
-di `cats'
-foreach l of local cats {
-noi di "$group: Calculate rate for variable `c' and level `l'" 
+				stptime if `c'==`l' 
 
-stptime if `c'==`l' 
-
-			* Save measures
-			post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)') ///
-							(`r(failures)') (`r(rate)') 							///
-							(`r(lb)') (`r(ub))') 	
-
-}
-}
-
-
-							
-}
+				* Save measures
+				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)')	///
+								(`r(failures)') (`r(rate)') 							///
+								(`r(lb)') (`r(ub))')
+			}
+		}
+	}
 }
 
 postclose `measures'
