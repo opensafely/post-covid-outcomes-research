@@ -8,29 +8,21 @@ ethnicity_codes = codelist_from_csv(
 )
 
 diabetes_codes = codelist_from_csv(
-    "codelists/opensafely-diabetes.csv",
-    system="ctv3",
-    column="CTV3ID"
+    "codelists/opensafely-diabetes.csv", system="ctv3", column="CTV3ID"
 )
 
 hba1c_new_codes = codelist(["XaPbt", "Xaeze", "Xaezd"], system="ctv3")
 hba1c_old_codes = codelist(["X772q", "XaERo", "XaERp"], system="ctv3")
 
 hypertension_codes = codelist_from_csv(
-    "codelists/opensafely-hypertension.csv",
-    system="ctv3",
-    column="CTV3ID"
+    "codelists/opensafely-hypertension.csv", system="ctv3", column="CTV3ID"
 )
 
 stroke = codelist_from_csv(
-    "codelists/opensafely-incident-stroke.csv",
-    system="ctv3",
-    column="CTV3ID"
+    "codelists/opensafely-incident-stroke.csv", system="ctv3", column="CTV3ID"
 )
 stroke_hospital = codelist_from_csv(
-    "codelists/opensafely-stroke-secondary-care.csv",
-    system="icd10",
-    column="icd"
+    "codelists/opensafely-stroke-secondary-care.csv", system="icd10", column="icd"
 )
 
 clear_smoking_codes = codelist_from_csv(

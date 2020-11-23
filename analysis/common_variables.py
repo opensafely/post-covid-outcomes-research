@@ -16,28 +16,76 @@ def common_variable_define(start_date):
             return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_date,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         pe_gp=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["pe"]),
             return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_date,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         other_vte_gp=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["other"]),
             return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_date,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         previous_vte_gp=patients.with_these_clinical_events(
             vte_codes_gp,
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"incidence": 0.05,},
+            return_expectations={
+                "incidence": 0.05,
+            },
+        ),
+        previous_pe_gp=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "incidence": 0.05,
+            },
+        ),
+        previous_pe_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "incidence": 0.05,
+            },
+        ),
+        previous_dvt_gp=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "incidence": 0.05,
+            },
+        ),
+        previous_dvt_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "incidence": 0.05,
+            },
         ),
         dvt_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
@@ -47,7 +95,9 @@ def common_variable_define(start_date):
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         pe_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
@@ -57,7 +107,9 @@ def common_variable_define(start_date):
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         other_vte_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
@@ -67,7 +119,9 @@ def common_variable_define(start_date):
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         dvt_ons=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
@@ -95,14 +149,18 @@ def common_variable_define(start_date):
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"incidence": 0.05,},
+            return_expectations={
+                "incidence": 0.05,
+            },
         ),
         stroke_gp=patients.with_these_clinical_events(
             stroke,
             return_first_date_in_period=True,
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         stroke_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
@@ -110,7 +168,9 @@ def common_variable_define(start_date):
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"date": {"earliest": start_date},},
+            return_expectations={
+                "date": {"earliest": start_date},
+            },
         ),
         stroke_ons=patients.with_these_codes_on_death_certificate(
             stroke_hospital,
@@ -124,14 +184,18 @@ def common_variable_define(start_date):
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"incidence": 0.05,},
+            return_expectations={
+                "incidence": 0.05,
+            },
         ),
         previous_stroke_hospital=patients.admitted_to_hospital(
             with_these_diagnoses=stroke_hospital,
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-            return_expectations={"incidence": 0.05,},
+            return_expectations={
+                "incidence": 0.05,
+            },
         ),
         died_date_ons=patients.died_from_any_cause(
             on_or_after=start_date,
@@ -203,12 +267,16 @@ def common_variable_define(start_date):
             ),
         ),
         hypertension=patients.with_these_clinical_events(
-            hypertension_codes, return_first_date_in_period=True, include_month=True,
+            hypertension_codes,
+            return_first_date_in_period=True,
+            include_month=True,
         ),
         # heart failure
         # other heart disease
         diabetes=patients.with_these_clinical_events(
-            diabetes_codes, return_first_date_in_period=True, include_month=True,
+            diabetes_codes,
+            return_first_date_in_period=True,
+            include_month=True,
         ),
         hba1c_mmol_per_mol_1=patients.with_these_clinical_events(
             hba1c_new_codes,
@@ -287,7 +355,17 @@ def common_variable_define(start_date):
             round_to_nearest=100,
             return_expectations={
                 "rate": "universal",
-                "category": {"ratios": {"100": 0.1, "200": 0.2, "300": 0.7}},
+                "category": {
+                    "ratios": {
+                        "100": 0.1,
+                        "200": 0.2,
+                        "300": 0.3,
+                        "400": 0.1,
+                        "500": 0.1,
+                        "600": 0.1,
+                        "700": 0.1,
+                    }
+                },
             },
         ),
     )
