@@ -3,6 +3,15 @@ from common_variables import common_variable_define
 from codelists import *
 
 start_date = "2020-02-01"
+start_mar  = "2020-03-01"
+start_apr  = "2020-04-01"
+start_may  = "2020-05-01"
+start_jun  = "2020-06-01"
+start_jul  = "2020-07-01"
+start_aug  = "2020-08-01"
+start_sep  = "2020-09-01"
+start_oct  = "2020-10-01"
+
 common_variables = common_variable_define(start_date)
 
 study = StudyDefinition(

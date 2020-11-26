@@ -11,7 +11,7 @@ def days_before(s, days):
 
 def common_variable_define(start_date):
     common_variables = dict(
-        dvt_gp=patients.with_these_clinical_events(
+        dvt_gp_feb=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["dvt"]),
             return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
@@ -20,7 +20,79 @@ def common_variable_define(start_date):
                 "date": {"earliest": start_date},
             },
         ),
-        pe_gp=patients.with_these_clinical_events(
+		dvt_gp_mar=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_mar,
+            return_expectations={
+                "date": {"earliest": start_mar},
+            },
+        ),
+		dvt_gp_apr=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_apr,
+            return_expectations={
+                "date": {"earliest": start_apr},
+            },
+        ),
+		dvt_gp_may=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_may,
+            return_expectations={
+                "date": {"earliest": start_may},
+            },
+        ),	
+		dvt_gp_jun=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_jun,
+            return_expectations={
+                "date": {"earliest": start_jun},
+            },
+        ),
+		dvt_gp_jul=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_jul,
+            return_expectations={
+                "date": {"earliest": start_jul},
+            },
+        ),
+		dvt_gp_aug=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_aug,
+            return_expectations={
+                "date": {"earliest": start_aug},
+            },
+        ),
+		dvt_gp_sep=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_sep,
+            return_expectations={
+                "date": {"earliest": start_sep},
+            },
+        ),
+		dvt_gp_oct=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_oct,
+            return_expectations={
+                "date": {"earliest": start_oct},
+            },
+        ),
+        pe_gp_feb=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["pe"]),
             return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
@@ -29,13 +101,76 @@ def common_variable_define(start_date):
                 "date": {"earliest": start_date},
             },
         ),
-        other_vte_gp=patients.with_these_clinical_events(
-            filter_codes_by_category(vte_codes_gp, include=["other"]),
+		pe_gp_mar=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
             return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
-            on_or_after=start_date,
+            on_or_after=start_mar,
             return_expectations={
-                "date": {"earliest": start_date},
+                "date": {"earliest": start_mar},
+            },
+        ),
+		pe_gp_apr=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_apr,
+            return_expectations={
+                "date": {"earliest": start_apr},
+            },
+        ),
+		pe_gp_may=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_may,
+            return_expectations={
+                "date": {"earliest": start_may},
+            },
+        ),	
+		pe_gp_jun=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_jun,
+            return_expectations={
+                "date": {"earliest": start_jun},
+            },
+        ),
+		pe_gp_jul=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_jul,
+            return_expectations={
+                "date": {"earliest": start_jul},
+            },
+        ),
+		pe_gp_aug=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_aug,
+            return_expectations={
+                "date": {"earliest": start_aug},
+            },
+        ),
+		pe_gp_sep=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_sep,
+            return_expectations={
+                "date": {"earliest": start_sep},
+            },
+        ),
+		pe_gp_oct=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_oct,
+            return_expectations={
+                "date": {"earliest": start_oct},
             },
         ),
         previous_vte_gp=patients.with_these_clinical_events(
@@ -87,7 +222,7 @@ def common_variable_define(start_date):
                 "incidence": 0.05,
             },
         ),
-        dvt_hospital=patients.admitted_to_hospital(
+        dvt_hospital_feb=patients.admitted_to_hospital(
             returning="date_admitted",
             with_these_diagnoses=filter_codes_by_category(
                 vte_codes_hospital, include=["dvt"]
@@ -99,7 +234,103 @@ def common_variable_define(start_date):
                 "date": {"earliest": start_date},
             },
         ),
-        pe_hospital=patients.admitted_to_hospital(
+        dvt_hospital_mar=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_mar,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_mar},
+            },
+        ),	
+		dvt_hospital_apr=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_apr,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_apr},
+            },
+        ),	
+		dvt_hospital_may=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_may,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_may},
+            },
+        ),	
+		dvt_hospital_jun=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_jun,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_jun},
+            },
+        ),	
+		dvt_hospital_jul=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_jul,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_jul},
+            },
+        ),	
+		dvt_hospital_aug=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_aug,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_aug},
+            },
+        ),	
+		dvt_hospital_sep=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_sep,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_sep},
+            },
+        ),	
+		dvt_hospital_oct=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),  # optional
+            on_or_after=start_oct,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_oct},
+            },
+        ),	
+        pe_hospital_feb=patients.admitted_to_hospital(
             returning="date_admitted",
             with_these_diagnoses=filter_codes_by_category(
                 vte_codes_hospital, include=["pe"]
@@ -111,6 +342,102 @@ def common_variable_define(start_date):
                 "date": {"earliest": start_date},
             },
         ),
+        pe_hospital_mar=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_mar,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_mar},
+            },
+        ),	
+		pe_hospital_apr=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_apr,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_apr},
+            },
+        ),	
+		pe_hospital_may=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_may,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_may},
+            },
+        ),	
+		pe_hospital_jun=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_jun,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_jun},
+            },
+        ),	
+		pe_hospital_jul=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_jul,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_jul},
+            },
+        ),	
+		pe_hospital_aug=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_aug,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_aug},
+            },
+        ),	
+		pe_hospital_sep=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_sep,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_sep},
+            },
+        ),	
+		pe_hospital_oct=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),  # optional
+            on_or_after=start_oct,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "date": {"earliest": start_oct},
+            },
+        ),	
         other_vte_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
             with_these_diagnoses=filter_codes_by_category(
@@ -123,20 +450,134 @@ def common_variable_define(start_date):
                 "date": {"earliest": start_date},
             },
         ),
-        dvt_ons=patients.with_these_codes_on_death_certificate(
+        dvt_ons_feb=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
             returning="date_of_death",
             match_only_underlying_cause=False,
             on_or_after=start_date,
             return_expectations={"date": {"earliest": start_date}},
         ),
-        pe_ons=patients.with_these_codes_on_death_certificate(
+		dvt_ons_mar=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_mar,
+            return_expectations={"date": {"earliest": start_mar}},
+        ),
+		dvt_ons_apr=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_apr,
+            return_expectations={"date": {"earliest": start_apr}},
+        ),
+		dvt_ons_may=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_may,
+            return_expectations={"date": {"earliest": start_may}},
+        ),
+		dvt_ons_jun=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_jun,
+            return_expectations={"date": {"earliest": start_jun}},
+        ),
+		dvt_ons_jul=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_jul,
+            return_expectations={"date": {"earliest": start_jul}},
+        ),
+		dvt_ons_aug=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_aug,
+            return_expectations={"date": {"earliest": start_aug}},
+        ),
+		dvt_ons_sep=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_sep,
+            return_expectations={"date": {"earliest": start_sep}},
+        ),
+		dvt_ons_oct=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_oct,
+            return_expectations={"date": {"earliest": start_oct}},
+        ),
+				
+        pe_ons_feb=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["pe"]),
             returning="date_of_death",
             match_only_underlying_cause=False,
-            on_or_after=start_date,
-            return_expectations={"date": {"earliest": start_date}},
+            on_or_after=start_feb,
+            return_expectations={"date": {"earliest": start_feb}},
         ),
+		pe_ons_mar=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_mar,
+            return_expectations={"date": {"earliest": start_mar}},
+        ),
+		pe_ons_apr=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_apr,
+            return_expectations={"date": {"earliest": start_apr}},
+        ),
+		pe_ons_may=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_may,
+            return_expectations={"date": {"earliest": start_may}},
+        ),
+		pe_ons_jun=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_jun,
+            return_expectations={"date": {"earliest": start_jun}},
+        ),
+		pe_ons_jul=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_jul,
+            return_expectations={"date": {"earliest": start_jul}},
+        ),
+		pe_ons_aug=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_aug,
+            return_expectations={"date": {"earliest": start_aug}},
+        ),
+		pe_ons_sep=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_sep,
+            return_expectations={"date": {"earliest": start_sep}},
+        ),
+		pe_ons_oct=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_oct,
+            return_expectations={"date": {"earliest": start_oct}},
+        ),
+				
         other_vte_ons=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["other"]),
             returning="date_of_death",
@@ -153,32 +594,240 @@ def common_variable_define(start_date):
                 "incidence": 0.05,
             },
         ),
-        stroke_gp=patients.with_these_clinical_events(
-            stroke,
-            return_first_date_in_period=True,
-            on_or_after=start_date,
+        stroke_gp_feb=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
             date_format="YYYY-MM-DD",
+            on_or_after=start_date,
             return_expectations={
                 "date": {"earliest": start_date},
             },
         ),
-        stroke_hospital=patients.admitted_to_hospital(
+		stroke_gp_mar=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_mar,
+            return_expectations={
+                "date": {"earliest": start_mar},
+            },
+        ),
+		stroke_gp_apr=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_apr,
+            return_expectations={
+                "date": {"earliest": start_apr},
+            },
+        ),
+		stroke_gp_may=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_may,
+            return_expectations={
+                "date": {"earliest": start_may},
+            },
+        ),	
+		stroke_gp_jun=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_jun,
+            return_expectations={
+                "date": {"earliest": start_jun},
+            },
+        ),
+		stroke_gp_jul=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_jul,
+            return_expectations={
+                "date": {"earliest": start_jul},
+            },
+        ),
+		stroke_gp_aug=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_aug,
+            return_expectations={
+                "date": {"earliest": start_aug},
+            },
+        ),
+		stroke_gp_sep=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_sep,
+            return_expectations={
+                "date": {"earliest": start_sep},
+            },
+        ),
+		stroke_gp_oct=patients.with_these_clinical_events(
+           stroke,
+            return_first_date_in_strokeriod=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=start_oct,
+            return_expectations={
+                "date": {"earliest": start_oct},
+            },
+        ),
+		stroke_hospital_feb=patients.admitted_to_hospital(
             returning="date_admitted",
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
-            find_first_match_in_period=True,
+            find_first_match_in_strokeriod=True,
             return_expectations={
                 "date": {"earliest": start_date},
             },
         ),
-        stroke_ons=patients.with_these_codes_on_death_certificate(
+        stroke_hospital_mar=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_mar,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_mar},
+            },
+        ),	
+		stroke_hospital_apr=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_apr,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_apr},
+            },
+        ),	
+		stroke_hospital_may=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_may,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_may},
+            },
+        ),	
+		stroke_hospital_jun=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_jun,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_jun},
+            },
+        ),	
+		stroke_hospital_jul=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_jul,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_jul},
+            },
+        ),	
+		stroke_hospital_aug=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_aug,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_aug},
+            },
+        ),	
+		stroke_hospital_sep=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_sep,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_sep},
+            },
+        ),	
+		stroke_hospital_oct=patients.admitted_to_hospital(
+            returning="date_admitted",
+            with_these_diagnoses=stroke_hospital,
+            on_or_after=start_oct,
+            date_format="YYYY-MM-DD",
+            find_first_match_in_strokeriod=True,
+            return_expectations={
+                "date": {"earliest": start_oct},
+            },
+        ),	
+		stroke_ons_feb=patients.with_these_codes_on_death_certificate(
             stroke_hospital,
             returning="date_of_death",
             match_only_underlying_cause=False,
-            on_or_after=start_date,
-            return_expectations={"date": {"earliest": start_date}},
+            on_or_after=start_feb,
+            return_expectations={"date": {"earliest": start_feb}},
         ),
+		stroke_ons_mar=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_mar,
+            return_expectations={"date": {"earliest": start_mar}},
+        ),
+		stroke_ons_apr=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_apr,
+            return_expectations={"date": {"earliest": start_apr}},
+        ),
+		stroke_ons_may=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_may,
+            return_expectations={"date": {"earliest": start_may}},
+        ),
+		stroke_ons_jun=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_jun,
+            return_expectations={"date": {"earliest": start_jun}},
+        ),
+		stroke_ons_jul=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_jul,
+            return_expectations={"date": {"earliest": start_jul}},
+        ),
+		stroke_ons_aug=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_aug,
+            return_expectations={"date": {"earliest": start_aug}},
+        ),
+		stroke_ons_sep=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_sep,
+            return_expectations={"date": {"earliest": start_sep}},
+        ),
+		stroke_ons_oct=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            returning="date_of_death",
+            match_only_underlying_cause=False,
+            on_or_after=start_oct,
+            return_expectations={"date": {"earliest": start_oct}},
+        ),		
         previous_stroke_gp=patients.with_these_clinical_events(
             stroke,
             returning="date",
