@@ -11,6 +11,11 @@ def days_before(s, days):
 
 def common_variable_define(start_date):
     common_variables = dict(
+		af=patients.with_these_clinical_events(
+            af_codes,
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+        ),
         dvt_gp_feb=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["dvt"]),
             return_first_date_in_period=True,

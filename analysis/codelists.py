@@ -1,5 +1,11 @@
 from cohortextractor import codelist, codelist_from_csv
 
+af_codes = codelist_from_csv(
+	"codelists/atrial-fibrillation-clinical-finding.csv",
+	system="ctv3",
+	column="CTV3Code",
+)
+
 ethnicity_codes = codelist_from_csv(
     "codelists/opensafely-ethnicity.csv",
     system="ctv3",
