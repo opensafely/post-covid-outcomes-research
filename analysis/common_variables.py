@@ -672,7 +672,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
         stroke_gp_feb=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_date,
             return_expectations={
@@ -681,7 +681,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_mar=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_mar,
             return_expectations={
@@ -690,7 +690,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_apr=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_apr,
             return_expectations={
@@ -699,7 +699,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_may=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_may,
             return_expectations={
@@ -708,7 +708,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),	
 		stroke_gp_jun=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_jun,
             return_expectations={
@@ -717,7 +717,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_jul=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_jul,
             return_expectations={
@@ -726,7 +726,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_aug=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_aug,
             return_expectations={
@@ -735,7 +735,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_sep=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_sep,
             return_expectations={
@@ -744,7 +744,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
         ),
 		stroke_gp_oct=patients.with_these_clinical_events(
            stroke,
-            return_first_date_in_strokeriod=True,
+            return_first_date_in_period=True,
             date_format="YYYY-MM-DD",
             on_or_after=start_oct,
             return_expectations={
@@ -756,7 +756,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_date,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_date},
             },
@@ -766,7 +766,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_mar,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_mar},
             },
@@ -776,7 +776,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_apr,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_apr},
             },
@@ -786,7 +786,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_may,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_may},
             },
@@ -796,7 +796,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_jun,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_jun},
             },
@@ -806,7 +806,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_jul,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_jul},
             },
@@ -816,7 +816,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_aug,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_aug},
             },
@@ -826,7 +826,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_sep,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_sep},
             },
@@ -836,7 +836,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             with_these_diagnoses=stroke_hospital,
             on_or_after=start_oct,
             date_format="YYYY-MM-DD",
-            find_first_match_in_strokeriod=True,
+            find_first_match_in_period=True,
             return_expectations={
                 "date": {"earliest": start_oct},
             },
