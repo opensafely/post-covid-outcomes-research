@@ -594,8 +594,8 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             filter_codes_by_category(vte_codes_hospital, include=["pe"]),
             returning="date_of_death",
             match_only_underlying_cause=False,
-            on_or_after=start_feb,
-            return_expectations={"date": {"earliest": start_feb}},
+            on_or_after=start_date,
+            return_expectations={"date": {"earliest": start_date}},
         ),
 		pe_ons_mar=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["pe"]),
@@ -845,8 +845,8 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             stroke_hospital,
             returning="date_of_death",
             match_only_underlying_cause=False,
-            on_or_after=start_feb,
-            return_expectations={"date": {"earliest": start_feb}},
+            on_or_after=start_date,
+            return_expectations={"date": {"earliest": start_date}},
         ),
 		stroke_ons_mar=patients.with_these_codes_on_death_certificate(
             stroke_hospital,
