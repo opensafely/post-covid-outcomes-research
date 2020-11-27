@@ -1,4 +1,4 @@
-from cohortextractor import filter_codes_by_category, patients
+from cohortextractor import filter_codes_by_category, patients, combine_codelists
 from codelists import *
 from datetime import datetime, timedelta
 

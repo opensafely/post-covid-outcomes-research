@@ -1,4 +1,4 @@
-from cohortextractor import StudyDefinition, patients, codelist, codelist_from_csv
+from cohortextractor import StudyDefinition, patients, codelist, codelist_from_csv, combine_codelists
 from common_variables import common_variable_define
 from codelists import *
 
