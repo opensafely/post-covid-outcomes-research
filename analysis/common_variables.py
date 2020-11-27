@@ -9,7 +9,7 @@ def days_before(s, days):
     return datetime.strftime(modified_date, "%Y-%m-%d")
 
 
-def common_variable_define(start_date):
+def common_variable_define(start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct):
     common_variables = dict(
 		af=patients.with_these_clinical_events(
             af_codes,

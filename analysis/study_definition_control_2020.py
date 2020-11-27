@@ -12,7 +12,7 @@ start_aug  = "2020-08-01"
 start_sep  = "2020-09-01"
 start_oct  = "2020-10-01"
 
-common_variables = common_variable_define(start_date)
+common_variables = common_variable_define(start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct)
 
 study = StudyDefinition(
     default_expectations={
