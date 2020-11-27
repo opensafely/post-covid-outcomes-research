@@ -22,70 +22,90 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[prev_3mths_start, start_date],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),
 		anticoag_rx_feb=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_date, start_mar],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),
 		anticoag_rx_mar=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_mar, start_apr],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),
 		anticoag_rx_apr=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_apr, start_may],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),
 		anticoag_rx_may=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_may, start_jun],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),		
 		anticoag_rx_jun=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_jun, start_jul],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),	
 		anticoag_rx_jul=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_jul, start_aug],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),	
 		anticoag_rx_aug=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_aug, start_sep],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),	
 		anticoag_rx_sep=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_sep, start_oct],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),	
 		anticoag_rx_oct=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
             between=[start_oct, end_date],
-			return_expectations={"incidence": 0.3}
+			return_expectations={
+                "date": {"earliest": prev_3mths},
+            }
         ),
         dvt_gp_feb=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["dvt"]),
