@@ -8,4 +8,4 @@ opensafely/smoking-clear/2020-04-29
 opensafely/incident-stroke/2020-10-05
 opensafely/stroke-secondary-care/2020-10-05
 opensafely/venous-thromboembolic-disease-hospital/2020-10-01
-opensafely/atrial-fibrillation-clinical-finding/2020-07-09/
+opensafely/atrial-fibrillation-clinical-finding/2020-07-09
