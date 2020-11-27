@@ -9,3 +9,5 @@ opensafely/incident-stroke/2020-10-05
 opensafely/stroke-secondary-care/2020-10-05
 opensafely/venous-thromboembolic-disease-hospital/2020-10-01
 opensafely/atrial-fibrillation-clinical-finding/2020-07-09
+opensafely/direct-acting-oral-anticoagulants-doac/2020-10-05
+opensafely/warfarin/2020-10-05

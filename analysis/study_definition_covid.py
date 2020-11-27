@@ -11,8 +11,9 @@ start_jul  = "2020-07-01"
 start_aug  = "2020-08-01"
 start_sep  = "2020-09-01"
 start_oct  = "2020-10-01"
+end_date  = "2020-11-01"
 
-common_variables = common_variable_define(start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct)
+common_variables = common_variable_define(start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct, end_date)
 
 study = StudyDefinition(
     default_expectations={
@@ -48,6 +49,15 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={"date": {"earliest": start_date},},
+    ),
+	# ICU admission from ICNARC-CMP
+    date_icu_admission=patients.admitted_to_icu(
+        find_first_match_in_period=True,
+        between=[start_date, start_oct],
+        returning="date_admitted",
+        #include_day = True, 
+        date_format="YYYY-MM-DD", #not yet working for admitted_to_icu?
+        return_expectations={"date": {"earliest": start_date}},
     ),
     exposure_discharge=patients.admitted_to_hospital(
         returning="date_discharged",
