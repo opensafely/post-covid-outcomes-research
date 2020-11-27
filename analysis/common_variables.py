@@ -9,7 +9,7 @@ def days_before(s, days):
     return datetime.strftime(modified_date, "%Y-%m-%d")
 
 
-def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct, end_date):
+def common_variable_define(prev_3mths, start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct, end_date):
     common_variables = dict(
 		af=patients.with_these_clinical_events(
             af_codes,
@@ -21,7 +21,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
-            between=[prev_3mths_start, start_date],
+            between=[prev_3mths, start_date],
 			return_expectations={
                 "date": {"earliest": prev_3mths},
             }
