@@ -9,7 +9,7 @@ def days_before(s, days):
     return datetime.strftime(modified_date, "%Y-%m-%d")
 
 
-def common_variable_define(prev_3mths, start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct, end_date):
+def common_variable_define(start_jan, prev_nov, prev_dec, start_date, start_mar, start_apr, start_may, start_jun, start_jul, start_aug, start_sep, start_oct, end_date):
     common_variables = dict(
 		af=patients.with_these_clinical_events(
             af_codes,
@@ -17,13 +17,31 @@ def common_variable_define(prev_3mths, start_date, start_mar, start_apr, start_m
             date_format="YYYY-MM-DD",
         ),
 		# 3mth hist of doac/warfarin use
-		anticoag_rx_3mths_before_start=patients.with_these_medications(
+		anticoag_rx_prev_nov=patients.with_these_medications(
            combine_codelists(doac_codes,
                              warfarin_codes),
             return_first_date_in_period=True,
-            between=[prev_3mths, start_date],
+            between=[prev_nov, prev_dec],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": prev_nov},
+            }
+		),
+		anticoag_rx_prev_dec=patients.with_these_medications(
+           combine_codelists(doac_codes,
+                             warfarin_codes),
+            return_first_date_in_period=True,
+            between=[prev_dec, start_jan],
+			return_expectations={
+                "date": {"earliest": prev_dec},
+            }	
+		),
+		anticoag_rx_jan=patients.with_these_medications(
+           combine_codelists(doac_codes,
+                             warfarin_codes),
+            return_first_date_in_period=True,
+            between=[start_jan, start_date],
+			return_expectations={
+                "date": {"earliest": start_jan},
             }
         ),
 		anticoag_rx_feb=patients.with_these_medications(
