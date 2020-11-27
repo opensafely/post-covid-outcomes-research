@@ -32,7 +32,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_date, start_mar],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_date},
             }
         ),
 		anticoag_rx_mar=patients.with_these_medications(
@@ -41,7 +41,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_mar, start_apr],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_mar},
             }
         ),
 		anticoag_rx_apr=patients.with_these_medications(
@@ -50,7 +50,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_apr, start_may],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_apr},
             }
         ),
 		anticoag_rx_may=patients.with_these_medications(
@@ -59,7 +59,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_may, start_jun],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_may},
             }
         ),		
 		anticoag_rx_jun=patients.with_these_medications(
@@ -68,7 +68,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_jun, start_jul],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_jun},
             }
         ),	
 		anticoag_rx_jul=patients.with_these_medications(
@@ -77,7 +77,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_jul, start_aug],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_jul},
             }
         ),	
 		anticoag_rx_aug=patients.with_these_medications(
@@ -86,7 +86,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_aug, start_sep],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_aug},
             }
         ),	
 		anticoag_rx_sep=patients.with_these_medications(
@@ -95,7 +95,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_sep, start_oct],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_sep},
             }
         ),	
 		anticoag_rx_oct=patients.with_these_medications(
@@ -104,7 +104,7 @@ def common_variable_define(prev_3mths_start, start_date, start_mar, start_apr, s
             return_first_date_in_period=True,
             between=[start_oct, end_date],
 			return_expectations={
-                "date": {"earliest": prev_3mths},
+                "date": {"earliest": start_oct},
             }
         ),
         dvt_gp_feb=patients.with_these_clinical_events(
