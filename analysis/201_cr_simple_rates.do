@@ -21,7 +21,7 @@
 use "data/cohort_rates_$group", replace 
 
 tempname measures
-	postfile `measures' str13(group) str12(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
+	postfile `measures' str16(group) str20(outcome) str12(analysis) str20(history) level str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
 
 
 foreach v in stroke dvt pe {
@@ -35,11 +35,11 @@ foreach v in stroke dvt pe {
 	* Overall rate 
 	stptime 
 	* Save measure
-	post `measures' ("$group") ("Overall") ("in_hosp") ("") (0) (`r(ptime)') 	///
+	post `measures' ("$group") ("`v'") ("in_hosp") ("") (0) ("Overall") (0) (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))')
 	
-	* Stratified
+	* Stratified by history of...
 	foreach c in hist_`v' {
 		qui levelsof `c' , local(cats) 
 		di `cats'
@@ -49,9 +49,37 @@ foreach v in stroke dvt pe {
 		
 			stptime if `c'==`l' 
 			* Save measures
-			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') 	///
+			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') ("History of") (`l') (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))') 	
+			
+			
+				* Further stratified by...
+				
+				foreach s in agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission community_exp  {
+					qui levelsof `s' , local(cats) 
+					di `cats'
+						foreach t of local cats {
+							noi di "$group, `c' level `l' : Calculate rate for variable `s' and level `t'" 
+			
+							qui  count if `c' ==`l' & `s' ==`t' 
+							if `r(N)' >  0 {
+							stptime if `c'==`l' & `s' == `t' 
+							* Save measures
+							post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') ("`s'") (`t') (`r(ptime)') 	///
+							(`r(failures)') (`r(rate)') 								///
+							(`r(lb)') (`r(ub))') 	
+							}
+							else {
+							post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') ("`s'") (`t') (.) 	///
+							(.) (.) 								///
+							(.) (.) 
+							}
+							
+					
+						}
+				}
+					
 		}
 	}
 
@@ -64,7 +92,7 @@ foreach v in stroke dvt pe {
 		* Overall rate 
 		stptime  
 		* Save measure
-		post `measures' ("$group") ("Overall") ("`a'") ("") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`v'") ("`a'") ("") (0) ("Overall") (0) (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))')
 		
@@ -78,9 +106,35 @@ foreach v in stroke dvt pe {
 				stptime if `c'==`l' 
 
 				* Save measures
-				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') ("History of") (`l') (`r(ptime)')	///
 								(`r(failures)') (`r(rate)') 							///
 								(`r(lb)') (`r(ub))')
+								
+				* Further stratified by...
+				
+				foreach s in agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission community_exp  {
+					qui levelsof `s' , local(cats) 
+					di `cats'
+						foreach t of local cats {
+							noi di "$group, `c' level `l' : Calculate rate for variable `s' and level `t'" 
+			
+							qui  count if `c' ==`l' & `s' ==`t' 
+							if `r(N)' > 0 {
+							stptime if `c'==`l' & `s' == `t' 
+							* Save measures
+							post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') ("`s'") (`t') (`r(ptime)') 	///
+							(`r(failures)') (`r(rate)') 								///
+							(`r(lb)') (`r(ub))') 	
+							}
+							else {
+							post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') ("`s'") (`t') (.) 	///
+							(.) (.) 								///
+							(.) (.) 
+							}
+					
+						}
+				}
+					
 			}
 		}
 	}
@@ -96,8 +150,5 @@ gen rate_ppm = 100*(rate * 365.25 / 12)
 gen lc_ppm = 100*(lc * 365.25 /12)
 gen uc_ppm = 100*(uc * 365.25 /12)
 
-
-
-* per perso
 export delimited using "data/rates_summary_$group.csv", replace
-erase "data/rates_summary_$group.dta"
+
