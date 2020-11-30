@@ -21,7 +21,7 @@
 use "data/cohort_rates_$group", replace 
 
 tempname measures
-	postfile `measures' str16(group) str20(outcome) str12(analysis) str20(history) level str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
+	postfile `measures' str16(group) str20(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
 
 
 foreach v in stroke dvt pe {
@@ -35,50 +35,31 @@ foreach v in stroke dvt pe {
 	* Overall rate 
 	stptime 
 	* Save measure
-	post `measures' ("$group") ("`v'") ("in_hosp") ("") (0) ("Overall") (0) (`r(ptime)') 	///
+	post `measures' ("$group") ("`v'") ("in_hosp") ("Overall") (0) (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))')
 	
 	* Stratified by history of...
-	foreach c in hist_`v' {
+	foreach c in hist_`v' agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission {
 		qui levelsof `c' , local(cats) 
 		di `cats'
 		foreach l of local cats {
 			noi di "$group: Calculate rate for variable `c' and level `l'" 
 			
-		
+			qui  count if `c' ==`l'
+			if `r(N)' > 0 {
 			stptime if `c'==`l' 
 			* Save measures
-			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') ("History of") (`l') (`r(ptime)') 	///
+			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
-							(`r(lb)') (`r(ub))') 	
-			
-			
-				* Further stratified by...
-				
-				foreach s in agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission community_exp  {
-					qui levelsof `s' , local(cats) 
-					di `cats'
-						foreach t of local cats {
-							noi di "$group, `c' level `l' : Calculate rate for variable `s' and level `t'" 
-			
-							qui  count if `c' ==`l' & `s' ==`t' 
-							if `r(N)' >  0 {
-							stptime if `c'==`l' & `s' == `t' 
-							* Save measures
-							post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') ("`s'") (`t') (`r(ptime)') 	///
-							(`r(failures)') (`r(rate)') 								///
-							(`r(lb)') (`r(ub))') 	
-							}
-							else {
-							post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') ("`s'") (`t') (.) 	///
+							(`r(lb)') (`r(ub))') 
+			}
+			else {
+			post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
-							}
-							
+			}
 					
-						}
-				}
 					
 		}
 	}
@@ -92,47 +73,30 @@ foreach v in stroke dvt pe {
 		* Overall rate 
 		stptime  
 		* Save measure
-		post `measures' ("$group") ("`v'") ("`a'") ("") (0) ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`v'") ("`a'") ("Overall") (0) (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))')
 		
 		* Stratified
-		foreach c in hist_`v' {
+		foreach c in hist_`v' agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission  {
 			qui levelsof `c' , local(cats) 
 			di `cats'
 			foreach l of local cats {
 				noi di "$group: Calculate rate for variable `c' and level `l'" 
-
+				qui  count if `c' ==`l'
+				if `r(N)' > 0 {
 				stptime if `c'==`l' 
 
 				* Save measures
-				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') ("History of") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)')	///
 								(`r(failures)') (`r(rate)') 							///
 								(`r(lb)') (`r(ub))')
-								
-				* Further stratified by...
-				
-				foreach s in agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission community_exp  {
-					qui levelsof `s' , local(cats) 
-					di `cats'
-						foreach t of local cats {
-							noi di "$group, `c' level `l' : Calculate rate for variable `s' and level `t'" 
-			
-							qui  count if `c' ==`l' & `s' ==`t' 
-							if `r(N)' > 0 {
-							stptime if `c'==`l' & `s' == `t' 
-							* Save measures
-							post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') ("`s'") (`t') (`r(ptime)') 	///
-							(`r(failures)') (`r(rate)') 								///
-							(`r(lb)') (`r(ub))') 	
-							}
-							else {
-							post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') ("`s'") (`t') (.) 	///
+				}
+
+				else {
+				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
-							}
-					
-						}
 				}
 					
 			}
