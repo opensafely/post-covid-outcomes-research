@@ -207,8 +207,8 @@ drop region_string
 **************************
 
 /*  Age variables  */ 
-drop if age < 18 
-drop if age > 110 
+assert age >= 18 & age <=110
+
 * Create categorised age
 recode 	age 			18/39.9999=1 	///
 						40/49.9999=2 	///
@@ -340,71 +340,71 @@ foreach m of local months {
 
 * Feb
 if `m' == 2 {
-replace hist_of_anticoag = 1 if anticoag_rx_jan !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_jan !=. | 	   ///
 								anticoag_rx_prev_nov !=. | ///
-								anticoag_rx_prev_dec !=. & ///
+								anticoag_rx_prev_dec !=.) & ///
 								indexMonth == 2
 }
 * Mar
 if `m' == 3 {
-replace hist_of_anticoag = 1 if anticoag_rx_jan !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_jan !=. | 	   ///
 								anticoag_rx_feb !=. | 	   ///
-								anticoag_rx_prev_dec !=. & ///
+								anticoag_rx_prev_dec !=.) & ///
 								indexMonth == 3
 }
 * Apr
 if `m' == 4 {
-replace hist_of_anticoag = 1 if anticoag_rx_jan !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_jan !=. | 	   ///
 								anticoag_rx_feb !=. | 	   ///
-								anticoag_rx_mar !=. & 	   ///
+								anticoag_rx_mar !=.) & 	   ///
 								indexMonth == 4
 }
 
 * May
 if `m' == 5 {
-replace hist_of_anticoag = 1 if anticoag_rx_feb !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_feb !=. | 	   ///
 								anticoag_rx_mar !=. | 	   ///
-								anticoag_rx_apr !=. & 	   ///
+								anticoag_rx_apr !=.) & 	   ///
 								indexMonth == 5
 }
 
 * Jun
 if `m' == 6 {
-replace hist_of_anticoag = 1 if anticoag_rx_mar !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_mar !=. | 	   ///
 								anticoag_rx_apr !=. | 	   ///
-								anticoag_rx_may !=. & 	   ///
+								anticoag_rx_may !=.) & 	   ///
 								indexMonth == 6
 }
 
 * Jul
 if `m' == 7 {
-replace hist_of_anticoag = 1 if anticoag_rx_apr !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_apr !=. | 	   ///
 								anticoag_rx_may !=. | 	   ///
-								anticoag_rx_jun !=. & 	   ///
+								anticoag_rx_jun !=.) & 	   ///
 								indexMonth == 7
 }
 
 * Aug
 if `m' == 8 {
-replace hist_of_anticoag = 1 if anticoag_rx_may !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_may !=. | 	   ///
 								anticoag_rx_jun !=. | 	   ///
-								anticoag_rx_jul !=. & 	   ///
+								anticoag_rx_jul !=.) & 	   ///
 								indexMonth == 8
 }
 
 * Sep
 if `m' == 9 {
-replace hist_of_anticoag = 1 if anticoag_rx_jun !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_jun !=. | 	   ///
 								anticoag_rx_jul !=. | 	   ///
-								anticoag_rx_aug !=. & 	   ///
+								anticoag_rx_aug !=.) & 	   ///
 								indexMonth == 9
 }
 
 * Oct
 if `m' == 10 {
-replace hist_of_anticoag = 1 if anticoag_rx_jul !=. | 	   ///
+replace hist_of_anticoag = 1 if (anticoag_rx_jul !=. | 	   ///
 								anticoag_rx_aug !=. | 	   ///
-								anticoag_rx_sep !=. & 	   ///
+								anticoag_rx_sep !=.) & 	   ///
 								indexMonth == 10
 }
 
