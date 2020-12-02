@@ -822,7 +822,7 @@ def common_variable_define(
             start_date,
             return_expectations={
                 "rate": "universal",
-                "int": {"distribution": "population_ages"},
+                "int": {"distribution": "normal", "mean": 64, "stddev": 5},
             },
         ),
         sex=patients.sex(
