@@ -1,10 +1,30 @@
 from cohortextractor import codelist, codelist_from_csv
 
+af_codes = codelist_from_csv(
+    "codelists/opensafely-atrial-fibrillation-clinical-finding.csv",
+    system="ctv3",
+    column="CTV3Code",
+)
+
 ethnicity_codes = codelist_from_csv(
     "codelists/opensafely-ethnicity.csv",
     system="ctv3",
     column="Code",
     category_column="Grouping_6",
+)
+
+
+# MEDICATIONS
+warfarin_codes = codelist_from_csv(
+    "codelists/opensafely-warfarin.csv",
+    system="snomed",
+    column="id",
+)
+
+doac_codes = codelist_from_csv(
+    "codelists/opensafely-direct-acting-oral-anticoagulants-doac.csv",
+    system="snomed",
+    column="id",
 )
 
 diabetes_codes = codelist_from_csv(

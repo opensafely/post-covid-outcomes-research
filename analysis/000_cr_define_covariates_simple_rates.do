@@ -36,11 +36,28 @@ drop if discharged_expo_date ==.
 drop if discharged_expo_date > $dataEndDate
 
 drop if discharged_expo_date < hospitalised_expo_date
+
+* Hospitalised covid/pneumonia is primary dx
+gen hospitalised_expo_primary_dx = date(exposure_hosp_primary_dx, "YMD")
+format hospitalised_expo_primary_dx %td 
+
+gen community_exp = cond(hospitalised_expo_primary_dx !=. , 1, 0)
+
+* Length of stay
+gen length_of_stay = discharged_expo_date - hospitalised_expo_date + 1
+label var length_of_stay "Length of stay in hospital (days)"
+hist length , name(length_of_stay_$group, replace) graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
+graph export "output/length_of_stay_$group.svg" , as(svg) replace
+
+* Create flag for patients staying in hospital longer than the median length
+summ length, detail
+gen long_hosp_stay = cond(length_of_stay >= `r(p50)' , 1, 0)
+
 * for matching 
 gen exposed = 1
-gen indexdate= discharged_expo_date
+gen indexdate= hospitalised_expo_date
 format indexdate %td
-gen indexMonth = month(discharged_expo_date)
+gen indexMonth = month(hospitalised_expo_date)
 
 gen flag = "$group"
 
@@ -50,14 +67,15 @@ gen flag = "$group"
 ******************************
 
 * To be added: dates related to outcomes
-foreach var of varlist dvt_gp 				///
-					   pe_gp 				///
-					   other_vte_gp 		///
-					   dvt_hospital			///
-					   pe_hospital 			///
+foreach var of varlist af 					///	
+					   date_icu_admission   ///
+					   dvt_gp_* 			///
+					   pe_gp_* 				///
+					   dvt_hospital_*	 	///
+					   pe_hospital_* 		///
 					   other_vte_hospital 	///
-					   stroke_gp 			///
-					   stroke_hospital  	///
+					   stroke_gp_* 			///
+					   stroke_hospital_*  	///
 					   died_date_ons 		///
 					   bmi_date_measured 	///
 					   hypertension 		/// 
@@ -85,7 +103,7 @@ capture confirm string variable `var'
 	format `var'_date %td
 }
 
-
+rename date_icu_admission_date icu_admission_date
 /* BMI */
 
 * Set implausible BMIs to missing:
@@ -189,6 +207,7 @@ drop region_string
 **************************
 
 /*  Age variables  */ 
+assert age >= 18 & age <=110
 
 * Create categorised age
 recode 	age 			18/39.9999=1 	///
@@ -197,7 +216,7 @@ recode 	age 			18/39.9999=1 	///
 						60/69.9999=4 	///
 						70/79.9999=5 	///
 						80/max=6, 		///
-						gen(agegroup) 
+				        gen(agegroup) 
 
 label define agegroup 	1 "18-<40" 		///
 						2 "40-<50" 		///
@@ -304,9 +323,153 @@ label define hba1ccat	0 "<6.5%"  		///
 	* Delete unneeded variables
 	drop hba1c_pct hba1c_percentage_1 hba1c_mmol_per_mol_1 
 
+*****************
+* History of AF *
+*****************
+
+gen hist_of_af = cond(af < hospitalised_expo_date, 1, 0) 
+
+***************************
+* Hist of anticoagulation *
+***************************	
+
+gen hist_of_anticoag = .
+
+levelsof indexMonth, local(months) 
+foreach m of local months {
+
+* Feb
+if `m' == 2 {
+replace hist_of_anticoag = 1 if (anticoag_rx_jan !=. | 	   ///
+								anticoag_rx_prev_nov !=. | ///
+								anticoag_rx_prev_dec !=.) & ///
+								indexMonth == 2
+}
+* Mar
+if `m' == 3 {
+replace hist_of_anticoag = 1 if (anticoag_rx_jan !=. | 	   ///
+								anticoag_rx_feb !=. | 	   ///
+								anticoag_rx_prev_dec !=.) & ///
+								indexMonth == 3
+}
+* Apr
+if `m' == 4 {
+replace hist_of_anticoag = 1 if (anticoag_rx_jan !=. | 	   ///
+								anticoag_rx_feb !=. | 	   ///
+								anticoag_rx_mar !=.) & 	   ///
+								indexMonth == 4
+}
+
+* May
+if `m' == 5 {
+replace hist_of_anticoag = 1 if (anticoag_rx_feb !=. | 	   ///
+								anticoag_rx_mar !=. | 	   ///
+								anticoag_rx_apr !=.) & 	   ///
+								indexMonth == 5
+}
+
+* Jun
+if `m' == 6 {
+replace hist_of_anticoag = 1 if (anticoag_rx_mar !=. | 	   ///
+								anticoag_rx_apr !=. | 	   ///
+								anticoag_rx_may !=.) & 	   ///
+								indexMonth == 6
+}
+
+* Jul
+if `m' == 7 {
+replace hist_of_anticoag = 1 if (anticoag_rx_apr !=. | 	   ///
+								anticoag_rx_may !=. | 	   ///
+								anticoag_rx_jun !=.) & 	   ///
+								indexMonth == 7
+}
+
+* Aug
+if `m' == 8 {
+replace hist_of_anticoag = 1 if (anticoag_rx_may !=. | 	   ///
+								anticoag_rx_jun !=. | 	   ///
+								anticoag_rx_jul !=.) & 	   ///
+								indexMonth == 8
+}
+
+* Sep
+if `m' == 9 {
+replace hist_of_anticoag = 1 if (anticoag_rx_jun !=. | 	   ///
+								anticoag_rx_jul !=. | 	   ///
+								anticoag_rx_aug !=.) & 	   ///
+								indexMonth == 9
+}
+
+* Oct
+if `m' == 10 {
+replace hist_of_anticoag = 1 if (anticoag_rx_jul !=. | 	   ///
+								anticoag_rx_aug !=. | 	   ///
+								anticoag_rx_sep !=.) & 	   ///
+								indexMonth == 10
+}
+
+}
+
+replace hist_of_anticoag = 0 if hist_of_anticoag == .	
+	
+	
+
+******************************************
+* Admitted to ICU during hospitalisation *	
+******************************************
+
+gen icu_admission = cond( icu_admission_date >= hospitalised_expo_date & icu_admission_date <= discharged_expo_date , 1, 0) 
+
+
 **************
 *  Outcomes  *
-**************
+**************	
+foreach o in stroke dvt pe {
+
+	* Set all dates which are less than the hospitalised date to missing
+	foreach v in feb mar apr may jun jul aug sep oct {
+		replace `o'_gp_`v'_date =. if `o'_gp_`v'_date < hospitalised_expo_date 
+		replace `o'_hospital_`v'_date =. if `o'_gp_`v'_date < hospitalised_expo_date 
+	}
+    * Select the minimum date of the dates as the outcome 
+	gen `o'_gp = min(`o'_gp_feb_date, ///
+						`o'_gp_mar_date, ///
+						`o'_gp_apr_date, ///
+						`o'_gp_may_date, ///
+						`o'_gp_jun_date, ///
+						`o'_gp_jul_date, ///
+						`o'_gp_aug_date, ///
+						`o'_gp_sep_date, ///
+						`o'_gp_oct_date)
+	format `o'_gp %td 
+	
+	gen `o'_hospital = min(`o'_hospital_feb_date, ///
+						`o'_hospital_mar_date, ///
+						`o'_hospital_apr_date, ///
+						`o'_hospital_may_date, ///
+						`o'_hospital_jun_date, ///
+						`o'_hospital_jul_date, ///
+						`o'_hospital_aug_date, ///
+						`o'_hospital_sep_date, ///
+						`o'_hospital_oct_date)	
+	format `o'_hospital %td 					
+	
+	* For ONS they will be dropped below if they have died before hospitalisation 
+	* This just picks up the min value as this doesn't represent an exact YYYY-MM-DD date
+    gen `o'_ons = min(`o'_hospital_feb_date, ///
+						`o'_hospital_mar_date, ///
+						`o'_hospital_apr_date, ///
+						`o'_hospital_may_date, ///
+						`o'_hospital_jun_date, ///
+						`o'_hospital_jul_date, ///
+						`o'_hospital_aug_date, ///
+						`o'_hospital_sep_date, ///
+						`o'_hospital_oct_date)
+	
+	
+
+}
+
 * Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
 replace died_date_ons_date = . if died_date_ons_date>td(01oct2020)
@@ -368,7 +531,17 @@ foreach out in stroke dvt pe {
 
 }
 										
-
+**** Tidy dataset
+keep patient_id died_date_ons_date age ethnicity hospitalised_expo_date ///
+ discharged_expo_date community_exp long_hosp_stay gender agegroup hist_of_af ///
+ hist_of_anticoag icu_admission stroke_gp stroke_hospital stroke_ons dvt_gp  /// 
+ dvt_hospital dvt_ons pe_gp pe_hospital pe_ons hist_stroke hist_dvt hist_pe /// 
+ stroke_in_hosp stroke_in_hosp_end_date stroke_post_hosp stroke_post_hosp_end_date /// 
+ stroke_post_hosp_gp stroke_post_hosp_gp_end_date dvt_in_hosp dvt_in_hosp_end_date ///
+ dvt_post_hosp dvt_post_hosp_end_date dvt_post_hosp_gp dvt_post_hosp_gp_end_date ///
+ pe_in_hosp pe_in_hosp_end_date pe_post_hosp pe_post_hosp_end_date pe_post_hosp_gp /// 
+ pe_post_hosp_gp_end_date
+ 
 save "data/cohort_rates_$group", replace 
 
 
