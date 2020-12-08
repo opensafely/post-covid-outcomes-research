@@ -1064,6 +1064,9 @@ def common_variable_define(
     dementia=patients.with_these_clinical_events(
         dementia, return_first_date_in_period=True, include_month=True,
     ),
+	 stroke_for_dementia_defn=patients.with_these_clinical_events(
+        stroke_for_dementia_defn, return_first_date_in_period=True, include_month=True,
+    ),
     # # Chronic kidney disease
     # https://github.com/ebmdatalab/tpp-sql-notebook/issues/17
     creatinine=patients.with_these_clinical_events(

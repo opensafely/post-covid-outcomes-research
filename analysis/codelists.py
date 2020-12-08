@@ -45,6 +45,11 @@ stroke_hospital = codelist_from_csv(
     "codelists/opensafely-stroke-secondary-care.csv", system="icd10", column="icd"
 )
 
+stroke_for_dementia_defn = codelist_from_csv(
+    "codelists/opensafely-stroke-updated.csv", system="ctv3", column="CTV3ID"
+)
+
+
 clear_smoking_codes = codelist_from_csv(
     "codelists/opensafely-smoking-clear.csv",
     system="ctv3",
