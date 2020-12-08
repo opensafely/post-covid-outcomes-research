@@ -25,7 +25,7 @@ tempname measures
 
 
 foreach v in stroke dvt pe {
-
+preserve
 	noi di "Starting analysis for $group: `v' Outcome ..." 
 	noi di "$group: stset in hospital" 
 																	 
@@ -63,9 +63,11 @@ foreach v in stroke dvt pe {
 					
 		}
 	}
-
+	
+	* DROP Patients who have the event in hospital
+	drop if `v'_in_hosp == 1 
+	
 	foreach a in post_hosp post_hosp_gp {
-
 		noi di "$group: stset in `a'" 
 		
 			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date)
@@ -102,6 +104,7 @@ foreach v in stroke dvt pe {
 			}
 		}
 	}
+restore
 }
 
 postclose `measures'

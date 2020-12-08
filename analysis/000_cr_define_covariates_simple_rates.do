@@ -210,20 +210,18 @@ drop region_string
 assert age >= 18 & age <=110
 
 * Create categorised age
-recode 	age 			18/39.9999=1 	///
-						40/49.9999=2 	///
-						50/59.9999=3 	///
-						60/69.9999=4 	///
-						70/79.9999=5 	///
-						80/max=6, 		///
+recode 	age 			18/49.9999=1 	///
+						50/59.9999=2 	///
+						60/69.9999=3 	///
+						70/79.9999=4 	///
+						80/max=5, 		///
 				        gen(agegroup) 
 
-label define agegroup 	1 "18-<40" 		///
-						2 "40-<50" 		///
-						3 "50-<60" 		///
-						4 "60-<70" 		///
-						5 "70-<80" 		///
-						6 "80+"
+label define agegroup 	1 "18-<50" 		///
+						2 "50-<60" 		///
+						3 "60-<70" 		///
+						4 "70-<80" 		///
+						5 "80+"
 label values agegroup agegroup
 
 
@@ -515,8 +513,8 @@ foreach out in stroke dvt pe {
 
 	* post-hospital (+ primary care)
 							
-	gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_expo_date  & `out'_hospital != . | ///
-							`out'_gp >= discharged_expo_date & `out'_gp != . | ///
+	gen `out'_post_hosp_gp = cond( `out'_hospital >= discharged_expo_date  & `out'_hospital != .& `out'_in_hosp!=1 | ///
+							`out'_gp >= discharged_expo_date & `out'_gp != . & `out'_in_hosp!=1 | ///
 							(`out'_ons == 2020 &  died_date_ons >= discharged_expo_date & died_date_ons_date!=. )  , 1, 0  )
 
 	gen `out'_post_hosp_gp_end_date = td(01oct2020) 
