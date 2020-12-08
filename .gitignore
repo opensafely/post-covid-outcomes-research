@@ -5,6 +5,7 @@ __pycache__
 .python-version
 output/*
 data/*
+metadata/*
 analysis/.DS_Store
 .DS_Store
 !.gitkeep

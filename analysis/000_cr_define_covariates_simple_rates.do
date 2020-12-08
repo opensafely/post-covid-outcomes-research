@@ -16,7 +16,10 @@
 *
 *	Note:			
 ********************************************************************************
+do `c(pwd)'/analysis/global.do
+global group `1'
 
+import delimited $outdir/input_$group.csv
 
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
@@ -47,7 +50,7 @@ gen community_exp = cond(hospitalised_expo_primary_dx !=. , 1, 0)
 gen length_of_stay = discharged_expo_date - hospitalised_expo_date + 1
 label var length_of_stay "Length of stay in hospital (days)"
 hist length , name(length_of_stay_$group, replace) graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
-graph export "output/length_of_stay_$group.svg" , as(svg) replace
+graph export $outdir/length_of_stay_$group.svg , as(svg) replace
 
 * Create flag for patients staying in hospital longer than the median length
 summ length, detail
@@ -542,7 +545,7 @@ keep patient_id died_date_ons_date age ethnicity hospitalised_expo_date ///
  pe_in_hosp pe_in_hosp_end_date pe_post_hosp pe_post_hosp_end_date pe_post_hosp_gp /// 
  pe_post_hosp_gp_end_date
  
-save "data/cohort_rates_$group", replace 
+save $outdir/cohort_rates_$group, replace 
 
 
 
