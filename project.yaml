@@ -1,0 +1,57 @@
+version: "3.0"
+
+expectations:
+  population_size: 10000
+
+actions:
+  generate_cohorts:
+    run: cohortextractor:latest generate_cohort
+    outputs:
+      highly_sensitive:
+        covid_cohort: output/input_covid.csv
+        pneumonia_cohort: output/input_pneumonia.csv
+        ctrl_2019_cohort: output/input_control_2019.csv
+        ctrl_2020_cohort: output/input_control_2020.csv
+
+  000_covid:
+    run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        graph: output/length_of_stay_covid.svg
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_covid.dta
+
+  000_pneumonia:
+    run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        graph: output/length_of_stay_pneumonia.svg
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_pneumonia.dta
+
+  201_covid:
+    run: stata-mp:latest analysis/201_cr_simple_rates.do "covid"
+    needs: [000_covid]
+    outputs:
+      moderately_sensitive:
+        graph: output/tabfig/rates_summary_covid.csv
+
+  201_pneumonia:
+    run: stata-mp:latest analysis/201_cr_simple_rates.do "pneumonia"
+    needs: [000_pneumonia]
+    outputs:
+      moderately_sensitive:
+        graph: output/tabfig/rates_summary_pneumonia.csv
+
+  run_all:
+    needs: [201_covid, 201_pneumonia]
+    # In order to be valid this action needs to define a run command and some
+    # output. We don't really care what these are but the below does the trick.
+    # In a future release of the platform, this special action won't need to be
+    # defined at all.
+    run: cohortextractor:latest --version
+    outputs:
+      moderately_sensitive:
+        whatever: project.yaml

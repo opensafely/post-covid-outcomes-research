@@ -16,12 +16,14 @@
 *
 *	Note:			
 ********************************************************************************
+do `c(pwd)'/analysis/global.do
+global group `1'
 
-
-use "data/cohort_rates_$group", replace 
+use $outdir/cohort_rates_$group, clear 
 
 tempname measures
-	postfile `measures' str16(group) str20(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using "data/rates_summary_$group", replace
+																	 
+	postfile `measures' str16(group) str20(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
 
 
 foreach v in stroke dvt pe {
@@ -107,12 +109,12 @@ foreach v in stroke dvt pe {
 postclose `measures'
 
 * Change postfiles to csv
-use "data/rates_summary_$group", replace
+use $tabfigdir/rates_summary_$group, replace
 
 * Change from per person-day to per 100 person-months
 gen rate_ppm = 100*(rate * 365.25 / 12)
 gen lc_ppm = 100*(lc * 365.25 /12)
 gen uc_ppm = 100*(uc * 365.25 /12)
 
-export delimited using "data/rates_summary_$group.csv", replace
+export delimited using $tabfigdir/rates_summary_$group.csv, replace
 
