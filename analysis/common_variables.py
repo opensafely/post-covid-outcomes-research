@@ -1,4 +1,5 @@
 from cohortextractor import filter_codes_by_category, patients, combine_codelists
+from cohortextractor import filter_codes_by_category, patients, combine_codelists
 from codelists import *
 from datetime import datetime, timedelta
 
@@ -1038,10 +1039,6 @@ def common_variable_define(
 			chronic_cardiac_disease_codes,
 			return_first_date_in_period=True,
 				include_month=True,
-    ),
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/30
-    diabetes=patients.with_these_clinical_events(
-        diabetes_codes, return_first_date_in_period=True, include_month=True,
     ),
     # https://github.com/ebmdatalab/tpp-sql-notebook/issues/32
     lung_cancer=patients.with_these_clinical_events(
