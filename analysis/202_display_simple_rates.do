@@ -85,12 +85,11 @@ replace category2 = "Black" if variable == "ethnicity" & category == 4
 replace category2 = "Other" if variable == "ethnicity" & category == 5
 replace category2 = "Unknown" if variable == "ethnicity" & category == .u
 
-replace category2 = "18-<40" if variable == "agegroup" & category==1
-replace category2 = "40-<50" if variable == "agegroup" & category==2
-replace category2 = "50-<60" if variable == "agegroup" & category==3
-replace category2 = "60-<70" if variable == "agegroup" & category==4
-replace category2 = "70-<80" if variable == "agegroup" & category==5
-replace category2 = "80+"	 if variable == "agegroup" & category==6
+replace category2 = "18-<50" if variable == "agegroup" & category==1
+replace category2 = "50-<60" if variable == "agegroup" & category==2
+replace category2 = "60-<70" if variable == "agegroup" & category==3
+replace category2 = "70-<80" if variable == "agegroup" & category==4
+replace category2 = "80+"	 if variable == "agegroup" & category==5
 
 replace variable = "Age" if variable == "agegroup"
 replace variable = "Gender" if variable == "gender"
@@ -156,12 +155,12 @@ gen x5 = 0.007
 gen x6 = 0.003
 
 * 
-replace variable = "" if _n!=1 & _n!=3 & _n!=7 & _n!=19 & _n!=23 & _n!=33 & _n!=37 & _n!=41 & _n!=45
+replace variable = "" if _n!=1 & _n!=3 & _n!=7 & _n!=17 & _n!=21 & _n!=31 & _n!=35 & _n!=39 & _n!=43
 replace variable = "Length of Hosp. stay" if _n==41
 replace variable = "({&ge} Median)" if _n==43
 
 
-forvalues i = 4(2)46 {
+forvalues i = 4(2)44 {
 replace category2 = "" in `i'
 }
 
