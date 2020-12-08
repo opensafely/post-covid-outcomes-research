@@ -1113,12 +1113,7 @@ def common_variable_define(
     temporary_immunodeficiency=patients.with_these_clinical_events(
         temp_immune_codes, return_last_date_in_period=True, include_month=True,
     ),
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/23
-    # immunosuppressant_med=
-    # hypertension
-    hypertension=patients.with_these_clinical_events(
-        hypertension_codes, return_first_date_in_period=True, include_month=True,
-    ),
+
     # Blood pressure
     # https://github.com/ebmdatalab/tpp-sql-notebook/issues/35
     bp_sys=patients.mean_recorded_value(
