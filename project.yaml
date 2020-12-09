@@ -63,7 +63,7 @@ actions:
       highly_sensitive:
         combined: output/matched_combined_control_2019_pe.csv
 
-  matching_control_2019_dvt:
+  matching_control_2019_stroke:
     run: python:latest python analysis/match_running.py "control_2019" "stroke"
     needs: [generate_cohorts]
     outputs:
@@ -90,7 +90,7 @@ actions:
       highly_sensitive:
         combined: output/matched_combined_control_2020_pe.csv
 
-  matching_control_2020_dvt:
+  matching_control_2020_stroke:
     run: python:latest python analysis/match_running.py "control_2020" "stroke"
     needs: [generate_cohorts]
     outputs:
