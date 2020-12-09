@@ -98,14 +98,3 @@ actions:
         matching_report: output/matching_report_control_2020_stroke.txt
       highly_sensitive:
         combined: output/matched_combined_control_2020_stroke.csv
-
-  run_all:
-    needs: [201_covid, 201_pneumonia]
-    # In order to be valid this action needs to define a run command and some
-    # output. We don't really care what these are but the below does the trick.
-    # In a future release of the platform, this special action won't need to be
-    # defined at all.
-    run: cohortextractor:latest --version
-    outputs:
-      moderately_sensitive:
-        whatever: project.yaml
