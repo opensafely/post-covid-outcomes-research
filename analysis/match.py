@@ -354,7 +354,7 @@ def match(
             matches.loc[matched_rows, index_date_variable] = index_date
 
     ## Drop unmatched cases/matches
-    matched_cases = cases.loc[cases["match_counts"] == matches_per_case]
+    matched_cases = cases
     matched_matches = matches.loc[matches["set_id"] != NOT_PREVIOUSLY_MATCHED]
 
     ## Describe population differences
