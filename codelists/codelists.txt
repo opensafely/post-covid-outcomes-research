@@ -5,7 +5,7 @@ opensafely/hypertension/2020-04-28
 opensafely/incident-venous-thromboembolic-disease/2020-09-30
 opensafely/pneumonia-secondary-care/2020-10-05
 opensafely/smoking-clear/2020-04-29
-opensafely/incident-stroke/2020-10-05
+opensafely/incident-non-traumatic-stroke/0be6efb3
 opensafely/stroke-secondary-care/2020-10-05
 opensafely/venous-thromboembolic-disease-hospital/2020-10-01
 opensafely/atrial-fibrillation-clinical-finding/2020-07-09
