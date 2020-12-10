@@ -32,7 +32,7 @@ global full i.case i.gender age1 age2 age3 i.obese4cat i.smoke_nomiss i.ethnicit
 				i.spleen i.ra_sle_psoriasis i.other_immunosuppression
 
 tempname measures
-	postfile `measures' str13(comparison) str12(outcome) str12(analysis) str10(adjustment) str20(variable) category hr lc uc using "$outdir/cox_model_summary_$group", replace
+	postfile `measures' str13(comparison) str12(outcome) str12(analysis) str10(adjustment) str20(variable) category hr lc uc using "$tabfigdir/cox_model_summary_$group", replace
 
 foreach v in stroke dvt pe  {
 preserve
@@ -120,4 +120,3 @@ restore
 
 postclose `measures'
 
-use "$outdir/cox_model_summary_$group", replace

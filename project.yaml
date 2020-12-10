@@ -100,14 +100,14 @@ actions:
     needs: [301_pneumonia]
     outputs:
       highly_sensitive:
-        combined1: output/cox_model_summary_pneumonia.dta
+        combined1: output/tabfig/cox_model_summary_pneumonia.dta
 
   302_control19:
     run: stata-mp:latest analysis/302_cox_models.do "control_2019"
     needs: [301_control19]
     outputs:
       highly_sensitive:
-        combined1: output/cox_model_summary_control_2019.dta
+        combined1: output/tabfig/cox_model_summary_control_2019.dta
 
 
   302_control20:
@@ -115,7 +115,7 @@ actions:
     needs: [301_control20]
     outputs:
       highly_sensitive:
-        combined1: output/cox_model_summary_control_2020.dta
+        combined1: output/tabfig/cox_model_summary_control_2020.dta
 
 
    
