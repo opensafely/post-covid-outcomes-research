@@ -39,7 +39,7 @@ hypertension_codes = codelist_from_csv(
 )
 
 stroke = codelist_from_csv(
-    "codelists/opensafely-incident-stroke.csv", system="ctv3", column="CTV3ID"
+    "codelists/opensafely-incident-non-traumatic-stroke.csv", system="ctv3", column="CTV3ID"
 )
 stroke_hospital = codelist_from_csv(
     "codelists/opensafely-stroke-secondary-care.csv", system="icd10", column="icd"
