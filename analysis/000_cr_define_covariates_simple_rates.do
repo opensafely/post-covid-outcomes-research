@@ -16,8 +16,23 @@
 *
 *	Note:			
 ********************************************************************************
+clear
 do `c(pwd)'/analysis/global.do
 global group `1'
+
+if "$group" == "covid"  { 
+local start_date  td(01/02/2020)
+local last_year   td(01/02/2019)
+local four_years_ago td(01/02/2015)	 
+local fifteen_months_ago td(01/09/2019)
+
+}
+else {
+local start_date  td(01/02/2019)
+local last_year   td(01/02/2018)	
+local four_years_ago td(01/02/2014)	 
+local fifteen_months_ago td(01/09/2018)
+}
 
 import delimited $outdir/input_$group.csv
 
@@ -25,7 +40,6 @@ di "STARTING COUNT FROM IMPORT:"
 noi safecount
 
 * Hospitalised with exposure (expo -> covid or pneumonia)
-
 gen hospitalised_expo_date = date(exposure_hospitalisation, "YMD")
 format hospitalised_expo_date %td
 
@@ -68,7 +82,8 @@ gen flag = "$group"
 ******************************
 *  Convert strings to dates  *
 ******************************
-
+drop hiv
+rename hiv_date hiv
 * To be added: dates related to outcomes
 foreach var of varlist af 					///	
 					   date_icu_admission   ///
@@ -90,7 +105,25 @@ foreach var of varlist af 					///
 					   previous_dvt_gp 		/// 
 					   previous_dvt_hospital /// 
 					   previous_pe_gp 		 /// 
-					   previous_pe_hospital  {
+					   previous_pe_hospital  ///
+					   chronic_respiratory_disease 	///
+						chronic_cardiac_disease 		///					///
+						chronic_liver_disease 			///
+						stroke_for_dementia_defn			///
+						dementia						///
+						other_neuro					///
+						organ_transplant 				///
+						aplastic_anaemia				///
+						dysplenia 						///
+						sickle_cell 					///
+						hiv							///
+						permanent_immunodeficiency		///
+						temporary_immunodeficiency		///
+						ra_sle_psoriasis ///
+					    lung_cancer ///
+						other_cancer ///
+						dialysis /// 
+						haem_cancer {
 
 capture confirm string variable `var'
 	if _rc!=0 {
@@ -105,6 +138,32 @@ capture confirm string variable `var'
 	}
 	format `var'_date %td
 }
+
+* Comorbidities ever before
+foreach var of varlist	chronic_respiratory_disease_date 	///
+						chronic_cardiac_disease_date 		///					///
+						chronic_liver_disease_date 			///
+						stroke_for_dementia_defn_date			///
+						dementia_date						///
+						other_neuro_date					///
+						organ_transplant_date 				///
+						aplastic_anaemia_date				///
+						dysplenia_date 						///
+						sickle_cell_date 					///
+						hiv_date							///
+						permanent_immunodeficiency_date		///
+						temporary_immunodeficiency_date		///
+						ra_sle_psoriasis_date ///
+						dialysis_date ///
+						lung_cancer_date ///
+						other_cancer_date ///
+						haem_cancer_date {
+	local newvar =  substr("`var'", 1, length("`var'") - 5)
+	gen `newvar' = (`var'< `start_date')
+	order `newvar', after(`var')
+}
+
+
 
 rename date_icu_admission_date icu_admission_date
 /* BMI */
@@ -203,6 +262,38 @@ label values region_7 region_7
 label var region_7 "Region of England (7 regions)"
 drop region_string
 
+/*  Blood pressure   */
+
+* Categorise
+gen     bpcat = 1 if bp_sys < 120 &  bp_dias < 80
+replace bpcat = 2 if inrange(bp_sys, 120, 130) & bp_dias<80
+replace bpcat = 3 if inrange(bp_sys, 130, 140) | inrange(bp_dias, 80, 90)
+replace bpcat = 4 if (bp_sys>=140 & bp_sys<.) | (bp_dias>=90 & bp_dias<.) 
+replace bpcat = . if bp_sys>=. | bp_dias>=. | bp_sys==0 | bp_dias==0
+
+label define bpcat 1 "Normal" 2 "Elevated" 3 "High, stage I"	///
+					4 "High, stage II" 
+label values bpcat bpcat
+
+recode bpcat .=1, gen(bpcat_nomiss)
+label values bpcat_nomiss bpcat
+
+* Create non-missing indicator of known high blood pressure
+gen bphigh = (bpcat==4)
+order bpcat bphigh, after(bp_dias_date)
+
+/*  Asthma  */
+
+
+* Asthma  (coded: 0 No, 1 Yes no OCS, 2 Yes with OCS)
+rename asthma asthmacat
+recode asthmacat 0=1 1=2 2=3 .=1
+label define asthmacat 1 "No" 2 "Yes, no OCS" 3 "Yes with OCS"
+label values asthmacat asthmacat
+
+gen asthma = (asthmacat==2|asthmacat==3)
+
+
 
 
 **************************
@@ -254,6 +345,16 @@ label define bmicat 	1 "Underweight (<18.5)" 				///
 	replace bmicat = .u  if bmi>=.
 	label values bmicat bmicat
 
+	* Create more granular categorisation
+	recode bmicat 1/3 .u = 1 4=2 5=3 6=4, gen(obese4cat)
+
+	label define obese4cat 	1 "No record of obesity" 	///
+						2 "Obese I (30-34.9)"		///
+						3 "Obese II (35-39.9)"		///
+						4 "Obese III (40+)"		
+	label values obese4cat obese4cat
+	order obese4cat, after(bmicat)
+
 /*  IMD  */
 
 * Group into 5 groups
@@ -282,6 +383,129 @@ label values imd imd
 ***************************
 
 
+/*  Neurological  */
+
+* Stroke and dementia
+egen stroke_dementia = rowmax(stroke_for_dementia_defn dementia)
+order stroke_dementia, after(dementia_date)
+
+
+/*  Spleen  */
+
+* Spleen problems (dysplenia/splenectomy/etc and sickle cell disease)   
+egen spleen = rowmax(dysplenia sickle_cell) 
+order spleen, after(sickle_cell)
+
+
+
+/*  Cancer  */
+
+label define cancer 1 "Never" 2 "Last year" 3 "2-5 years ago" 4 "5+ years"
+
+* Haematological malignancies
+gen     cancer_haem_cat = 4 if inrange(haem_cancer_date, td(1/1/1900), `four_years_ago')
+replace cancer_haem_cat = 3 if inrange(haem_cancer_date, `four_years_ago', `last_year')
+replace cancer_haem_cat = 2 if inrange(haem_cancer_date, `last_year', `start_date')
+recode  cancer_haem_cat . = 1
+label values cancer_haem_cat cancer
+
+
+* All other cancers
+gen     cancer_exhaem_cat = 4 if inrange(lung_cancer_date,  td(01/01/1900), `four_years_ago') | ///
+								 inrange(other_cancer_date, td(01/01/1900), `four_years_ago') 
+replace cancer_exhaem_cat = 3 if inrange(lung_cancer_date, `four_years_ago', `last_year') | ///
+								 inrange(other_cancer_date, `four_years_ago', `last_year') 
+replace cancer_exhaem_cat = 2 if inrange(lung_cancer_date,  `last_year', `start_date') | ///
+								 inrange(other_cancer_date, `last_year', `start_date')
+recode  cancer_exhaem_cat . = 1
+label values cancer_exhaem_cat cancer
+
+
+* Put variables together
+order cancer_exhaem_cat cancer_haem_cat, after(other_cancer_date)
+
+
+
+/*  Immunosuppression  */
+
+* Immunosuppressed:
+* HIV, permanent immunodeficiency ever, OR 
+* temporary immunodeficiency or aplastic anaemia last year
+gen temp1  = max(hiv, permanent_immunodeficiency)
+gen temp2  = inrange(temporary_immunodeficiency_date, `last_year', `start_date')
+gen temp3  = inrange(aplastic_anaemia_date, `last_year', `start_date')
+
+egen other_immunosuppression = rowmax(temp1 temp2 temp3)
+drop temp1 temp2 temp3
+order other_immunosuppression, after(temporary_immunodeficiency)
+
+
+
+
+/*  Hypertension  */
+
+gen htdiag_or_highbp = bphigh
+recode htdiag_or_highbp 0 = 1 if hypertension==1 
+
+
+
+
+************
+*   eGFR   *
+************
+
+* Set implausible creatinine values to missing (Note: zero changed to missing)
+replace creatinine = . if !inrange(creatinine, 20, 3000) 
+	
+* Divide by 88.4 (to convert umol/l to mg/dl)
+gen SCr_adj = creatinine/88.4
+
+gen min=.
+replace min = SCr_adj/0.7 if gender==0
+replace min = SCr_adj/0.9 if gender==1
+replace min = min^-0.329  if gender==0
+replace min = min^-0.411  if gender==1
+replace min = 1 if min<1
+
+gen max=.
+replace max=SCr_adj/0.7 if gender==0
+replace max=SCr_adj/0.9 if gender==1
+replace max=max^-1.209
+replace max=1 if max>1
+
+gen egfr=min*max*141
+replace egfr=egfr*(0.993^age)
+replace egfr=egfr*1.018 if gender==0
+label var egfr "egfr calculated using CKD-EPI formula with no eth"
+
+* Categorise into ckd stages
+egen egfr_cat = cut(egfr), at(0, 15, 30, 45, 60, 5000)
+recode egfr_cat 0=5 15=4 30=3 45=2 60=0, generate(ckd)
+* 0 = "No CKD" 	2 "stage 3a" 3 "stage 3b" 4 "stage 4" 5 "stage 5"
+label define ckd 0 "No CKD" 1 "CKD"
+label values ckd ckd
+label var ckd "CKD stage calc without eth"
+
+* Convert into CKD group
+*recode ckd 2/5=1, gen(chronic_kidney_disease)
+*replace chronic_kidney_disease = 0 if creatinine==. 
+
+recode ckd 0=1 2/3=2 4/5=3, gen(reduced_kidney_function_cat)
+replace reduced_kidney_function_cat = 1 if creatinine==. 
+label define reduced_kidney_function_catlab ///
+	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4/5 egfr<30"
+label values reduced_kidney_function_cat reduced_kidney_function_catlab 
+
+*More detailed version incorporating stage 5 or dialysis as a separate category	
+recode ckd 0=1 2/3=2 4=3 5=4, gen(reduced_kidney_function_cat2)
+replace reduced_kidney_function_cat2 = 1 if creatinine==. 
+replace reduced_kidney_function_cat2 = 5 if dialysis==1 
+
+label define reduced_kidney_function_cat2lab ///
+	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4 egfr 15-<30" 4 "Stage 4 egfr <15-<30" 5 "Stage 5 egfr <15 or dialysis"
+label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab 
+ 
+	
 	
 ****************************************
 *   Hba1c:  Level of diabetic control  *
@@ -293,10 +517,11 @@ label define hba1ccat	0 "<6.5%"  		///
 						3">=8-8.9" 		///
 						4">=9"
 
-* Set zero or negative to missing
+	* Set zero or negative to missing
 	replace hba1c_percentage_1   = . if hba1c_percentage_1   <= 0
 	replace hba1c_mmol_per_mol_1 = . if hba1c_mmol_per_mol_1 <= 0
 
+	* Only consider measurements in last 15 months (this is done in the study definition/common variables)
 
 	/* Express  HbA1c as percentage  */ 
 
@@ -320,6 +545,18 @@ label define hba1ccat	0 "<6.5%"  		///
 	replace hba1ccat_1 = 3 if hba1c_pct >= 8    & hba1c_pct < 9
 	replace hba1ccat_1 = 4 if hba1c_pct >= 9    & hba1c_pct !=.
 	label values hba1ccat_1 hba1ccat
+	
+	* Create diabetes, split by control/not
+gen     diabcat = 1 if diabetes==0
+replace diabcat = 2 if diabetes==1 & inlist(hba1ccat, 0, 1)
+replace diabcat = 3 if diabetes==1 & inlist(hba1ccat, 2, 3, 4)
+replace diabcat = 4 if diabetes==1 & !inlist(hba1ccat, 0, 1, 2, 3, 4)
+
+label define diabcat 	1 "No diabetes" 			///
+						2 "Controlled diabetes"		///
+						3 "Uncontrolled diabetes" 	///
+						4 "Diabetes, no hba1c measure"
+label values diabcat diabcat
 	
 	* Delete unneeded variables
 	drop hba1c_pct hba1c_percentage_1 hba1c_mmol_per_mol_1 
@@ -541,7 +778,11 @@ keep patient_id died_date_ons_date age ethnicity hospitalised_expo_date ///
  stroke_post_hosp_gp stroke_post_hosp_gp_end_date dvt_in_hosp dvt_in_hosp_end_date ///
  dvt_post_hosp dvt_post_hosp_end_date dvt_post_hosp_gp dvt_post_hosp_gp_end_date ///
  pe_in_hosp pe_in_hosp_end_date pe_post_hosp pe_post_hosp_end_date pe_post_hosp_gp /// 
- pe_post_hosp_gp_end_date
+ pe_post_hosp_gp_end_date chronic_respiratory_disease chronic_cardiac_disease /// 
+ cancer_exhaem_cat cancer_haem_cat chronic_liver_disease other_neuro /// 
+ stroke_dementia organ_transplant spleen other_immunosuppression bpcat bphigh ///
+ ra_sle_psoriasis asthmacat gender smoke bpcat_nomiss obese4cat imd htdiag_or_highbp  ///
+ reduced_kidney_function_cat2 diabcat flag
  
 save $outdir/cohort_rates_$group, replace 
 
