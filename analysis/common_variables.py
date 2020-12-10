@@ -1,5 +1,4 @@
 from cohortextractor import filter_codes_by_category, patients, combine_codelists
-from cohortextractor import filter_codes_by_category, patients, combine_codelists
 from codelists import *
 from datetime import datetime, timedelta
 
@@ -887,8 +886,6 @@ def common_variable_define(
             return_first_date_in_period=True,
             include_month=True,
         ),
-        # heart failure
-        # other heart disease
         diabetes=patients.with_these_clinical_events(
             diabetes_codes,
             return_first_date_in_period=True,
@@ -987,17 +984,15 @@ def common_variable_define(
                 },
             },
         ),
-		# https://github.com/ebmdatalab/tpp-sql-notebook/issues/21
-		chronic_respiratory_disease=patients.with_these_clinical_events(
-			chronic_respiratory_disease_codes,
-			return_first_date_in_period=True,
-			include_month=True,
-		),
-		# https://github.com/ebmdatalab/tpp-sql-notebook/issues/55
-		asthma=patients.categorised_as(
-        {
-            "0": "DEFAULT",
-            "1": """
+        chronic_respiratory_disease=patients.with_these_clinical_events(
+            chronic_respiratory_disease_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        asthma=patients.categorised_as(
+            {
+                "0": "DEFAULT",
+                "1": """
                 (
                   recent_asthma_code OR (
                     asthma_code_ever AND NOT
@@ -1008,7 +1003,7 @@ def common_variable_define(
                   prednisolone_last_year > 4
                 )
             """,
-            "2": """
+                "2": """
                 (
                   recent_asthma_code OR (
                     asthma_code_ever AND NOT
@@ -1019,133 +1014,150 @@ def common_variable_define(
                 prednisolone_last_year < 5
                 
             """,
-        },
-        return_expectations={"category": {"ratios": {"0": 0.8, "1": 0.1, "2": 0.1}},},
-        recent_asthma_code=patients.with_these_clinical_events(
-            asthma_codes, between=["2017-02-01", "2020-02-01"],
-			),
-        asthma_code_ever=patients.with_these_clinical_events(asthma_codes),
-        copd_code_ever=patients.with_these_clinical_events(
-            chronic_respiratory_disease_codes
-			),
-        prednisolone_last_year=patients.with_these_medications(
-            pred_codes,
-            between=["2019-02-01", "2020-02-01"],
-            returning="number_of_matches_in_period",
-			),
-		),
-		# https://github.com/ebmdatalab/tpp-sql-notebook/issues/7
-		chronic_cardiac_disease=patients.with_these_clinical_events(
-			chronic_cardiac_disease_codes,
-			return_first_date_in_period=True,
-				include_month=True,
-    ),
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/32
-    lung_cancer=patients.with_these_clinical_events(
-        lung_cancer_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    haem_cancer=patients.with_these_clinical_events(
-        haem_cancer_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    other_cancer=patients.with_these_clinical_events(
-        other_cancer_codes, return_first_date_in_period=True, include_month=True,
-    ),
-
-    # # https://github.com/ebmdatalab/tpp-sql-notebook/issues/12
-    chronic_liver_disease=patients.with_these_clinical_events(
-        chronic_liver_disease_codes,
-        return_first_date_in_period=True,
-        include_month=True,
-    ),
-    # # https://github.com/ebmdatalab/tpp-sql-notebook/issues/14
-    other_neuro=patients.with_these_clinical_events(
-        other_neuro, return_first_date_in_period=True, include_month=True,
-    ),
-    dementia=patients.with_these_clinical_events(
-        dementia, return_first_date_in_period=True, include_month=True,
-    ),
-	 stroke_for_dementia_defn=patients.with_these_clinical_events(
-        stroke_for_dementia_defn, return_first_date_in_period=True, include_month=True,
-    ),
-    # # Chronic kidney disease
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/17
-    creatinine=patients.with_these_clinical_events(
-        creatinine_codes,
-        find_last_match_in_period=True,
-        on_or_before="2020-02-01",
-        returning="numeric_value",
-        include_date_of_match=True,
-        include_month=True,
-        return_expectations={
-            "float": {"distribution": "normal", "mean": 60.0, "stddev": 15},
-            "date": {"earliest": "2019-02-28", "latest": "2020-02-29"},
-            "incidence": 0.95,
-        },
-    ),
-    dialysis=patients.with_these_clinical_events(
-        dialysis_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/31
-    organ_transplant=patients.with_these_clinical_events(
-        organ_transplant_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/13
-    dysplenia=patients.with_these_clinical_events(
-        spleen_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    sickle_cell=patients.with_these_clinical_events(
-        sickle_cell_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/36
-    aplastic_anaemia=patients.with_these_clinical_events(
-        aplastic_codes, return_last_date_in_period=True, include_month=True,
-    ),
-    hiv=patients.with_these_clinical_events(
-        hiv_codes,
-        returning="category", 
-        find_first_match_in_period=True, 
-        include_date_of_match=True,
-        include_month=True,
-        return_expectations={
-            "category": {"ratios": {"43C3.": 0.8, "XaFuL": 0.2}},
             },
-    ),   
-    permanent_immunodeficiency=patients.with_these_clinical_events(
-        permanent_immune_codes, return_first_date_in_period=True, include_month=True,
-    ),
-    temporary_immunodeficiency=patients.with_these_clinical_events(
-        temp_immune_codes, return_last_date_in_period=True, include_month=True,
-    ),
-
-    # Blood pressure
-    # https://github.com/ebmdatalab/tpp-sql-notebook/issues/35
-    bp_sys=patients.mean_recorded_value(
-        systolic_blood_pressure_codes,
-        on_most_recent_day_of_measurement=True,
-        on_or_before="2020-02-01",
-        include_measurement_date=True,
-        include_month=True,
-        return_expectations={
-            "float": {"distribution": "normal", "mean": 80, "stddev": 10},
-            "date": {"latest": "2020-02-29"},
-            "incidence": 0.95,
-        },
-    ),
-    bp_dias=patients.mean_recorded_value(
-        diastolic_blood_pressure_codes,
-        on_most_recent_day_of_measurement=True,
-        on_or_before="2020-02-01",
-        include_measurement_date=True,
-        include_month=True,
-        return_expectations={
-            "float": {"distribution": "normal", "mean": 120, "stddev": 10},
-            "date": {"latest": "2020-02-29"},
-            "incidence": 0.95,
-        },
-    ),
-    # # https://github.com/ebmdatalab/tpp-sql-notebook/issues/49
-    ra_sle_psoriasis=patients.with_these_clinical_events(
-        ra_sle_psoriasis_codes, return_first_date_in_period=True, include_month=True,
-    ),
+            return_expectations={
+                "category": {"ratios": {"0": 0.8, "1": 0.1, "2": 0.1}},
+            },
+            recent_asthma_code=patients.with_these_clinical_events(
+                asthma_codes,
+                between=["2017-02-01", "2020-02-01"],
+            ),
+            asthma_code_ever=patients.with_these_clinical_events(asthma_codes),
+            copd_code_ever=patients.with_these_clinical_events(
+                chronic_respiratory_disease_codes
+            ),
+            prednisolone_last_year=patients.with_these_medications(
+                pred_codes,
+                between=["2019-02-01", "2020-02-01"],
+                returning="number_of_matches_in_period",
+            ),
+        ),
+        chronic_cardiac_disease=patients.with_these_clinical_events(
+            chronic_cardiac_disease_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        lung_cancer=patients.with_these_clinical_events(
+            lung_cancer_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        haem_cancer=patients.with_these_clinical_events(
+            haem_cancer_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        other_cancer=patients.with_these_clinical_events(
+            other_cancer_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        chronic_liver_disease=patients.with_these_clinical_events(
+            chronic_liver_disease_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        other_neuro=patients.with_these_clinical_events(
+            other_neuro,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        dementia=patients.with_these_clinical_events(
+            dementia,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        stroke_for_dementia_defn=patients.with_these_clinical_events(
+            stroke_for_dementia_defn,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        creatinine=patients.with_these_clinical_events(
+            creatinine_codes,
+            find_last_match_in_period=True,
+            on_or_before="2020-02-01",
+            returning="numeric_value",
+            include_date_of_match=True,
+            include_month=True,
+            return_expectations={
+                "float": {"distribution": "normal", "mean": 60.0, "stddev": 15},
+                "date": {"earliest": "2019-02-28", "latest": "2020-02-29"},
+                "incidence": 0.95,
+            },
+        ),
+        dialysis=patients.with_these_clinical_events(
+            dialysis_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        organ_transplant=patients.with_these_clinical_events(
+            organ_transplant_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        dysplenia=patients.with_these_clinical_events(
+            spleen_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        sickle_cell=patients.with_these_clinical_events(
+            sickle_cell_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        aplastic_anaemia=patients.with_these_clinical_events(
+            aplastic_codes,
+            return_last_date_in_period=True,
+            include_month=True,
+        ),
+        hiv=patients.with_these_clinical_events(
+            hiv_codes,
+            returning="category",
+            find_first_match_in_period=True,
+            include_date_of_match=True,
+            include_month=True,
+            return_expectations={
+                "category": {"ratios": {"43C3.": 0.8, "XaFuL": 0.2}},
+            },
+        ),
+        permanent_immunodeficiency=patients.with_these_clinical_events(
+            permanent_immune_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
+        temporary_immunodeficiency=patients.with_these_clinical_events(
+            temp_immune_codes,
+            return_last_date_in_period=True,
+            include_month=True,
+        ),
+        bp_sys=patients.mean_recorded_value(
+            systolic_blood_pressure_codes,
+            on_most_recent_day_of_measurement=True,
+            on_or_before="2020-02-01",
+            include_measurement_date=True,
+            include_month=True,
+            return_expectations={
+                "float": {"distribution": "normal", "mean": 80, "stddev": 10},
+                "date": {"latest": "2020-02-29"},
+                "incidence": 0.95,
+            },
+        ),
+        bp_dias=patients.mean_recorded_value(
+            diastolic_blood_pressure_codes,
+            on_most_recent_day_of_measurement=True,
+            on_or_before="2020-02-01",
+            include_measurement_date=True,
+            include_month=True,
+            return_expectations={
+                "float": {"distribution": "normal", "mean": 120, "stddev": 10},
+                "date": {"latest": "2020-02-29"},
+                "incidence": 0.95,
+            },
+        ),
+        ra_sle_psoriasis=patients.with_these_clinical_events(
+            ra_sle_psoriasis_codes,
+            return_first_date_in_period=True,
+            include_month=True,
+        ),
     )
     return common_variables
