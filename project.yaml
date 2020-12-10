@@ -65,7 +65,7 @@ actions:
 
   matching_data_management:
     run: stata-mp:latest analysis/300_cr_data_management_matching.do 
-    needs: [matching_control_2019 matching_control_2020]
+    needs: [generate_cohorts, matching_control_2019, matching_control_2020]
     outputs:
       highly_sensitive:
         combined1: output/patients_covid.dta
