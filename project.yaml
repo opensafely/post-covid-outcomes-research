@@ -45,56 +45,20 @@ actions:
       moderately_sensitive:
         graph: output/tabfig/rates_summary_pneumonia.csv
 
-  matching_control_2019_dvt:
-    run: python:latest python analysis/match_running.py "control_2019" "dvt"
+  matching_control_2019:
+    run: python:latest python analysis/match_running.py "control_2019"
     needs: [generate_cohorts]
     outputs:
       moderately_sensitive:
-        matching_report: output/matching_report_control_2019_dvt.txt
+        matching_report: output/matching_report_control_2019.txt
       highly_sensitive:
-        combined: output/matched_combined_control_2019_dvt.csv
+        combined: output/matched_combined_control_2019.csv
 
-  matching_control_2019_pe:
-    run: python:latest python analysis/match_running.py "control_2019" "pe"
+  matching_control_2020:
+    run: python:latest python analysis/match_running.py "control_2020"
     needs: [generate_cohorts]
     outputs:
       moderately_sensitive:
-        matching_report: output/matching_report_control_2019_pe.txt
+        matching_report: output/matching_report_control_2020.txt
       highly_sensitive:
-        combined: output/matched_combined_control_2019_pe.csv
-
-  matching_control_2019_stroke:
-    run: python:latest python analysis/match_running.py "control_2019" "stroke"
-    needs: [generate_cohorts]
-    outputs:
-      moderately_sensitive:
-        matching_report: output/matching_report_control_2019_stroke.txt
-      highly_sensitive:
-        combined: output/matched_combined_control_2019_stroke.csv
-
-  matching_control_2020_dvt:
-    run: python:latest python analysis/match_running.py "control_2020" "dvt"
-    needs: [generate_cohorts]
-    outputs:
-      moderately_sensitive:
-        matching_report: output/matching_report_control_2020_dvt.txt
-      highly_sensitive:
-        combined: output/matched_combined_control_2020_dvt.csv
-
-  matching_control_2020_pe:
-    run: python:latest python analysis/match_running.py "control_2020" "pe"
-    needs: [generate_cohorts]
-    outputs:
-      moderately_sensitive:
-        matching_report: output/matching_report_control_2020_pe.txt
-      highly_sensitive:
-        combined: output/matched_combined_control_2020_pe.csv
-
-  matching_control_2020_stroke:
-    run: python:latest python analysis/match_running.py "control_2020" "stroke"
-    needs: [generate_cohorts]
-    outputs:
-      moderately_sensitive:
-        matching_report: output/matching_report_control_2020_stroke.txt
-      highly_sensitive:
-        combined: output/matched_combined_control_2020_stroke.csv
+        combined: output/matched_combined_control_2020.csv
