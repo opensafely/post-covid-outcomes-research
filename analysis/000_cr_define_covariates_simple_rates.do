@@ -188,17 +188,20 @@ label define genderLab 1 "male" 0 "female"
 label values gender genderLab
 label var gender "gender = 0 F, 1 M"
 
-
 * Smoking
-label define smoke 1 "Never" 2 "Former" 3 "Current" .u "Unknown (.u)"
+label define smoke 1 "Never" 2 "Former" 3 "Current" 
+
 gen     smoke = 1  if smoking_status=="N"
 replace smoke = 2  if smoking_status=="E"
 replace smoke = 3  if smoking_status=="S"
-replace smoke = .u if smoking_status=="M"
-replace smoke = .u if smoking_status==""
+replace smoke = . if smoking_status=="M"
 label values smoke smoke
 drop smoking_status
 
+* Create non-missing 3-category variable for current smoking
+recode smoke .=1, gen(smoke_nomiss)
+order smoke_nomiss, after(smoke)
+label values smoke_nomiss smoke
 
 * Ethnicity (5 category)
 replace ethnicity = .u if ethnicity==.
@@ -781,7 +784,7 @@ keep patient_id died_date_ons_date age ethnicity hospitalised_expo_date ///
  pe_post_hosp_gp_end_date chronic_respiratory_disease chronic_cardiac_disease /// 
  cancer_exhaem_cat cancer_haem_cat chronic_liver_disease other_neuro /// 
  stroke_dementia organ_transplant spleen other_immunosuppression bpcat bphigh ///
- ra_sle_psoriasis asthmacat gender smoke bpcat_nomiss obese4cat imd htdiag_or_highbp  ///
+ ra_sle_psoriasis asthmacat gender smoke bpcat_nomiss obese4cat imd htdiag_or_highbp smoke_nomiss ///
  reduced_kidney_function_cat2 diabcat flag
  
 save $outdir/cohort_rates_$group, replace 

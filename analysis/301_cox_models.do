@@ -18,7 +18,7 @@
 ********************************************************************************
 global crude i.exposed 
 global age_sex i.exposed i.gender i.agegroup
-global full i.exposed i.gender i.agegroup i.obese4cat i.smoke i.ethnicity i.imd i.htdiag_or_highbp  /// 
+global full i.exposed i.gender i.agegroup i.obese4cat i.smoke_nomiss i.ethnicity i.imd i.htdiag_or_highbp  /// 
 				i.chronic_respiratory_disease i.asthmacat i.chronic_cardiac_disease ///		
 				i.diabcat i.cancer_exhaem_cat i.cancer_haem_cat i.chronic_liver_disease /// 		
 				i.stroke_dementia i.other_neuro i.reduced_kidney_function_cat2 i.organ_transplant ///				
