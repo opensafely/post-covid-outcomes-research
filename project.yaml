@@ -45,13 +45,56 @@ actions:
       moderately_sensitive:
         graph: output/tabfig/rates_summary_pneumonia.csv
 
-  run_all:
-    needs: [201_covid, 201_pneumonia]
-    # In order to be valid this action needs to define a run command and some
-    # output. We don't really care what these are but the below does the trick.
-    # In a future release of the platform, this special action won't need to be
-    # defined at all.
-    run: cohortextractor:latest --version
+  matching_control_2019_dvt:
+    run: python:latest python analysis/match_running.py "control_2019" "dvt"
+    needs: [generate_cohorts]
     outputs:
       moderately_sensitive:
-        whatever: project.yaml
+        matching_report: output/matching_report_control_2019_dvt.txt
+      highly_sensitive:
+        combined: output/matched_combined_control_2019_dvt.csv
+
+  matching_control_2019_pe:
+    run: python:latest python analysis/match_running.py "control_2019" "pe"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        matching_report: output/matching_report_control_2019_pe.txt
+      highly_sensitive:
+        combined: output/matched_combined_control_2019_pe.csv
+
+  matching_control_2019_stroke:
+    run: python:latest python analysis/match_running.py "control_2019" "stroke"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        matching_report: output/matching_report_control_2019_stroke.txt
+      highly_sensitive:
+        combined: output/matched_combined_control_2019_stroke.csv
+
+  matching_control_2020_dvt:
+    run: python:latest python analysis/match_running.py "control_2020" "dvt"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        matching_report: output/matching_report_control_2020_dvt.txt
+      highly_sensitive:
+        combined: output/matched_combined_control_2020_dvt.csv
+
+  matching_control_2020_pe:
+    run: python:latest python analysis/match_running.py "control_2020" "pe"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        matching_report: output/matching_report_control_2020_pe.txt
+      highly_sensitive:
+        combined: output/matched_combined_control_2020_pe.csv
+
+  matching_control_2020_stroke:
+    run: python:latest python analysis/match_running.py "control_2020" "stroke"
+    needs: [generate_cohorts]
+    outputs:
+      moderately_sensitive:
+        matching_report: output/matching_report_control_2020_stroke.txt
+      highly_sensitive:
+        combined: output/matched_combined_control_2020_stroke.csv
