@@ -31,7 +31,7 @@ local four_years_ago_19 td(01/02/2014)
 local fifteen_months_ago_19 td(01/09/2018)
 
 
-use "$outdir/matched_combined_$group.dta", replace
+use $outdir/matched_combined_$group.dta, replace
 
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
