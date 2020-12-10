@@ -69,10 +69,10 @@ actions:
     outputs:
       highly_sensitive:
         combined1: output/patients_covid.dta
-	combined2: output/patients_pneumonia.dta
-	combined3: output/matched_combined_pneumonia.dta
-	combined4: output/matched_combined_control_2019.dta
-	combined5: output/matched_combined_control_2020.dta
+        combined2: output/patients_pneumonia.dta
+        combined3: output/matched_combined_pneumonia.dta
+        combined4: output/matched_combined_control_2019.dta
+        combined5: output/matched_combined_control_2020.dta
 
   301_pneumonia:
     run: stata-mp:latest analysis/301_cr_define_covariates_matched_groups.do "pneumonia"
@@ -109,13 +109,9 @@ actions:
       highly_sensitive:
         combined1: output/tabfig/cox_model_summary_control_2019.dta
 
-
   302_control20:
     run: stata-mp:latest analysis/302_cox_models.do "control_2020"
     needs: [301_control20]
     outputs:
       highly_sensitive:
         combined1: output/tabfig/cox_model_summary_control_2020.dta
-
-
-   
