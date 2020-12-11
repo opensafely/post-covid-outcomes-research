@@ -712,7 +712,7 @@ foreach o in stroke dvt pe {
 
 * Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
-replace died_date_ons_date = . if died_date_ons_date>td(01oct2020)
+replace died_date_ons_date = . if died_date_ons_date>td(`end_date')
 
 
 * Exclude those have died
