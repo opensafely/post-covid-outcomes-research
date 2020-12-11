@@ -712,7 +712,7 @@ foreach o in stroke dvt pe {
 
 * Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
-replace died_date_ons_date = . if died_date_ons_date>td(`end_date')
+replace died_date_ons_date = . if died_date_ons_date>`end_date'
 
 
 * Exclude those have died
@@ -763,8 +763,6 @@ foreach out in stroke dvt pe {
 	replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
 	replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp > discharged_expo_date & `out'_gp != .
 	replace `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
-	format %td `out'_post_hosp_gp_end_date 
-
 	format %td `out'_post_hosp_gp_end_date 
 
 	replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
