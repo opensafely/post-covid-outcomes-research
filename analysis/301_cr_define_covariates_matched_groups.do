@@ -284,11 +284,8 @@ gen asthma = (asthmacat==2|asthmacat==3)
 *  Categorise variables  *
 **************************
 
-/*  Age variables  */ 
-assert age >= 18 & age <=110
-
 * Create categorised age
-recode 	age 			18/49.9999=1 	///
+recode 	age 			min/49.9999=1 	///
 						50/59.9999=2 	///
 						60/69.9999=3 	///
 						70/79.9999=4 	///

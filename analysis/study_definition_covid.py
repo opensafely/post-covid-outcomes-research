@@ -40,8 +40,8 @@ common_variables = common_variable_define(
 
 study = StudyDefinition(
     default_expectations={
-        "date": {"earliest": "1900-01-01", "latest": "today"},
-        "rate": "exponential_increase",
+        "date": {"earliest": "1980-01-01", "latest": "today"},
+        "rate": "uniform",
         "incidence": 0.7,
     },
     population=patients.satisfying(
