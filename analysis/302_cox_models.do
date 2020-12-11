@@ -59,7 +59,7 @@ local a = "in_hosp"
 			
 	    
 		forvalues s = 0/1 {
-			stcox $adjust if hist_`v' == `s'
+			stcox $`adjust' if hist_`v' == `s'
 
 			matrix b = r(table)
 			local hr= b[1,2]

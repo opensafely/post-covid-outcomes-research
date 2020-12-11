@@ -51,6 +51,6 @@ save $outdir/matched_combined_control_2019.dta, replace
 ********************************************************************************
 
 import delimited $outdir/matched_combined_control_2020.csv, clear
-gen compflag = "control_20"
-gen year_20 = 1
+gen year_20 = 1 if case == 1
+replace year_20 = 0 if case == 0
 save $outdir/matched_combined_control_2020.dta, replace

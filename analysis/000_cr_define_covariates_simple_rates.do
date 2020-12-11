@@ -549,10 +549,10 @@ label define hba1ccat	0 "<6.5%"  		///
 	label values hba1ccat_1 hba1ccat
 	
 	* Create diabetes, split by control/not
-gen     diabcat = 1 if diabetes==0
-replace diabcat = 2 if diabetes==1 & inlist(hba1ccat, 0, 1)
-replace diabcat = 3 if diabetes==1 & inlist(hba1ccat, 2, 3, 4)
-replace diabcat = 4 if diabetes==1 & !inlist(hba1ccat, 0, 1, 2, 3, 4)
+gen     diabcat = 1 if diabetes==.
+replace diabcat = 2 if diabetes!=. & inlist(hba1ccat, 0, 1)
+replace diabcat = 3 if diabetes!=. & inlist(hba1ccat, 2, 3, 4)
+replace diabcat = 4 if diabetes!=. & !inlist(hba1ccat, 0, 1, 2, 3, 4)
 
 label define diabcat 	1 "No diabetes" 			///
 						2 "Controlled diabetes"		///

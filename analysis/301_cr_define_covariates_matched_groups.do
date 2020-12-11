@@ -24,13 +24,13 @@ local start_date_20  td(01/02/2020)
 local last_year_20   td(01/02/2019)
 local four_years_ago_20 td(01/02/2015)	 
 local fifteen_months_ago_20 td(01/09/2019)
-local end_date td(01/10/2020)
+local end_date_20 td(01/10/2020)
 
 local start_date_19 td(01/02/2019)
 local last_year_19  td(01/02/2018)	
 local four_years_ago_19 td(01/02/2014)	 
 local fifteen_months_ago_19 td(01/09/2018)
-local end_date td(01/10/2019)
+local end_date_19 td(01/10/2019)
 
 
 use $outdir/matched_combined_$group.dta, replace
@@ -547,10 +547,10 @@ label define hba1ccat	0 "<6.5%"  		///
 	label values hba1ccat_1 hba1ccat
 	
 	* Create diabetes, split by control/not
-gen     diabcat = 1 if diabetes==0
-replace diabcat = 2 if diabetes==1 & inlist(hba1ccat, 0, 1)
-replace diabcat = 3 if diabetes==1 & inlist(hba1ccat, 2, 3, 4)
-replace diabcat = 4 if diabetes==1 & !inlist(hba1ccat, 0, 1, 2, 3, 4)
+gen     diabcat = 1 if diabetes==.
+replace diabcat = 2 if diabetes!=. & inlist(hba1ccat, 0, 1)
+replace diabcat = 3 if diabetes!=. & inlist(hba1ccat, 2, 3, 4)
+replace diabcat = 4 if diabetes!=. & !inlist(hba1ccat, 0, 1, 2, 3, 4)
 
 label define diabcat 	1 "No diabetes" 			///
 						2 "Controlled diabetes"		///
@@ -704,7 +704,8 @@ foreach o in stroke dvt pe {
 
 * Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
-replace died_date_ons_date = . if died_date_ons_date>`end_date'
+replace died_date_ons_date = . if died_date_ons_date>`end_date_20' & year_20==1
+replace died_date_ons_date = . if died_date_ons_date>`end_date_19' & year_20==0
 
 
 * Exclude those have died
@@ -727,7 +728,8 @@ foreach out in stroke dvt pe {
 	gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .) | ///
 							(`out'_ons != . & died_date_ons <= discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-	gen `out'_in_hosp_end_date =  `end_date'
+	gen 	`out'_in_hosp_end_date = `end_date_20' if year_20==1
+	replace `out'_in_hosp_end_date = `end_date_19' if year_20==0
 	replace `out'_in_hosp_end_date = `out'_hospital if `out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .
 	replace `out'_in_hosp_end_date = died_date_ons if `out'_ons != . & hospitalised_expo_date >= died_date_ons &  died_date_ons <= discharged_expo_date & died_date_ons_date!=. 
 	format %td `out'_in_hosp_end_date 
@@ -738,7 +740,8 @@ foreach out in stroke dvt pe {
 	gen `out'_post_hosp = cond( (`out'_hospital > discharged_expo_date & `out'_hospital != .) | ///
 							(`out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-	gen `out'_post_hosp_end_date = `end_date'
+	gen 	`out'_post_hosp_end_date = `end_date_20' if year_20==1
+	replace `out'_post_hosp_end_date = `end_date_19' if year_20==0
 	replace  `out'_post_hosp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
 	replace `out'_post_hosp_end_date = died_date_ons_date if `out'_ons !=. &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
 	format %td `out'_post_hosp_end_date 
@@ -751,7 +754,8 @@ foreach out in stroke dvt pe {
 							(`out'_gp > discharged_expo_date & `out'_gp != . & `out'_in_hosp!=1) | ///
 							(`out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. )  , 1, 0  )
 
-	gen `out'_post_hosp_gp_end_date = `end_date' 
+	gen 	`out'_post_hosp_gp_end_date = `end_date_20' if year_20==1
+	replace `out'_post_hosp_gp_end_date = `end_date_19' if year_20==0
 	replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
 	replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp > discharged_expo_date & `out'_gp != .
 	replace `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
