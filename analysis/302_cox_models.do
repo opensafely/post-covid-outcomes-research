@@ -120,3 +120,7 @@ restore
 
 postclose `measures'
 
+* Change postfiles to csv
+use $tabfigdir/cox_model_summary_$group, replace
+
+export delimited using $tabfigdir/cox_model_summary_$group.csv, replace
