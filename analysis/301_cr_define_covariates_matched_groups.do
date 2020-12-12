@@ -20,23 +20,20 @@ clear
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-if "$group" == "covid"  { 
-local start_date  td(01/02/2020)
-local last_year   td(01/02/2019)
-local four_years_ago td(01/02/2015)	 
-local fifteen_months_ago td(01/09/2019)
-local end_date td(01/10/2020)
+local start_date_20  td(01/02/2020)
+local last_year_20   td(01/02/2019)
+local four_years_ago_20 td(01/02/2015)	 
+local fifteen_months_ago_20 td(01/09/2019)
+local end_date_20 td(01/10/2020)
 
-}
-else {
-local start_date  td(01/02/2019)
-local last_year   td(01/02/2018)	
-local four_years_ago td(01/02/2014)	 
-local fifteen_months_ago td(01/09/2018)
-local end_date td(01/10/2019)
-}
+local start_date_19 td(01/02/2019)
+local last_year_19  td(01/02/2018)	
+local four_years_ago_19 td(01/02/2014)	 
+local fifteen_months_ago_19 td(01/09/2018)
+local end_date_19 td(01/10/2019)
 
-import delimited $outdir/input_$group.csv
+
+use $outdir/matched_combined_$group.dta, replace
 
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
@@ -60,26 +57,10 @@ drop if discharged_expo_date < hospitalised_expo_date
 gen hospitalised_expo_primary_dx = date(exposure_hosp_primary_dx, "YMD")
 format hospitalised_expo_primary_dx %td 
 
-gen community_exp = cond(hospitalised_expo_primary_dx !=. , 1, 0)
 
-* Length of stay
-gen length_of_stay = discharged_expo_date - hospitalised_expo_date + 1
-label var length_of_stay "Length of stay in hospital (days)"
-hist length , name(length_of_stay_$group, replace) graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
-graph export $outdir/length_of_stay_$group.svg , as(svg) replace
-
-* Create flag for patients staying in hospital longer than the median length
-summ length, detail
-gen long_hosp_stay = cond(length_of_stay >= `r(p50)' , 1, 0)
-
-* for matching 
-gen exposed = 1
 gen indexdate= hospitalised_expo_date
 format indexdate %td
 gen indexMonth = month(hospitalised_expo_date)
-
-gen flag = "$group"
-
 
 ******************************
 *  Convert strings to dates  *
@@ -161,13 +142,11 @@ foreach var of varlist	chronic_respiratory_disease_date 	///
 						other_cancer_date ///
 						haem_cancer_date {
 	local newvar =  substr("`var'", 1, length("`var'") - 5)
-	gen `newvar' = (`var'< `start_date')
+	gen `newvar' = (`var'< `start_date_20') if year_20==1
+	replace `newvar' = (`var'< `start_date_19') if year_20==0
 	order `newvar', after(`var')
 }
 
-
-
-rename date_icu_admission_date icu_admission_date
 /* BMI */
 
 * Set implausible BMIs to missing:
@@ -325,6 +304,9 @@ label values agegroup agegroup
 assert age<.
 assert agegroup<.
 
+* Create restricted cubic splines fir age
+mkspline age = age, cubic nknots(4)
+
 /*  Body Mass Index  */
 
 label define bmicat 	1 "Underweight (<18.5)" 				///
@@ -405,20 +387,34 @@ order spleen, after(sickle_cell)
 label define cancer 1 "Never" 2 "Last year" 3 "2-5 years ago" 4 "5+ years"
 
 * Haematological malignancies
-gen     cancer_haem_cat = 4 if inrange(haem_cancer_date, td(1/1/1900), `four_years_ago')
-replace cancer_haem_cat = 3 if inrange(haem_cancer_date, `four_years_ago', `last_year')
-replace cancer_haem_cat = 2 if inrange(haem_cancer_date, `last_year', `start_date')
+gen     cancer_haem_cat = 4 if inrange(haem_cancer_date, td(1/1/1900), `four_years_ago_20') & year_20 ==1 
+replace cancer_haem_cat = 4 if inrange(haem_cancer_date, td(1/1/1900), `four_years_ago_19') & year_20 ==0 
+replace cancer_haem_cat = 3 if inrange(haem_cancer_date, `four_years_ago_20', `last_year_20') & year_20 ==1 
+replace cancer_haem_cat = 3 if inrange(haem_cancer_date, `four_years_ago_19', `last_year_19') & year_20 ==0
+replace cancer_haem_cat = 2 if inrange(haem_cancer_date, `last_year_20', `start_date_20') & year_20 == 1
+replace cancer_haem_cat = 2 if inrange(haem_cancer_date, `last_year_19', `start_date_19') & year_20 ==0
 recode  cancer_haem_cat . = 1
 label values cancer_haem_cat cancer
 
 
 * All other cancers
-gen     cancer_exhaem_cat = 4 if inrange(lung_cancer_date,  td(01/01/1900), `four_years_ago') | ///
-								 inrange(other_cancer_date, td(01/01/1900), `four_years_ago') 
-replace cancer_exhaem_cat = 3 if inrange(lung_cancer_date, `four_years_ago', `last_year') | ///
-								 inrange(other_cancer_date, `four_years_ago', `last_year') 
-replace cancer_exhaem_cat = 2 if inrange(lung_cancer_date,  `last_year', `start_date') | ///
-								 inrange(other_cancer_date, `last_year', `start_date')
+gen     cancer_exhaem_cat = 4 if inrange(lung_cancer_date,  td(01/01/1900), `four_years_ago_20') | ///
+								 inrange(other_cancer_date, td(01/01/1900), `four_years_ago_20')  & year_20 ==1
+								 
+replace     cancer_exhaem_cat = 4 if inrange(lung_cancer_date,  td(01/01/1900), `four_years_ago_19') | ///
+								 inrange(other_cancer_date, td(01/01/1900), `four_years_ago_19')  & year_20 ==0
+								 
+replace cancer_exhaem_cat = 3 if inrange(lung_cancer_date, `four_years_ago_20', `last_year_20') | ///
+								 inrange(other_cancer_date, `four_years_ago_20', `last_year_20') & year_20==1
+								 
+replace cancer_exhaem_cat = 3 if inrange(lung_cancer_date, `four_years_ago_19', `last_year_19') | ///
+								 inrange(other_cancer_date, `four_years_ago_19', `last_year_19') & year_20==0
+								 
+replace cancer_exhaem_cat = 2 if inrange(lung_cancer_date,  `last_year_20', `start_date_20') | ///
+								 inrange(other_cancer_date, `last_year_20', `start_date_20') & year_20==1
+								 
+replace cancer_exhaem_cat = 2 if inrange(lung_cancer_date,  `last_year_19', `start_date_19') | ///
+								 inrange(other_cancer_date, `last_year_19', `start_date_19')	& year_20==0							 
 recode  cancer_exhaem_cat . = 1
 label values cancer_exhaem_cat cancer
 
@@ -434,8 +430,10 @@ order cancer_exhaem_cat cancer_haem_cat, after(other_cancer_date)
 * HIV, permanent immunodeficiency ever, OR 
 * temporary immunodeficiency or aplastic anaemia last year
 gen temp1  = max(hiv, permanent_immunodeficiency)
-gen temp2  = inrange(temporary_immunodeficiency_date, `last_year', `start_date')
-gen temp3  = inrange(aplastic_anaemia_date, `last_year', `start_date')
+gen temp2  = inrange(temporary_immunodeficiency_date, `last_year_20', `start_date_20') & year_20 ==1 
+replace temp2  = inrange(temporary_immunodeficiency_date, `last_year_19', `start_date_19') & year_20 ==0
+gen temp3  = inrange(aplastic_anaemia_date, `last_year_20', `start_date_20') & year_20 ==1 
+replace temp3  = inrange(aplastic_anaemia_date, `last_year_19', `start_date_19') & year_20 ==0
 
 egen other_immunosuppression = rowmax(temp1 temp2 temp3)
 drop temp1 temp2 temp3
@@ -527,7 +525,7 @@ label define hba1ccat	0 "<6.5%"  		///
 
 	/* Express  HbA1c as percentage  */ 
 
-	* Express all values as percentage 
+	* Express all values as perecentage 
 	noi summ hba1c_percentage_1 hba1c_mmol_per_mol_1
 	gen 	hba1c_pct = hba1c_percentage_1 
 	replace hba1c_pct = (hba1c_mmol_per_mol_1/10.929) + 2.15  ///
@@ -654,12 +652,6 @@ replace hist_of_anticoag = 0 if hist_of_anticoag == .
 	
 	
 
-******************************************
-* Admitted to ICU during hospitalisation *	
-******************************************
-
-gen icu_admission = cond( icu_admission_date >= hospitalised_expo_date & icu_admission_date <= discharged_expo_date , 1, 0) 
-
 
 **************
 *  Outcomes  *
@@ -705,11 +697,15 @@ foreach o in stroke dvt pe {
 						`o'_ons_aug, ///
 						`o'_ons_sep, ///
 						`o'_ons_oct)
+	
+	
+
 }
 
 * Note: There may be deaths recorded after end of our study (08 Oct)
 * Set these to missing
-replace died_date_ons_date = . if died_date_ons_date>`end_date'
+replace died_date_ons_date = . if died_date_ons_date>`end_date_20' & year_20==1
+replace died_date_ons_date = . if died_date_ons_date>`end_date_19' & year_20==0
 
 
 * Exclude those have died
@@ -732,7 +728,8 @@ foreach out in stroke dvt pe {
 	gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .) | ///
 							(`out'_ons != . & died_date_ons <= discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-	gen `out'_in_hosp_end_date =  `end_date'
+	gen 	`out'_in_hosp_end_date = `end_date_20' if year_20==1
+	replace `out'_in_hosp_end_date = `end_date_19' if year_20==0
 	replace `out'_in_hosp_end_date = `out'_hospital if `out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .
 	replace `out'_in_hosp_end_date = died_date_ons if `out'_ons != . & hospitalised_expo_date >= died_date_ons &  died_date_ons <= discharged_expo_date & died_date_ons_date!=. 
 	format %td `out'_in_hosp_end_date 
@@ -743,7 +740,8 @@ foreach out in stroke dvt pe {
 	gen `out'_post_hosp = cond( (`out'_hospital > discharged_expo_date & `out'_hospital != .) | ///
 							(`out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-	gen `out'_post_hosp_end_date = `end_date'
+	gen 	`out'_post_hosp_end_date = `end_date_20' if year_20==1
+	replace `out'_post_hosp_end_date = `end_date_19' if year_20==0
 	replace  `out'_post_hosp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
 	replace `out'_post_hosp_end_date = died_date_ons_date if `out'_ons !=. &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
 	format %td `out'_post_hosp_end_date 
@@ -756,7 +754,8 @@ foreach out in stroke dvt pe {
 							(`out'_gp > discharged_expo_date & `out'_gp != . & `out'_in_hosp!=1) | ///
 							(`out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. )  , 1, 0  )
 
-	gen `out'_post_hosp_gp_end_date = `end_date' 
+	gen 	`out'_post_hosp_gp_end_date = `end_date_20' if year_20==1
+	replace `out'_post_hosp_gp_end_date = `end_date_19' if year_20==0
 	replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
 	replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp > discharged_expo_date & `out'_gp != .
 	replace `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
@@ -765,11 +764,12 @@ foreach out in stroke dvt pe {
 	replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
 
 }
+		
 										
 **** Tidy dataset
 keep patient_id died_date_ons_date age ethnicity hospitalised_expo_date ///
- discharged_expo_date community_exp long_hosp_stay gender agegroup hist_of_af ///
- hist_of_anticoag icu_admission stroke_gp stroke_hospital stroke_ons dvt_gp  /// 
+ discharged_expo_date  gender agegroup hist_of_af ///
+ hist_of_anticoag stroke_gp stroke_hospital stroke_ons dvt_gp  /// 
  dvt_hospital dvt_ons pe_gp pe_hospital pe_ons hist_stroke hist_dvt hist_pe /// 
  stroke_in_hosp stroke_in_hosp_end_date stroke_post_hosp stroke_post_hosp_end_date /// 
  stroke_post_hosp_gp stroke_post_hosp_gp_end_date dvt_in_hosp dvt_in_hosp_end_date ///
@@ -779,6 +779,13 @@ keep patient_id died_date_ons_date age ethnicity hospitalised_expo_date ///
  cancer_exhaem_cat cancer_haem_cat chronic_liver_disease other_neuro /// 
  stroke_dementia organ_transplant spleen other_immunosuppression bpcat bphigh ///
  ra_sle_psoriasis asthmacat gender smoke bpcat_nomiss obese4cat imd htdiag_or_highbp smoke_nomiss ///
- reduced_kidney_function_cat2 diabcat flag
+ reduced_kidney_function_cat2 diabcat case age*
  
-save $outdir/cohort_rates_$group, replace 
+save $outdir/matched_cohort_$group, replace 
+
+
+
+
+
+
+

@@ -822,7 +822,7 @@ def common_variable_define(
             start_date,
             return_expectations={
                 "rate": "universal",
-                "int": {"distribution": "normal", "mean": 64, "stddev": 5},
+                "int": {"distribution": "population_ages"},
             },
         ),
         sex=patients.sex(
@@ -847,7 +847,7 @@ def common_variable_define(
             include_measurement_date=True,
             include_month=True,
             return_expectations={
-                "incidence": 0.6,
+                "incidence": 0.98,
                 "float": {"distribution": "normal", "mean": 35, "stddev": 10},
             },
         ),
@@ -899,7 +899,7 @@ def common_variable_define(
             include_date_of_match=False,
             return_expectations={
                 "float": {"distribution": "normal", "mean": 40.0, "stddev": 20},
-                "incidence": 0.95,
+                "incidence": 0.98,
             },
         ),
         hba1c_percentage_1=patients.with_these_clinical_events(
@@ -910,7 +910,7 @@ def common_variable_define(
             include_date_of_match=False,
             return_expectations={
                 "float": {"distribution": "normal", "mean": 5, "stddev": 2},
-                "incidence": 0.95,
+                "incidence": 0.98,
             },
         ),
         practice_id=patients.registered_practice_as_of(

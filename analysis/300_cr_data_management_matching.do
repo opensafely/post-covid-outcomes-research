@@ -8,7 +8,7 @@
 *
 *	Data created:   None
 *
-*	Other output:	None
+*	Other $outdir:	None
 *
 ********************************************************************************
 *
@@ -16,10 +16,41 @@
 *
 *	Note:			
 ********************************************************************************
+clear
+do `c(pwd)'/analysis/global.do
+********************************************************************************
+* Append covid/pneumonia groups matched datasets
+********************************************************************************
+ls $outdir/
+foreach v in covid pneumonia  {
+import delimited $outdir/input_`v'.csv, clear
+save $outdir/patients_`v'.dta, replace
+}
 
-use "/Users/lsh1401926/Desktop/post-covid-thrombosis-research/output/cohort_rates_pneumonia.dta", replace
-replace patient_id = patient_id + 1000000 // for dummy data
-append using "/Users/lsh1401926/Desktop/post-covid-thrombosis-research/output/cohort_rates_covid.dta"
-gen exposed = 1 if flag == "covid"
-replace exposed =0 if exposed ==.
-save "data/cr_matched_cohort", replace 
+* Gen flag for covid patients  (case = 1)
+use $outdir/patients_covid.dta, replace
+gen case = 1 
+append using $outdir/patients_pneumonia.dta
+replace case = 0 if case ==.
+gen year_20 = 1 if case == 1
+replace year_20 = 0 if case == 0
+save $outdir/matched_combined_pneumonia.dta, replace
+
+
+********************************************************************************
+* Format controls_2019 matched sets 
+********************************************************************************
+
+import delimited $outdir/matched_combined_control_2019.csv, clear
+gen year_20 = 1 if case == 1
+replace year_20 = 0 if case == 0
+save $outdir/matched_combined_control_2019.dta, replace
+
+********************************************************************************
+* Format controls_2020 matched sets 
+********************************************************************************
+
+import delimited $outdir/matched_combined_control_2020.csv, clear
+gen year_20 = 1 if case == 1
+replace year_20 = 0 if case == 0
+save $outdir/matched_combined_control_2020.dta, replace
