@@ -30,7 +30,7 @@ save $outdir/patients_`v'.dta, replace
 * Gen flag for covid patients  (case = 1)
 use $outdir/patients_covid.dta, replace
 gen case = 1 
-append using $outdir/patients_pneumonia.dta
+append using $outdir/patients_pneumonia.dta, force
 replace case = 0 if case ==.
 gen year_20 = 1 if case == 1
 replace year_20 = 0 if case == 0
