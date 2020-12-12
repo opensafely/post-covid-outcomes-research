@@ -22,7 +22,7 @@ do `c(pwd)'/analysis/global.do
 global group `1'
 
 use $outdir/matched_cohort_$group.dta, replace
-
+log using $outdir/cox_model_$group, replace t
 global crude i.case
 global age_sex i.case i.gender age1 age2 age3
 global full i.case i.gender age1 age2 age3 i.obese4cat i.smoke_nomiss i.ethnicity i.imd i.htdiag_or_highbp  /// 

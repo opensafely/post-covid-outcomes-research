@@ -98,6 +98,7 @@ actions:
     needs: [301_pneumonia]
     outputs:
       moderately_sensitive:
+        log: output/cox_model_pneumonia.log
         combined1: output/tabfig/cox_model_summary_pneumonia.csv
 
   302_control_2019:
@@ -105,6 +106,7 @@ actions:
     needs: [301_control_2019]
     outputs:
       moderately_sensitive:
+        log: output/cox_model_control_2019.log
         combined1: output/tabfig/cox_model_summary_control_2019.csv
 
   302_control_2020:
@@ -112,4 +114,5 @@ actions:
     needs: [301_control_2020]
     outputs:
       moderately_sensitive:
+        log: output/cox_model_control_2020.log
         combined1: output/tabfig/cox_model_summary_control_2020.csv

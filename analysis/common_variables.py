@@ -816,7 +816,7 @@ def common_variable_define(
             on_or_after=start_date,
             returning="date_of_death",
             date_format="YYYY-MM-DD",
-            return_expectations={"date": {"earliest": start_date}},
+            return_expectations={"date": {"earliest": start_date}, "incidence": 0.1},
         ),
         age=patients.age_as_of(
             start_date,

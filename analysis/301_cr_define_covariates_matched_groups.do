@@ -42,7 +42,9 @@ noi safecount
 gen hospitalised_expo_date = date(exposure_hospitalisation, "YMD")
 format hospitalised_expo_date %td
 
-drop if hospitalised_expo_date ==.
+if "$group" == "pneumonia"{
+    drop if hospitalised_expo_date ==.
+}
 
 gen discharged_expo_date = date(exposure_discharge, "YMD")
 format discharged_expo_date %td
@@ -51,7 +53,10 @@ drop if discharged_expo_date ==.
 
 drop if discharged_expo_date > $dataEndDate
 
-drop if discharged_expo_date < hospitalised_expo_date
+
+if "$group" == "pneumonia"{
+    drop if discharged_expo_date < hospitalised_expo_date
+}
 
 * Hospitalised covid/pneumonia is primary dx
 gen hospitalised_expo_primary_dx = date(exposure_hosp_primary_dx, "YMD")
