@@ -43,7 +43,7 @@ gen hospitalised_expo_date = date(exposure_hospitalisation, "YMD")
 format hospitalised_expo_date %td
 
 if "$group" == "pneumonia"{
-    drop if hospitalised_expo_date ==.
+	drop if hospitalised_expo_date ==.
 }
 
 gen discharged_expo_date = date(exposure_discharge, "YMD")
@@ -55,7 +55,7 @@ drop if discharged_expo_date > $dataEndDate
 
 
 if "$group" == "pneumonia"{
-    drop if discharged_expo_date < hospitalised_expo_date
+	drop if discharged_expo_date < hospitalised_expo_date
 }
 
 * Hospitalised covid/pneumonia is primary dx
@@ -85,7 +85,6 @@ foreach var of varlist af 					///
 					   died_date_ons 		///
 					   bmi_date_measured 	///
 					   hypertension 		/// 
-					   diabetes 			///
 					   previous_stroke_gp   ///
 					   previous_stroke_hospital /// 
 					   previous_vte_gp   	///
@@ -94,24 +93,7 @@ foreach var of varlist af 					///
 					   previous_dvt_hospital /// 
 					   previous_pe_gp 		 /// 
 					   previous_pe_hospital  ///
-					   chronic_respiratory_disease 	///
-						chronic_cardiac_disease 		///					///
-						chronic_liver_disease 			///
-						stroke_for_dementia_defn			///
-						dementia						///
-						other_neuro					///
-						organ_transplant 				///
-						aplastic_anaemia				///
-						dysplenia 						///
-						sickle_cell 					///
-						hiv							///
-						permanent_immunodeficiency		///
-						temporary_immunodeficiency		///
-						ra_sle_psoriasis ///
-					    lung_cancer ///
-						other_cancer ///
-						dialysis /// 
-						haem_cancer {
+						{
 
 capture confirm string variable `var'
 	if _rc!=0 {
@@ -120,6 +102,42 @@ capture confirm string variable `var'
 	}
 	else {
 		rename `var' `var'_dstr
+		gen `var'_date = date(`var'_dstr, "YMD") 
+		order `var'_date, after(`var'_dstr)
+		drop `var'_dstr
+	}
+	format `var'_date %td
+}
+
+foreach var of varlist	diabetes                        ///
+						chronic_respiratory_disease     ///
+						chronic_cardiac_disease         ///
+						chronic_liver_disease           ///
+						stroke_for_dementia_defn        ///
+						dementia                        ///
+						other_neuro                     ///
+						organ_transplant                ///
+						aplastic_anaemia                ///
+						dysplenia                       ///
+						sickle_cell                     ///
+						hiv                             ///
+						permanent_immunodeficiency      ///
+						temporary_immunodeficiency      ///
+						ra_sle_psoriasis                ///
+						lung_cancer                     ///
+						other_cancer                    ///
+						dialysis                        /// 
+						haem_cancer                     ///
+						{
+	capture confirm string variable `var'
+	if _rc!=0 {
+		assert `var'==.
+		rename `var' `var'_date
+	}
+	else {
+		replace `var' = `var' + "-15"
+		rename `var' `var'_dstr
+		replace `var'_dstr = " " if `var'_dstr == "-15"
 		gen `var'_date = date(`var'_dstr, "YMD") 
 		order `var'_date, after(`var'_dstr)
 		drop `var'_dstr
@@ -295,7 +313,7 @@ recode 	age 			min/49.9999=1 	///
 						60/69.9999=3 	///
 						70/79.9999=4 	///
 						80/max=5, 		///
-				        gen(agegroup) 
+						gen(agegroup) 
 
 label define agegroup 	1 "18-<50" 		///
 						2 "50-<60" 		///
@@ -324,7 +342,7 @@ label define bmicat 	1 "Underweight (<18.5)" 				///
 
 
 	* Categorised BMI (NB: watch for missingness)
-    gen 	bmicat = .
+	gen 	bmicat = .
 	recode  bmicat . = 1 if bmi<18.5
 	recode  bmicat . = 2 if bmi<25
 	recode  bmicat . = 3 if bmi<30
@@ -668,7 +686,7 @@ foreach o in stroke dvt pe {
 		replace `o'_gp_`v'_date =. if `o'_gp_`v'_date < hospitalised_expo_date 
 		replace `o'_hospital_`v'_date =. if `o'_gp_`v'_date < hospitalised_expo_date 
 	}
-    * Select the minimum date of the dates as the outcome 
+	* Select the minimum date of the dates as the outcome 
 	gen `o'_gp = min(`o'_gp_feb_date, ///
 						`o'_gp_mar_date, ///
 						`o'_gp_apr_date, ///
@@ -693,7 +711,7 @@ foreach o in stroke dvt pe {
 	
 	* For ONS they will be dropped below if they have died before hospitalisation 
 	* This just picks up the min value as this doesn't represent an exact YYYY-MM-DD date
-    gen `o'_ons = min(`o'_ons_feb, ///
+	gen `o'_ons = min(`o'_ons_feb, ///
 						`o'_ons_mar, ///
 						`o'_ons_apr, ///
 						`o'_ons_may, ///
