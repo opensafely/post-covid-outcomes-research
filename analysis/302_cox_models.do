@@ -22,6 +22,7 @@ do `c(pwd)'/analysis/global.do
 global group `1'
 
 use $outdir/matched_cohort_$group.dta, replace
+cap log close
 log using $outdir/cox_model_$group, replace t
 global crude i.case
 global age_sex i.case i.gender age1 age2 age3
@@ -124,3 +125,5 @@ postclose `measures'
 use $tabfigdir/cox_model_summary_$group, replace
 
 export delimited using $tabfigdir/cox_model_summary_$group.csv, replace
+
+log close
