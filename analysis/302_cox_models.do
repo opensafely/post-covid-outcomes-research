@@ -42,7 +42,7 @@ noi di "Starting analysis for $group: `v' Outcome ..."
 	noi di "$group: stset in hospital" 
 local a = "in_hosp"	
 																	 
-		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date)
+		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date) origin(hospitalised_expo_date)
         
 		foreach adjust in crude age_sex full {
 		stcox $`adjust'
@@ -75,13 +75,13 @@ local a = "in_hosp"
 		}
 		}
 
-* DROP Patients who have the event in hospital
-drop if `v'_in_hosp == 1 
-* post-hosp
+    * DROP Patients who have the event in hospital
+    drop if `v'_in_hosp == 1 
+    * post-hosp
 	foreach a in post_hosp post_hosp_gp  {
 		noi di "$group: stset in `a'" 
 		
-		stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date)
+		stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date) origin(discharged_expo_date)
 		
 		foreach adjust in crude age_sex full {
 		stcox $`adjust'

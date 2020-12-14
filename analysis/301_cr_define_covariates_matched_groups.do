@@ -51,7 +51,8 @@ format discharged_expo_date %td
 
 drop if discharged_expo_date ==.
 
-drop if discharged_expo_date > $dataEndDate
+drop if discharged_expo_date > `end_date_20' & year_20==1
+drop if discharged_expo_date > `end_date_19' & year_20==0
 
 
 if "$group" == "pneumonia"{
@@ -773,7 +774,6 @@ foreach out in stroke dvt pe {
 			& died_date_ons_date < `out'_in_hosp_end_date // otherwise it would overwrite earlier hosp dates
 	replace `out'_in_hosp_end_date = `out'_in_hosp_end_date + 1 
 	format %td `out'_in_hosp_end_date
-	******** WAIT! DO WE NOT WANT THE LATEST END DATE TO BE DISCHARGE DATE HERE? ***********
 
 
 	di "post-hospital (hosp + ons)"
