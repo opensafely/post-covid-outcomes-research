@@ -32,6 +32,11 @@ use $outdir/patients_covid.dta, replace
 gen case = 1 
 append using $outdir/patients_pneumonia.dta, force
 replace case = 0 if case ==.
+* Remove patients from pneumonia group who are among Covid group
+bysort patient_id: gen flag = _n
+bysort patient_id: egen tot = max(flag)
+drop if tot == 2 & case ==0 
+drop flag tot
 gen year_20 = 1 if case == 1
 replace year_20 = 0 if case == 0
 save $outdir/matched_combined_pneumonia.dta, replace
