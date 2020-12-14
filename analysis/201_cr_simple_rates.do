@@ -31,7 +31,7 @@ preserve
 	noi di "Starting analysis for $group: `v' Outcome ..." 
 	noi di "$group: stset in hospital" 
 																	 
-		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date)
+		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date) origin(hospitalised_expo_date)
 
 
 	* Overall rate 
@@ -72,7 +72,7 @@ preserve
 	foreach a in post_hosp post_hosp_gp {
 		noi di "$group: stset in `a'" 
 		
-			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date)
+			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date)  origin(discharged_expo_date)
 		
 		* Overall rate 
 		stptime  

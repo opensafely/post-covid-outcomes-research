@@ -52,7 +52,7 @@ format discharged_expo_date %td
 
 drop if discharged_expo_date ==.
 
-drop if discharged_expo_date > $dataEndDate
+drop if discharged_expo_date > `end_date'
 
 drop if discharged_expo_date < hospitalised_expo_date
 
@@ -681,7 +681,9 @@ foreach o in stroke dvt pe {
 						`o'_gp_aug_date, ///
 						`o'_gp_sep_date, ///
 						`o'_gp_oct_date)
-	format `o'_gp %td 
+	format `o'_gp %td
+	* remove outcomes after study end
+	replace `o'_gp = . if `o'_gp > `end_date'
 	
 	gen `o'_hospital = min(`o'_hospital_feb_date, ///
 						`o'_hospital_mar_date, ///
@@ -692,7 +694,9 @@ foreach o in stroke dvt pe {
 						`o'_hospital_aug_date, ///
 						`o'_hospital_sep_date, ///
 						`o'_hospital_oct_date)	
-	format `o'_hospital %td 					
+	format `o'_hospital %td
+	* remove outcomes after study end
+	replace `o'_hospital = . if `o'_hospital > `end_date'
 	
 	* For ONS they will be dropped below if they have died before hospitalisation 
 	* This just picks up the min value as this doesn't represent an exact YYYY-MM-DD date
@@ -728,42 +732,92 @@ gen hist_pe = cond(previous_pe_gp < hospitalised_expo_date | ///
 * Define outcome 
 foreach out in stroke dvt pe {
 
-	* in-hospital
-	gen `out'_in_hosp = cond( (`out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .) | ///
-							(`out'_ons != . & died_date_ons <= discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
+	di "in-hospital"
+	gen `out'_in_hosp = cond( ///
+		( ///
+			  `out'_hospital >= hospitalised_expo_date /// after hosp admission
+			& `out'_hospital <= discharged_expo_date /// before discharge
+			& `out'_hospital != . /// and not missing
+		) | ( ///
+			  `out'_ons != . /// not missing means this COD is on death cert
+			& died_date_ons_date >= hospitalised_expo_date /// after hosp admission
+			& died_date_ons_date <= discharged_expo_date /// before discharge
+			& died_date_ons_date != . /// this may be redundant
+		), ///
+		1, 0 ///
+	)
 
-	gen `out'_in_hosp_end_date =  `end_date'
-	replace `out'_in_hosp_end_date = `out'_hospital if `out'_hospital >= hospitalised_expo_date & `out'_hospital <= discharged_expo_date & `out'_hospital != .
-	replace `out'_in_hosp_end_date = died_date_ons if `out'_ons != . & hospitalised_expo_date >= died_date_ons &  died_date_ons <= discharged_expo_date & died_date_ons_date!=. 
-	format %td `out'_in_hosp_end_date 
-
+	gen     `out'_in_hosp_end_date = discharged_expo_date
+	replace `out'_in_hosp_end_date = died_date_ons if /// replace with death date
+			  died_date_ons_date >= hospitalised_expo_date /// after hosp admission
+			& died_date_ons_date <= discharged_expo_date /// before discharge
+			& died_date_ons_date != . /// and not missing - this may be redundant
+			& died_date_ons_date < `out'_in_hosp_end_date // otherwise it would overwrite earlier hosp dates
 	replace `out'_in_hosp_end_date = `out'_in_hosp_end_date + 1 
+	format %td `out'_in_hosp_end_date
 
-	* post-hospital (hosp + ons)
-	gen `out'_post_hosp = cond( (`out'_hospital > discharged_expo_date & `out'_hospital != .) | ///
-							(`out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. ) , 1, 0  )
 
-	gen `out'_post_hosp_end_date = `end_date'
-	replace  `out'_post_hosp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
-	replace `out'_post_hosp_end_date = died_date_ons_date if `out'_ons !=. &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
+	di "post-hospital (hosp + ons)"
+	gen `out'_post_hosp = cond( ///
+		( ///
+			  `out'_hospital > discharged_expo_date /// after hosp discharge
+			& `out'_hospital != . /// and not missing
+			& `out'_in_hosp != 1 /// and no events in hospital
+		) | ( ///
+			  `out'_ons != . /// not missing means this COD is on death cert
+			& died_date_ons_date > discharged_expo_date /// after hosp discharge
+			& died_date_ons_date != . /// and not missing - this may be redundant
+			& `out'_in_hosp != 1 /// and no events in hospital
+		), ///
+		1, 0 ///
+	)
+
+	gen 	`out'_post_hosp_end_date = `end_date' // relevant end date
+	replace  `out'_post_hosp_end_date = `out'_hospital if /// replace with hosp
+		  `out'_hospital > discharged_expo_date /// after hosp discharge
+		& `out'_hospital != . // and not missing
+	replace `out'_post_hosp_end_date = died_date_ons_date if /// replace with death date
+		  died_date_ons > discharged_expo_date /// after hosp discharge
+		& died_date_ons_date != . /// and not missing
+		& died_date_ons_date < `out'_post_hosp_end_date // otherwise it would overwrite earlier hosp dates
+	replace `out'_post_hosp_end_date = `out'_post_hosp_end_date + 1 
 	format %td `out'_post_hosp_end_date 
 
-	replace `out'_post_hosp_end_date = `out'_post_hosp_end_date + 1 
 
-	* post-hospital (+ primary care)
-							
-	gen `out'_post_hosp_gp = cond( (`out'_hospital > discharged_expo_date  & `out'_hospital != .& `out'_in_hosp!=1) | ///
-							(`out'_gp > discharged_expo_date & `out'_gp != . & `out'_in_hosp!=1) | ///
-							(`out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. )  , 1, 0  )
 
-	gen `out'_post_hosp_gp_end_date = `end_date' 
-	replace  `out'_post_hosp_gp_end_date = `out'_hospital if `out'_hospital > discharged_expo_date & `out'_hospital != .
-	replace  `out'_post_hosp_gp_end_date = `out'_gp if `out'_gp > discharged_expo_date & `out'_gp != .
-	replace `out'_post_hosp_gp_end_date = died_date_ons_date if `out'_ons != . &  died_date_ons > discharged_expo_date & died_date_ons_date!=. 
-	format %td `out'_post_hosp_gp_end_date 
+	di "post-hospital (+ primary care)"
+	gen `out'_post_hosp_gp = cond( ///
+		( ///
+			  `out'_hospital > discharged_expo_date /// after hosp discharge
+			& `out'_hospital != . /// and not missing
+			& `out'_in_hosp != 1 /// and no events in hospital
+		) | ( ///
+			  `out'_gp > discharged_expo_date /// after hosp discharge
+			& `out'_gp != . /// and not missing
+			& `out'_in_hosp != 1 /// and no events in hospital
+		) | ( ///
+			  `out'_ons != . /// not missing means this COD is on death cert
+			& died_date_ons_date > discharged_expo_date /// after hosp discharge
+			& died_date_ons_date != . /// and not missing - this may be redundant
+			& `out'_in_hosp != 1 /// and no events in hospital
+		), ///
+		1, 0 ///
+	)
 
+	gen 	`out'_post_hosp_gp_end_date = `end_date' // relevant end date
+	replace  `out'_post_hosp_gp_end_date = `out'_hospital if ///
+		  `out'_hospital > discharged_expo_date /// after hosp discharge
+		& `out'_hospital != . // and not missing
+	replace  `out'_post_hosp_gp_end_date = `out'_gp if ///
+		  `out'_gp > discharged_expo_date /// after hosp discharge
+		& `out'_gp != . /// and not missing
+		& `out'_gp < `out'_post_hosp_gp_end_date // otherwise it would overwrite earlier gp dates
+	replace `out'_post_hosp_gp_end_date = died_date_ons_date if ///
+		  died_date_ons > discharged_expo_date ///
+		& died_date_ons_date != . ///
+		& died_date_ons_date < `out'_post_hosp_gp_end_date // otherwise it would overwrite earlier gp & hosp dates
 	replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
-
+	format %td `out'_post_hosp_gp_end_date 
 }
 										
 **** Tidy dataset

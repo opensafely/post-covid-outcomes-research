@@ -22,6 +22,7 @@ do `c(pwd)'/analysis/global.do
 global group `1'
 
 use $outdir/matched_cohort_$group.dta, replace
+cap log close
 log using $outdir/cox_model_$group, replace t
 global crude i.case
 global age_sex i.case i.gender age1 age2 age3
@@ -41,7 +42,7 @@ noi di "Starting analysis for $group: `v' Outcome ..."
 	noi di "$group: stset in hospital" 
 local a = "in_hosp"	
 																	 
-		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date)
+		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date) origin(hospitalised_expo_date)
         
 		foreach adjust in crude age_sex full {
 		stcox $`adjust'
@@ -74,13 +75,13 @@ local a = "in_hosp"
 		}
 		}
 
-* DROP Patients who have the event in hospital
-drop if `v'_in_hosp == 1 
-* post-hosp
+    * DROP Patients who have the event in hospital
+    drop if `v'_in_hosp == 1 
+    * post-hosp
 	foreach a in post_hosp post_hosp_gp  {
 		noi di "$group: stset in `a'" 
 		
-		stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date)
+		stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date) origin(discharged_expo_date)
 		
 		foreach adjust in crude age_sex full {
 		stcox $`adjust'
@@ -124,3 +125,5 @@ postclose `measures'
 use $tabfigdir/cox_model_summary_$group, replace
 
 export delimited using $tabfigdir/cox_model_summary_$group.csv, replace
+
+log close
