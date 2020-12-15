@@ -1,82 +1,82 @@
 comparison,outcome,analysis,adjustment,variable,category,hr,lc,uc
 pneumonia,stroke,in_hosp,crude,Overall,0,1.2564191,1.1729482,1.34583
-pneumonia,stroke,in_hosp,crude,History of stroke,0,1.0923692,.99947286,1.1938999
-pneumonia,stroke,in_hosp,crude,History of stroke,1,1.619253,1.4513916,1.8065284
+pneumonia,stroke,in_hosp,crude,History of stroke,0,1.0784806,.99236929,1.1720641
+pneumonia,stroke,in_hosp,crude,History of stroke,1,1.8711091,1.6522387,2.118973
 pneumonia,stroke,in_hosp,age_sex,Overall,0,1.3155272,1.2275223,1.4098415
-pneumonia,stroke,in_hosp,age_sex,History of stroke,0,1.1321585,1.0350494,1.2383784
-pneumonia,stroke,in_hosp,age_sex,History of stroke,1,1.6358739,1.4659054,1.8255501
+pneumonia,stroke,in_hosp,age_sex,History of stroke,0,1.1222674,1.0318987,1.2205501
+pneumonia,stroke,in_hosp,age_sex,History of stroke,1,1.8955007,1.6732709,2.1472449
 pneumonia,stroke,in_hosp,full,Overall,0,1.2125626,1.1149364,1.3187373
-pneumonia,stroke,in_hosp,full,History of stroke,0,1.0614606,.95198107,1.1835304
-pneumonia,stroke,in_hosp,full,History of stroke,1,1.4529814,1.2713675,1.6605384
+pneumonia,stroke,in_hosp,full,History of stroke,0,1.0496755,.94827098,1.1619239
+pneumonia,stroke,in_hosp,full,History of stroke,1,1.6542857,1.4213874,1.9253449
 pneumonia,stroke,post_hosp,crude,Overall,0,.68495959,.60366845,.7771976
-pneumonia,stroke,post_hosp,crude,History of stroke,0,.59674257,.50014699,.71199411
-pneumonia,stroke,post_hosp,crude,History of stroke,1,.8841002,.73741633,1.0599619
+pneumonia,stroke,post_hosp,crude,History of stroke,0,.5998106,.502379,.71613818
+pneumonia,stroke,post_hosp,crude,History of stroke,1,.87721533,.73224628,1.0508852
 pneumonia,stroke,post_hosp,age_sex,Overall,0,.76893729,.67737931,.8728708
-pneumonia,stroke,post_hosp,age_sex,History of stroke,0,.66701889,.55863029,.79643762
-pneumonia,stroke,post_hosp,age_sex,History of stroke,1,.90422916,.75402129,1.0843598
+pneumonia,stroke,post_hosp,age_sex,History of stroke,0,.67088735,.56148636,.80160421
+pneumonia,stroke,post_hosp,age_sex,History of stroke,1,.89610285,.74783981,1.0737597
 pneumonia,stroke,post_hosp,full,Overall,0,.77035862,.66488147,.89256871
-pneumonia,stroke,post_hosp,full,History of stroke,0,.70227909,.57330233,.86027199
-pneumonia,stroke,post_hosp,full,History of stroke,1,.84283304,.67979372,1.0449752
+pneumonia,stroke,post_hosp,full,History of stroke,0,.70347857,.57375568,.86253107
+pneumonia,stroke,post_hosp,full,History of stroke,1,.83877945,.67734349,1.0386915
 pneumonia,stroke,post_hosp_gp,crude,Overall,0,.71189237,.6342743,.79900873
-pneumonia,stroke,post_hosp_gp,crude,History of stroke,0,.6403147,.54621696,.75062281
-pneumonia,stroke,post_hosp_gp,crude,History of stroke,1,.88914198,.75140768,1.0521232
+pneumonia,stroke,post_hosp_gp,crude,History of stroke,0,.64335704,.54853672,.75456804
+pneumonia,stroke,post_hosp_gp,crude,History of stroke,1,.88318628,.74684292,1.0444204
 pneumonia,stroke,post_hosp_gp,age_sex,Overall,0,.79168284,.70505327,.88895661
-pneumonia,stroke,post_hosp_gp,age_sex,History of stroke,0,.71260381,.60744745,.83596402
-pneumonia,stroke,post_hosp_gp,age_sex,History of stroke,1,.89837617,.75900573,1.0633382
+pneumonia,stroke,post_hosp_gp,age_sex,History of stroke,0,.71637994,.61035562,.84082156
+pneumonia,stroke,post_hosp_gp,age_sex,History of stroke,1,.89224494,.75432223,1.0553858
 pneumonia,stroke,post_hosp_gp,full,Overall,0,.79507697,.69403076,.91083485
-pneumonia,stroke,post_hosp_gp,full,History of stroke,0,.7346046,.60950953,.88537407
-pneumonia,stroke,post_hosp_gp,full,History of stroke,1,.84613174,.69343996,1.0324454
+pneumonia,stroke,post_hosp_gp,full,History of stroke,0,.73594648,.61018348,.88763016
+pneumonia,stroke,post_hosp_gp,full,History of stroke,1,.84607148,.69411832,1.0312895
 pneumonia,dvt,in_hosp,crude,Overall,0,1.067845,.93851906,1.2149917
-pneumonia,dvt,in_hosp,crude,History of dvt,0,1.1496776,.99259925,1.3316135
-pneumonia,dvt,in_hosp,crude,History of dvt,1,.90938747,.69213766,1.1948282
+pneumonia,dvt,in_hosp,crude,History of dvt,0,1.0694556,.93192959,1.2272767
+pneumonia,dvt,in_hosp,crude,History of dvt,1,1.0953921,.75495631,1.5893422
 pneumonia,dvt,in_hosp,age_sex,Overall,0,.99227965,.87128162,1.1300811
-pneumonia,dvt,in_hosp,age_sex,History of dvt,0,1.0687464,.92155021,1.2394539
-pneumonia,dvt,in_hosp,age_sex,History of dvt,1,.91304326,.694004,1.2012149
+pneumonia,dvt,in_hosp,age_sex,History of dvt,0,.99379128,.86503375,1.141714
+pneumonia,dvt,in_hosp,age_sex,History of dvt,1,1.0821062,.74439967,1.5730176
 pneumonia,dvt,in_hosp,full,Overall,0,1.0499915,.90068901,1.224043
-pneumonia,dvt,in_hosp,full,History of dvt,0,1.1189086,.93823397,1.3343755
-pneumonia,dvt,in_hosp,full,History of dvt,1,.98314428,.71429574,1.3531828
+pneumonia,dvt,in_hosp,full,History of dvt,0,1.0458001,.88777888,1.2319484
+pneumonia,dvt,in_hosp,full,History of dvt,1,1.1166471,.71482003,1.7443565
 pneumonia,dvt,post_hosp,crude,Overall,0,.84665275,.7011748,1.0223141
-pneumonia,dvt,post_hosp,crude,History of dvt,0,.82149076,.66206139,1.0193118
-pneumonia,dvt,post_hosp,crude,History of dvt,1,1.0039024,.68099546,1.4799221
+pneumonia,dvt,post_hosp,crude,History of dvt,0,.8141135,.65565413,1.0108695
+pneumonia,dvt,post_hosp,crude,History of dvt,1,1.0289304,.70059896,1.5111326
 pneumonia,dvt,post_hosp,age_sex,Overall,0,.83311677,.68908709,1.0072508
-pneumonia,dvt,post_hosp,age_sex,History of dvt,0,.80849588,.6505543,1.0047826
-pneumonia,dvt,post_hosp,age_sex,History of dvt,1,.98766685,.66966832,1.4566702
+pneumonia,dvt,post_hosp,age_sex,History of dvt,0,.80180299,.64471787,.99716187
+pneumonia,dvt,post_hosp,age_sex,History of dvt,1,1.010044,.68742049,1.4840829
 pneumonia,dvt,post_hosp,full,Overall,0,.81015223,.64448988,1.0183971
-pneumonia,dvt,post_hosp,full,History of dvt,0,.80108738,.61717266,1.0398078
-pneumonia,dvt,post_hosp,full,History of dvt,1,.92368847,.57353216,1.4876243
+pneumonia,dvt,post_hosp,full,History of dvt,0,.79194826,.60944158,1.0291095
+pneumonia,dvt,post_hosp,full,History of dvt,1,.95355618,.59579653,1.5261408
 pneumonia,dvt,post_hosp_gp,crude,Overall,0,.82571203,.70374781,.96881354
-pneumonia,dvt,post_hosp_gp,crude,History of dvt,0,.82171077,.68467844,.98616886
-pneumonia,dvt,post_hosp_gp,crude,History of dvt,1,.89859432,.64506149,1.2517748
+pneumonia,dvt,post_hosp_gp,crude,History of dvt,0,.81648499,.680035,.98031378
+pneumonia,dvt,post_hosp_gp,crude,History of dvt,1,.91447777,.65809828,1.2707367
 pneumonia,dvt,post_hosp_gp,age_sex,Overall,0,.8167727,.69538653,.95934802
-pneumonia,dvt,post_hosp_gp,age_sex,History of dvt,0,.81695169,.67980409,.98176831
-pneumonia,dvt,post_hosp_gp,age_sex,History of dvt,1,.88861835,.63764411,1.2383751
+pneumonia,dvt,post_hosp_gp,age_sex,History of dvt,0,.81217271,.67554253,.97643679
+pneumonia,dvt,post_hosp_gp,age_sex,History of dvt,1,.90218121,.64899963,1.2541316
 pneumonia,dvt,post_hosp_gp,full,Overall,0,.85309923,.7043519,1.0332594
-pneumonia,dvt,post_hosp_gp,full,History of dvt,0,.86014414,.69160134,1.0697607
-pneumonia,dvt,post_hosp_gp,full,History of dvt,1,.90581334,.60661364,1.3525872
+pneumonia,dvt,post_hosp_gp,full,History of dvt,0,.85357994,.68588716,1.062272
+pneumonia,dvt,post_hosp_gp,full,History of dvt,1,.92568731,.62237418,1.3768196
 pneumonia,pe,in_hosp,crude,Overall,0,1.1110145,1.0344973,1.1931913
-pneumonia,pe,in_hosp,crude,History of pe,0,1.1414119,1.0561748,1.2335279
-pneumonia,pe,in_hosp,crude,History of pe,1,1.0364332,.86364013,1.2437979
+pneumonia,pe,in_hosp,crude,History of pe,0,1.0965916,1.017601,1.1817137
+pneumonia,pe,in_hosp,crude,History of pe,1,1.324129,1.041445,1.6835431
 pneumonia,pe,in_hosp,age_sex,Overall,0,1.0091684,.9392522,1.0842892
-pneumonia,pe,in_hosp,age_sex,History of pe,0,1.026709,.94955057,1.110137
-pneumonia,pe,in_hosp,age_sex,History of pe,1,1.0008892,.83383775,1.2014077
+pneumonia,pe,in_hosp,age_sex,History of pe,0,.98800468,.91639054,1.0652153
+pneumonia,pe,in_hosp,age_sex,History of pe,1,1.3000705,1.0220861,1.6536604
 pneumonia,pe,in_hosp,full,Overall,0,.96607614,.8857342,1.0537056
-pneumonia,pe,in_hosp,full,History of pe,0,.97043359,.88252878,1.0670942
-pneumonia,pe,in_hosp,full,History of pe,1,.98093271,.78904188,1.2194904
+pneumonia,pe,in_hosp,full,History of pe,0,.92691284,.84611499,1.0154264
+pneumonia,pe,in_hosp,full,History of pe,1,1.5267304,1.143459,2.0384691
 pneumonia,pe,post_hosp,crude,Overall,0,.77493143,.67569268,.88874543
-pneumonia,pe,post_hosp,crude,History of pe,0,.76931459,.66116959,.8951484
-pneumonia,pe,post_hosp,crude,History of pe,1,.88825989,.64409417,1.2249849
+pneumonia,pe,post_hosp,crude,History of pe,0,.76891106,.66037357,.89528757
+pneumonia,pe,post_hosp,crude,History of pe,1,.88995808,.64937586,1.2196717
 pneumonia,pe,post_hosp,age_sex,Overall,0,.77404249,.6743511,.88847148
-pneumonia,pe,post_hosp,age_sex,History of pe,0,.76120794,.65356565,.88657892
-pneumonia,pe,post_hosp,age_sex,History of pe,1,.89225322,.64682192,1.2308115
+pneumonia,pe,post_hosp,age_sex,History of pe,0,.7612741,.65317732,.88726026
+pneumonia,pe,post_hosp,age_sex,History of pe,1,.89299458,.65141582,1.2241632
 pneumonia,pe,post_hosp,full,Overall,0,.88771731,.75370449,1.0455583
-pneumonia,pe,post_hosp,full,History of pe,0,.85767245,.71451718,1.0295092
-pneumonia,pe,post_hosp,full,History of pe,1,1.0697685,.74200404,1.542316
+pneumonia,pe,post_hosp,full,History of pe,0,.85684049,.71304178,1.029639
+pneumonia,pe,post_hosp,full,History of pe,1,1.0658746,.74555051,1.5238253
 pneumonia,pe,post_hosp_gp,crude,Overall,0,.81895077,.7231282,.92747092
-pneumonia,pe,post_hosp_gp,crude,History of pe,0,.81839377,.71321458,.93908393
-pneumonia,pe,post_hosp_gp,crude,History of pe,1,.91127449,.68059146,1.2201464
+pneumonia,pe,post_hosp_gp,crude,History of pe,0,.81839639,.71285391,.93956506
+pneumonia,pe,post_hosp_gp,crude,History of pe,1,.91198945,.68434179,1.2153646
 pneumonia,pe,post_hosp_gp,age_sex,Overall,0,.80540192,.71058953,.91286498
-pneumonia,pe,post_hosp_gp,age_sex,History of pe,0,.79738796,.69425654,.91583949
-pneumonia,pe,post_hosp_gp,age_sex,History of pe,1,.90890628,.6786558,1.2172748
+pneumonia,pe,post_hosp_gp,age_sex,History of pe,0,.79766774,.69414562,.91662872
+pneumonia,pe,post_hosp_gp,age_sex,History of pe,1,.90899658,.68191856,1.2116914
 pneumonia,pe,post_hosp_gp,full,Overall,0,.94076866,.8110618,1.0912186
-pneumonia,pe,post_hosp_gp,full,History of pe,0,.9205882,.78018808,1.0862541
-pneumonia,pe,post_hosp_gp,full,History of pe,1,1.052606,.75538081,1.4667826
+pneumonia,pe,post_hosp_gp,full,History of pe,0,.92038321,.77937788,1.0868993
+pneumonia,pe,post_hosp_gp,full,History of pe,1,1.0499616,.75819975,1.4539957

@@ -9,23 +9,23 @@ control_2020,stroke,in_hosp,full,Overall,0,1,,
 control_2020,stroke,in_hosp,full,History of stroke,0,1,,
 control_2020,stroke,in_hosp,full,History of stroke,1,1,,
 control_2020,stroke,post_hosp,crude,Overall,0,6.460639,5.4911699,7.6012678
-control_2020,stroke,post_hosp,crude,History of stroke,0,2.3725009e+16,0,
-control_2020,stroke,post_hosp,crude,History of stroke,1,1.7375137,1.4276155,2.1146827
+control_2020,stroke,post_hosp,crude,History of stroke,0,4.3096299,3.5081222,5.29426
+control_2020,stroke,post_hosp,crude,History of stroke,1,2.6931033,1.9731214,3.6758027
 control_2020,stroke,post_hosp,age_sex,Overall,0,6.901062,5.864449,8.1209097
-control_2020,stroke,post_hosp,age_sex,History of stroke,0,1.7161188e+18,0,
-control_2020,stroke,post_hosp,age_sex,History of stroke,1,1.8468108,1.5147772,2.2516251
+control_2020,stroke,post_hosp,age_sex,History of stroke,0,4.7965517,3.9028172,5.8949485
+control_2020,stroke,post_hosp,age_sex,History of stroke,1,2.936718,2.1481905,4.0146871
 control_2020,stroke,post_hosp,full,Overall,0,5.7351408,4.7264276,6.9591336
-control_2020,stroke,post_hosp,full,History of stroke,0,1.0698395e+16,0,
-control_2020,stroke,post_hosp,full,History of stroke,1,1.5025959,1.1856306,1.9042984
+control_2020,stroke,post_hosp,full,History of stroke,0,4.6631804,3.666672,5.9305143
+control_2020,stroke,post_hosp,full,History of stroke,1,2.9935248,2.0613046,4.3473396
 control_2020,stroke,post_hosp_gp,crude,Overall,0,7.8218679,6.6923838,9.1419773
-control_2020,stroke,post_hosp_gp,crude,History of stroke,0,8932158659887104,0,
-control_2020,stroke,post_hosp_gp,crude,History of stroke,1,2.0357871,1.6877135,2.4556475
+control_2020,stroke,post_hosp_gp,crude,History of stroke,0,5.4149938,4.4637923,6.5688891
+control_2020,stroke,post_hosp_gp,crude,History of stroke,1,3.1559293,2.3249941,4.2838345
 control_2020,stroke,post_hosp_gp,age_sex,Overall,0,8.3346949,7.1299634,9.7429857
-control_2020,stroke,post_hosp_gp,age_sex,History of stroke,0,1.5921172e+19,,
-control_2020,stroke,post_hosp_gp,age_sex,History of stroke,1,2.1535285,1.7822956,2.6020854
+control_2020,stroke,post_hosp_gp,age_sex,History of stroke,0,6.0034256,4.9468608,7.2856545
+control_2020,stroke,post_hosp_gp,age_sex,History of stroke,1,3.3967557,2.4986572,4.61766
 control_2020,stroke,post_hosp_gp,full,Overall,0,6.8967838,5.725945,8.3070345
-control_2020,stroke,post_hosp_gp,full,History of stroke,0,1.7697706e+16,0,
-control_2020,stroke,post_hosp_gp,full,History of stroke,1,1.8198255,1.4530218,2.2792258
+control_2020,stroke,post_hosp_gp,full,History of stroke,0,5.5627799,4.4259977,6.9915361
+control_2020,stroke,post_hosp_gp,full,History of stroke,1,3.5818517,2.4848483,5.163157
 control_2020,dvt,in_hosp,crude,Overall,0,,,
 control_2020,dvt,in_hosp,crude,History of dvt,0,,,
 control_2020,dvt,in_hosp,crude,History of dvt,1,,,
@@ -36,23 +36,23 @@ control_2020,dvt,in_hosp,full,Overall,0,1,,
 control_2020,dvt,in_hosp,full,History of dvt,0,1,,
 control_2020,dvt,in_hosp,full,History of dvt,1,1,,
 control_2020,dvt,post_hosp,crude,Overall,0,12.193831,9.1391764,16.269466
-control_2020,dvt,post_hosp,crude,History of dvt,0,2772484872994816,0,
-control_2020,dvt,post_hosp,crude,History of dvt,1,1.6986108,1.1326424,2.5473871
+control_2020,dvt,post_hosp,crude,History of dvt,0,13.136366,9.3897676,18.377888
+control_2020,dvt,post_hosp,crude,History of dvt,1,1.0804542,.61495811,1.8983102
 control_2020,dvt,post_hosp,age_sex,Overall,0,12.425783,9.3114519,16.581741
-control_2020,dvt,post_hosp,age_sex,History of dvt,0,3.6717440e+18,,
-control_2020,dvt,post_hosp,age_sex,History of dvt,1,1.6993985,1.1269454,2.5626402
+control_2020,dvt,post_hosp,age_sex,History of dvt,0,13.482325,9.6343594,18.86717
+control_2020,dvt,post_hosp,age_sex,History of dvt,1,1.0467097,.59110075,1.8534931
 control_2020,dvt,post_hosp,full,Overall,0,11.035752,7.8205223,15.572852
-control_2020,dvt,post_hosp,full,History of dvt,0,1.0276191e+16,0,
-control_2020,dvt,post_hosp,full,History of dvt,1,1.475973,.88927013,2.4497578
+control_2020,dvt,post_hosp,full,History of dvt,0,12.567007,8.367466,18.874252
+control_2020,dvt,post_hosp,full,History of dvt,1,.8285197,.42175099,1.6276071
 control_2020,dvt,post_hosp_gp,crude,Overall,0,16.846054,12.786824,22.193899
-control_2020,dvt,post_hosp_gp,crude,History of dvt,0,7535323626078208,0,
-control_2020,dvt,post_hosp_gp,crude,History of dvt,1,2.2762616,1.5709031,3.2983365
+control_2020,dvt,post_hosp_gp,crude,History of dvt,0,18.371607,13.330153,25.319735
+control_2020,dvt,post_hosp_gp,crude,History of dvt,1,1.4415166,.83961266,2.4749155
 control_2020,dvt,post_hosp_gp,age_sex,Overall,0,17.142012,13.009796,22.586714
-control_2020,dvt,post_hosp_gp,age_sex,History of dvt,0,2783583068487680,0,
-control_2020,dvt,post_hosp_gp,age_sex,History of dvt,1,2.3013318,1.5797372,3.3525376
+control_2020,dvt,post_hosp_gp,age_sex,History of dvt,0,18.788774,13.630075,25.899937
+control_2020,dvt,post_hosp_gp,age_sex,History of dvt,1,1.4252212,.82431364,2.4641781
 control_2020,dvt,post_hosp_gp,full,Overall,0,15.864221,11.467895,21.945921
-control_2020,dvt,post_hosp_gp,full,History of dvt,0,5014914410217472,0,
-control_2020,dvt,post_hosp_gp,full,History of dvt,1,2.138329,1.3567568,3.3701334
+control_2020,dvt,post_hosp_gp,full,History of dvt,0,18.306673,12.469201,26.876965
+control_2020,dvt,post_hosp_gp,full,History of dvt,1,1.1592424,.61690152,2.178375
 control_2020,pe,in_hosp,crude,Overall,0,,,
 control_2020,pe,in_hosp,crude,History of pe,0,,,
 control_2020,pe,in_hosp,crude,History of pe,1,,,
@@ -63,20 +63,20 @@ control_2020,pe,in_hosp,full,Overall,0,1,,
 control_2020,pe,in_hosp,full,History of pe,0,1,,
 control_2020,pe,in_hosp,full,History of pe,1,1,,
 control_2020,pe,post_hosp,crude,Overall,0,17.827923,13.976502,22.740656
-control_2020,pe,post_hosp,crude,History of pe,0,2916737255211008,0,
-control_2020,pe,post_hosp,crude,History of pe,1,1.440769,1.0157198,2.0436888
+control_2020,pe,post_hosp,crude,History of pe,0,16.763121,12.918353,21.752169
+control_2020,pe,post_hosp,crude,History of pe,1,4.0623407,2.0014019,8.2455263
 control_2020,pe,post_hosp,age_sex,Overall,0,18.106546,14.19381,23.097887
-control_2020,pe,post_hosp,age_sex,History of pe,0,8021617540071424,0,
-control_2020,pe,post_hosp,age_sex,History of pe,1,1.5819083,1.1069393,2.2606785
+control_2020,pe,post_hosp,age_sex,History of pe,0,17.035454,13.12697,22.107668
+control_2020,pe,post_hosp,age_sex,History of pe,1,4.7395654,2.3151913,9.7026463
 control_2020,pe,post_hosp,full,Overall,0,16.167711,12.134263,21.541885
-control_2020,pe,post_hosp,full,History of pe,0,2958553593675776,0,
-control_2020,pe,post_hosp,full,History of pe,1,1.792311,1.1868638,2.7066109
+control_2020,pe,post_hosp,full,History of pe,0,15.292165,11.206448,20.867477
+control_2020,pe,post_hosp,full,History of pe,1,4.3121405,1.9748541,9.4156599
 control_2020,pe,post_hosp_gp,crude,Overall,0,21.967554,17.315973,27.868683
-control_2020,pe,post_hosp_gp,crude,History of pe,0,8150446157856768,0,
-control_2020,pe,post_hosp_gp,crude,History of pe,1,1.7644861,1.2695811,2.4523139
+control_2020,pe,post_hosp_gp,crude,History of pe,0,20.730675,16.078283,26.729275
+control_2020,pe,post_hosp_gp,crude,History of pe,1,4.9390068,2.4558139,9.9330778
 control_2020,pe,post_hosp_gp,age_sex,Overall,0,22.229671,17.52145,28.203045
-control_2020,pe,post_hosp_gp,age_sex,History of pe,0,2994455493738496,0,
-control_2020,pe,post_hosp_gp,age_sex,History of pe,1,1.9257736,1.3755971,2.6959958
+control_2020,pe,post_hosp_gp,age_sex,History of pe,0,20.963692,16.257669,27.03194
+control_2020,pe,post_hosp_gp,age_sex,History of pe,1,5.6436696,2.7853787,11.435072
 control_2020,pe,post_hosp_gp,full,Overall,0,20.870848,15.786299,27.593058
-control_2020,pe,post_hosp_gp,full,History of pe,0,1.9086229e+18,,
-control_2020,pe,post_hosp_gp,full,History of pe,1,2.1676116,1.4669218,3.2029929
+control_2020,pe,post_hosp_gp,full,History of pe,0,19.986139,14.785333,27.016354
+control_2020,pe,post_hosp_gp,full,History of pe,1,5.2246442,2.4286292,11.239636
