@@ -33,7 +33,11 @@ global full i.case i.gender age1 age2 age3 i.obese4cat i.smoke_nomiss i.ethnicit
 				i.spleen i.ra_sle_psoriasis i.other_immunosuppression
 
 tempname measures
-	postfile `measures' str13(comparison) str12(outcome) str12(analysis) str10(adjustment) str20(variable) category hr lc uc using $tabfigdir/cox_model_summary_$group, replace
+	postfile `measures' ///
+		str13(comparison) str12(outcome) str12(analysis) str10(adjustment) str20(variable) ///
+		category rate_ppm_covid rate_ppm_$group ///
+		hr lc uc ///
+		using $tabfigdir/cox_model_summary_$group, replace
 
 foreach v in stroke dvt pe  {
 preserve
@@ -43,22 +47,27 @@ noi di "Starting analysis for $group: `v' Outcome ..."
 local a = "in_hosp"	
 																	 
 		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date) origin(hospitalised_expo_date)
-        
-		foreach adjust in crude age_sex full {
-		stcox $`adjust'
-	
-		matrix b = r(table)
-		local hr= b[1,2]
-		local lc = b[5,2] 
-		local uc = b[6,2]
-		local c = "Overall"
-		local s = 0
-
 		
-		post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') 	///
-						(`hr') (`lc') (`uc')
-			
-	    
+		foreach adjust in crude age_sex full {
+			stcox $`adjust'
+		
+			matrix b = r(table)
+			local hr= b[1,2]
+			local lc = b[5,2] 
+			local uc = b[6,2]
+			local c = "Overall"
+			local s = 0
+
+			cap stptime if case == 1
+			local rate_covid = 100*(r(rate) * 365.25 / 12)
+			cap stptime if case == 0
+			local rate_control = 100*(r(rate) * 365.25 / 12)
+
+			* Save measures
+			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
+							(`rate_covid') (`rate_control') ///
+							(`hr') (`lc') (`uc')
+
 		forvalues s = 0/1 {
 			stcox $`adjust' if hist_`v' == `s'
 
@@ -67,54 +76,68 @@ local a = "in_hosp"
 			local lc = b[5,2] 
 			local uc = b[6,2]
 			local c = "History of `v'"
-		
-	
-			post `measures' ("$group") ("`v'") ("`a'")  ("`adjust'") ("`c'") (`s') 	///
+
+			cap stptime if hist_`v' == `s' & case == 1
+			local rate_covid = 100*(r(rate) * 365.25 / 12)
+			cap stptime if hist_`v' == `s' & case == 0
+			local rate_control = 100*(r(rate) * 365.25 / 12)
+
+			post `measures' ("$group") ("`v'") ("`a'")  ("`adjust'") ("`c'") (`s') ///
+						(`rate_covid') (`rate_control') ///
 						(`hr') (`lc') (`uc')
 			
 		}
-		}
+	}
 
-    * DROP Patients who have the event in hospital
-    drop if `v'_in_hosp == 1 
-    * post-hosp
+	* DROP Patients who have the event in hospital
+	drop if `v'_in_hosp == 1 
+	* post-hosp
 	foreach a in post_hosp post_hosp_gp  {
 		noi di "$group: stset in `a'" 
 		
 		stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date) origin(discharged_expo_date)
 		
 		foreach adjust in crude age_sex full {
-		stcox $`adjust'
-
-		matrix b = r(table)
-		local hr= b[1,2]
-		local lc = b[5,2] 
-		local uc = b[6,2]
-		local c = "Overall"
-		local s = 0
-
-		post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') 	///
-						(`hr') (`lc') (`uc')
-		
-
-		forvalues s = 0/1 {
-		
-			stcox $`adjust' if hist_`v' == `s'
+			stcox $`adjust'
 
 			matrix b = r(table)
 			local hr= b[1,2]
 			local lc = b[5,2] 
 			local uc = b[6,2]
-			local c = "History of `v'"
-		
+			local c = "Overall"
+			local s = 0
+
+			cap stptime if case == 1
+			local rate_covid = 100*(r(rate) * 365.25 / 12)
+			cap stptime if case == 0
+			local rate_control = 100*(r(rate) * 365.25 / 12)
+
+			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
+							(`rate_covid') (`rate_control') ///
+							(`hr') (`lc') (`uc')
 			
-			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') 	///
-						(`hr') (`lc') (`uc')
+
+			forvalues s = 0/1 {
 			
-		}
+				stcox $`adjust' if hist_`v' == `s'
+
+				matrix b = r(table)
+				local hr= b[1,2]
+				local lc = b[5,2] 
+				local uc = b[6,2]
+				local c = "History of `v'"
+
+				cap stptime if hist_`v' == `s' & case == 1
+				local rate_covid = 100*(r(rate) * 365.25 / 12)
+				cap stptime if hist_`v' == `s' & case == 0
+				local rate_control = 100*(r(rate) * 365.25 / 12)
+
+				post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
+							(`rate_covid') (`rate_control') ///
+							(`hr') (`lc') (`uc')
+			}
 		}
 	}
-
 restore			
 }
 
