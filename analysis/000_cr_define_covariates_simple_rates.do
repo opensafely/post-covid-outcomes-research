@@ -719,18 +719,20 @@ replace died_date_ons_date = . if died_date_ons_date>`end_date'
 * Exclude those have died
 drop if died_date_ons < hospitalised_expo_date 
 
-* Define history of dvt/pe/stroke at admission
-gen hist_stroke = cond(previous_stroke_gp < hospitalised_expo_date | ///
-						   previous_stroke_hospital < hospitalised_expo_date , 1, 0   )
 
-gen hist_dvt = cond(previous_dvt_gp < hospitalised_expo_date | ///
-						   previous_dvt_hospital < hospitalised_expo_date , 1, 0  )
-						   
-gen hist_pe = cond(previous_pe_gp < hospitalised_expo_date | ///
-						   previous_pe_hospital < hospitalised_expo_date , 1, 0  )
+foreach out in stroke dvt pe {
+
+* Define history of dvt/pe/stroke at admission
+gen hist_`out' = cond( ///
+	( ///
+		  previous_`out'_gp < discharged_expo_date ///
+		| previous_`out'_hospital < discharged_expo_date ///
+	) ///
+	& previous_`out'_hospital != hospitalised_expo_date, ///
+	1, 0 ///
+)
 						   
 * Define outcome 
-foreach out in stroke dvt pe {
 
 	di "in-hospital"
 	gen `out'_in_hosp = cond( ///
