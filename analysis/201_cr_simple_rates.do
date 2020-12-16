@@ -67,7 +67,8 @@ preserve
 	}
 	
 	* DROP Patients who have the event in hospital
-	drop if `v'_in_hosp == 1 
+	drop if `v'_in_hosp == 1
+	drop if died_date_ons_date <= discharged_expo_date
 	
 	foreach a in post_hosp post_hosp_gp {
 		noi di "$group: stset in `a'" 
