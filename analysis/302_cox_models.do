@@ -59,9 +59,9 @@ local a = "in_hosp"
 			local s = 0
 
 			cap stptime if case == 1
-			local rate_covid = 100*(r(rate) * 365.25 / 12)
+			local rate_covid = 1000*(r(rate) * 365.25 / 12)
 			cap stptime if case == 0
-			local rate_control = 100*(r(rate) * 365.25 / 12)
+			local rate_control = 1000*(r(rate) * 365.25 / 12)
 
 			* Save measures
 			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
@@ -78,9 +78,9 @@ local a = "in_hosp"
 			local c = "History of `v'"
 
 			cap stptime if hist_`v' == `s' & case == 1
-			local rate_covid = 100*(r(rate) * 365.25 / 12)
+			local rate_covid = 1000*(r(rate) * 365.25 / 12)
 			cap stptime if hist_`v' == `s' & case == 0
-			local rate_control = 100*(r(rate) * 365.25 / 12)
+			local rate_control = 1000*(r(rate) * 365.25 / 12)
 
 			post `measures' ("$group") ("`v'") ("`a'")  ("`adjust'") ("`c'") (`s') ///
 						(`rate_covid') (`rate_control') ///
@@ -108,9 +108,9 @@ local a = "in_hosp"
 			local s = 0
 
 			cap stptime if case == 1
-			local rate_covid = 100*(r(rate) * 365.25 / 12)
+			local rate_covid = 1000*(r(rate) * 365.25 / 12)
 			cap stptime if case == 0
-			local rate_control = 100*(r(rate) * 365.25 / 12)
+			local rate_control = 1000*(r(rate) * 365.25 / 12)
 
 			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
 							(`rate_covid') (`rate_control') ///
@@ -128,9 +128,9 @@ local a = "in_hosp"
 				local c = "History of `v'"
 
 				cap stptime if hist_`v' == `s' & case == 1
-				local rate_covid = 100*(r(rate) * 365.25 / 12)
+				local rate_covid = 1000*(r(rate) * 365.25 / 12)
 				cap stptime if hist_`v' == `s' & case == 0
-				local rate_control = 100*(r(rate) * 365.25 / 12)
+				local rate_control = 1000*(r(rate) * 365.25 / 12)
 
 				post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
 							(`rate_covid') (`rate_control') ///
