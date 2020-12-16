@@ -1,0 +1,82 @@
+comparison,outcome,analysis,adjustment,variable,category,hr,lc,uc
+control_2019,stroke,in_hosp,crude,Overall,0,,,
+control_2019,stroke,in_hosp,crude,History of stroke,0,,,
+control_2019,stroke,in_hosp,crude,History of stroke,1,,,
+control_2019,stroke,in_hosp,age_sex,Overall,0,1,,
+control_2019,stroke,in_hosp,age_sex,History of stroke,0,1,,
+control_2019,stroke,in_hosp,age_sex,History of stroke,1,1,,
+control_2019,stroke,in_hosp,full,Overall,0,1,,
+control_2019,stroke,in_hosp,full,History of stroke,0,1,,
+control_2019,stroke,in_hosp,full,History of stroke,1,1,,
+control_2019,stroke,post_hosp,crude,Overall,0,7.1067634,6.0137715,8.3984041
+control_2019,stroke,post_hosp,crude,History of stroke,0,4.7861543,3.8773582,5.907959
+control_2019,stroke,post_hosp,crude,History of stroke,1,2.5453331,1.8520356,3.4981623
+control_2019,stroke,post_hosp,age_sex,Overall,0,7.5884352,6.4201851,8.9692659
+control_2019,stroke,post_hosp,age_sex,History of stroke,0,5.3108807,4.3006668,6.5583901
+control_2019,stroke,post_hosp,age_sex,History of stroke,1,2.8627639,2.0762279,3.947263
+control_2019,stroke,post_hosp,full,Overall,0,6.3120198,5.1691504,7.707571
+control_2019,stroke,post_hosp,full,History of stroke,0,5.1816521,4.0367727,6.6512332
+control_2019,stroke,post_hosp,full,History of stroke,1,2.5260136,1.7451673,3.6562374
+control_2019,stroke,post_hosp_gp,crude,Overall,0,8.6050844,7.3287883,10.103645
+control_2019,stroke,post_hosp_gp,crude,History of stroke,0,6.015182,4.9332948,7.3343306
+control_2019,stroke,post_hosp_gp,crude,History of stroke,1,2.9835963,2.1826463,4.078465
+control_2019,stroke,post_hosp_gp,age_sex,Overall,0,9.165555,7.8048086,10.763544
+control_2019,stroke,post_hosp_gp,age_sex,History of stroke,0,6.6509242,5.4525638,8.1126595
+control_2019,stroke,post_hosp_gp,age_sex,History of stroke,1,3.3031819,2.409147,4.5289931
+control_2019,stroke,post_hosp_gp,full,Overall,0,7.6116428,6.2787437,9.2275
+control_2019,stroke,post_hosp_gp,full,History of stroke,0,6.2320514,4.9125695,7.9059362
+control_2019,stroke,post_hosp_gp,full,History of stroke,1,3.0148413,2.0982645,4.3318028
+control_2019,dvt,in_hosp,crude,Overall,0,,,
+control_2019,dvt,in_hosp,crude,History of dvt,0,,,
+control_2019,dvt,in_hosp,crude,History of dvt,1,,,
+control_2019,dvt,in_hosp,age_sex,Overall,0,1,,
+control_2019,dvt,in_hosp,age_sex,History of dvt,0,1,,
+control_2019,dvt,in_hosp,age_sex,History of dvt,1,1,,
+control_2019,dvt,in_hosp,full,Overall,0,1,,
+control_2019,dvt,in_hosp,full,History of dvt,0,1,,
+control_2019,dvt,in_hosp,full,History of dvt,1,1,,
+control_2019,dvt,post_hosp,crude,Overall,0,7.4257894,5.8038349,9.5010195
+control_2019,dvt,post_hosp,crude,History of dvt,0,7.6695123,5.7793846,10.1778
+control_2019,dvt,post_hosp,crude,History of dvt,1,.69639683,.42158428,1.1503478
+control_2019,dvt,post_hosp,age_sex,Overall,0,7.5863085,5.9282675,9.7080765
+control_2019,dvt,post_hosp,age_sex,History of dvt,0,7.8681126,5.9273558,10.444319
+control_2019,dvt,post_hosp,age_sex,History of dvt,1,.67908067,.40806505,1.1300908
+control_2019,dvt,post_hosp,full,Overall,0,7.4113164,5.4601169,10.059787
+control_2019,dvt,post_hosp,full,History of dvt,0,7.8602557,5.527257,11.17799
+control_2019,dvt,post_hosp,full,History of dvt,1,.67318058,.35275561,1.284663
+control_2019,dvt,post_hosp_gp,crude,Overall,0,10.261052,8.1404934,12.934008
+control_2019,dvt,post_hosp_gp,crude,History of dvt,0,10.729214,8.231472,13.984865
+control_2019,dvt,post_hosp_gp,crude,History of dvt,1,.92862457,.57700491,1.4945171
+control_2019,dvt,post_hosp_gp,age_sex,Overall,0,10.46492,8.3010712,13.192822
+control_2019,dvt,post_hosp_gp,age_sex,History of dvt,0,10.974563,8.4178438,14.307822
+control_2019,dvt,post_hosp_gp,age_sex,History of dvt,1,.91941881,.56753379,1.4894812
+control_2019,dvt,post_hosp_gp,full,Overall,0,10.72223,8.0698147,14.24645
+control_2019,dvt,post_hosp_gp,full,History of dvt,0,11.532153,8.3187485,15.986847
+control_2019,dvt,post_hosp_gp,full,History of dvt,1,.97288513,.53511488,1.7687893
+control_2019,pe,in_hosp,crude,Overall,0,,,
+control_2019,pe,in_hosp,crude,History of pe,0,,,
+control_2019,pe,in_hosp,crude,History of pe,1,,,
+control_2019,pe,in_hosp,age_sex,Overall,0,1,,
+control_2019,pe,in_hosp,age_sex,History of pe,0,1,,
+control_2019,pe,in_hosp,age_sex,History of pe,1,1,,
+control_2019,pe,in_hosp,full,Overall,0,1,,
+control_2019,pe,in_hosp,full,History of pe,0,1,,
+control_2019,pe,in_hosp,full,History of pe,1,1,,
+control_2019,pe,post_hosp,crude,Overall,0,11.752882,9.5330582,14.489604
+control_2019,pe,post_hosp,crude,History of pe,0,12.044869,9.55618,15.181683
+control_2019,pe,post_hosp,crude,History of pe,1,1.4103932,.86311662,2.304682
+control_2019,pe,post_hosp,age_sex,Overall,0,11.956637,9.6975155,14.742043
+control_2019,pe,post_hosp,age_sex,History of pe,0,12.266672,9.7311354,15.462868
+control_2019,pe,post_hosp,age_sex,History of pe,1,1.5961032,.96695012,2.634619
+control_2019,pe,post_hosp,full,Overall,0,10.450873,8.1407938,13.416475
+control_2019,pe,post_hosp,full,History of pe,0,10.660146,8.081851,14.060976
+control_2019,pe,post_hosp,full,History of pe,1,1.9878365,1.0928234,3.6158574
+control_2019,pe,post_hosp_gp,crude,Overall,0,14.478954,11.819202,17.737246
+control_2019,pe,post_hosp_gp,crude,History of pe,0,14.890345,11.899247,18.633308
+control_2019,pe,post_hosp_gp,crude,History of pe,1,1.7172061,1.0649842,2.7688646
+control_2019,pe,post_hosp_gp,age_sex,Overall,0,14.676843,11.979895,17.980936
+control_2019,pe,post_hosp_gp,age_sex,History of pe,0,15.088914,12.056829,18.883516
+control_2019,pe,post_hosp_gp,age_sex,History of pe,1,1.9177654,1.1785816,3.1205511
+control_2019,pe,post_hosp_gp,full,Overall,0,13.474363,10.588007,17.147558
+control_2019,pe,post_hosp_gp,full,History of pe,0,13.916644,10.66073,18.166954
+control_2019,pe,post_hosp_gp,full,History of pe,1,2.3199704,1.30062,4.1382284
