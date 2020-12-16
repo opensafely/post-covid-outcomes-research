@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /workspace/output/cox_model_control_2019.log
   log type:  text
- opened on:  16 Dec 2020, 09:41:03
+ opened on:  16 Dec 2020, 15:01:23
 
 . global crude i.case
 
@@ -89,63 +89,65 @@
  33.         }
  34. 
 .         * DROP Patients who have the event in hospital
-.         drop if `v'_in_hosp == 1 
- 35.         * post-hosp
+.         drop if `v'_in_hosp == 1
+ 35.         drop if died_date_ons_date <= discharged_expo_date
+ 36. 
+.         * post-hosp
 .         foreach a in post_hosp post_hosp_gp  {
- 36.                 noi di "$group: stset in `a'" 
- 37.                 
+ 37.                 noi di "$group: stset in `a'" 
+ 38.                 
 .                 stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') ente
 > r(discharged_expo_date) origin(discharged_expo_date)
- 38.                 
+ 39.                 
 .                 foreach adjust in crude age_sex full {
- 39.                         stcox $`adjust'
- 40. 
+ 40.                         stcox $`adjust'
+ 41. 
 .                         matrix b = r(table)
- 41.                         local hr= b[1,2]
- 42.                         local lc = b[5,2] 
- 43.                         local uc = b[6,2]
- 44.                         local c = "Overall"
- 45.                         local s = 0
- 46. 
+ 42.                         local hr= b[1,2]
+ 43.                         local lc = b[5,2] 
+ 44.                         local uc = b[6,2]
+ 45.                         local c = "Overall"
+ 46.                         local s = 0
+ 47. 
 .                         cap stptime if case == 1
- 47.                         local rate_covid = 1000*(r(rate) * 365.25 / 12)
- 48.                         cap stptime if case == 0
- 49.                         local rate_control = 1000*(r(rate) * 365.25 / 12)
- 50. 
+ 48.                         local rate_covid = 1000*(r(rate) * 365.25 / 12)
+ 49.                         cap stptime if case == 0
+ 50.                         local rate_control = 1000*(r(rate) * 365.25 / 12)
+ 51. 
 .                         post `measures' ("$group") ("`v'") ("`a'") ("`adjust'
 > ") ("`c'") (`s') ///
 >                                                         (`rate_covid') (`rate
 > _control') ///
 >                                                         (`hr') (`lc') (`uc')
- 51.                         
+ 52.                         
 . 
 .                         forvalues s = 0/1 {
- 52.                         
+ 53.                         
 .                                 stcox $`adjust' if hist_`v' == `s'
- 53. 
+ 54. 
 .                                 matrix b = r(table)
- 54.                                 local hr= b[1,2]
- 55.                                 local lc = b[5,2] 
- 56.                                 local uc = b[6,2]
- 57.                                 local c = "History of `v'"
- 58. 
+ 55.                                 local hr= b[1,2]
+ 56.                                 local lc = b[5,2] 
+ 57.                                 local uc = b[6,2]
+ 58.                                 local c = "History of `v'"
+ 59. 
 .                                 cap stptime if hist_`v' == `s' & case == 1
- 59.                                 local rate_covid = 1000*(r(rate) * 365.25 
+ 60.                                 local rate_covid = 1000*(r(rate) * 365.25 
 > / 12)
- 60.                                 cap stptime if hist_`v' == `s' & case == 0
- 61.                                 local rate_control = 1000*(r(rate) * 365.2
+ 61.                                 cap stptime if hist_`v' == `s' & case == 0
+ 62.                                 local rate_control = 1000*(r(rate) * 365.2
 > 5 / 12)
- 62. 
+ 63. 
 .                                 post `measures' ("$group") ("`v'") ("`a'") ("
 > `adjust'") ("`c'") (`s') ///
 >                                                         (`rate_covid') (`rate
 > _control') ///
 >                                                         (`hr') (`lc') (`uc')
- 63.                         }
- 64.                 }
- 65.         }
- 66. restore                 
- 67. }
+ 64.                         }
+ 65.                 }
+ 66.         }
+ 67. restore                 
+ 68. }
 Starting analysis for control_2019: stroke Outcome ...
 control_2019: stset in hospital
 
@@ -757,6 +759,7 @@ Stage 5 e..  |   .5506135   1.059624    -0.31   0.757     .0126695    23.92955
 1.other_im~n |   3.14e-17          .        .       .            .           .
 ------------------------------------------------------------------------------
 (485 observations deleted)
+(0 observations deleted)
 control_2019: stset in post_hosp
 
                 id:  patient_id
@@ -2590,6 +2593,7 @@ Stage 5 e..  |   2.499594   3.287138     0.70   0.486     .1898808    32.90471
 1.other_im~n |   267.0359   465.7427     3.20   0.001     8.749273    8150.184
 ------------------------------------------------------------------------------
 (225 observations deleted)
+(0 observations deleted)
 control_2019: stset in post_hosp
 
                 id:  patient_id
@@ -4399,6 +4403,7 @@ Stage 5 e..  |   4.900296   4.630874     1.68   0.093     .7688128    31.23374
 1.other_im~n |   1.15e-18          .        .       .            .           .
 ------------------------------------------------------------------------------
 (759 observations deleted)
+(0 observations deleted)
 control_2019: stset in post_hosp
 
                 id:  patient_id
@@ -5619,5 +5624,5 @@ file /workspace/output/tabfig/cox_model_summary_control_2019.csv saved
       name:  <unnamed>
        log:  /workspace/output/cox_model_control_2019.log
   log type:  text
- closed on:  16 Dec 2020, 10:04:14
+ closed on:  16 Dec 2020, 15:25:24
 -------------------------------------------------------------------------------
