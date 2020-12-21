@@ -13,6 +13,26 @@ actions:
         ctrl_2019_cohort: output/input_control_2019.csv
         ctrl_2020_cohort: output/input_control_2020.csv
 
+  generate_measure_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_measures --index-date-range "2019-01-01 to 2020-12-01 by month"
+    outputs:
+      highly_sensitive:
+        measure_data: output/input_measures*.csv
+
+  generate_measures:
+    run: cohortextractor:latest  generate_measures --study-definition study_definition_measures
+    needs: [generate_measure_cohort]
+    outputs:
+      moderately_sensitive:
+        measure: output/measure_*_rate.csv
+
+  draw_timeseries:
+    run: python:latest python analysis/time_series_plots.py
+    needs: [generate_measures]
+    outputs:
+      moderately_sensitive:
+        graph: output/event_count_time_series.svg
+
   000_covid:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
     needs: [generate_cohorts]
