@@ -26,7 +26,7 @@ study = StudyDefinition(
         AND NOT stp = ""
         """,
         has_follow_up=patients.registered_with_one_practice_between(
-            "2019-02-01", "2020-02-01"
+            "index_date - 1 year", "index_date"
         ),
         age=patients.age_as_of(
             "index_date",
