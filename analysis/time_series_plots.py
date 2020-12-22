@@ -1,30 +1,46 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from study_definition_measures import measures
+
+COLOUR_PALETTE = {
+    2: ["#3399ff", "#ffad33"],
+    4: ["#3399ff", "#99ccff", "#ffad33", "#ffd699"],
+}
 
 
-def import_timeseries(path, name):
-    df = pd.read_csv(path, usecols=["date", "covid_hospitalisation", name])
+def import_timeseries(measure):
+    path = f"output/measure_{measure.id}.csv"
+    df = pd.read_csv(path, usecols=["date", measure.numerator] + measure.group_by)
     df["date"] = pd.to_datetime(df["date"])
-    df = df.set_index(["date", "covid_hospitalisation"])
-    df = df.unstack()
+    df = df.set_index(["date"] + measure.group_by)
+    df = df.unstack(measure.group_by)
+    df.columns = df.columns.droplevel()
     return df
 
 
-## Get data
-names = ["stroke", "DVT", "PE"]
-files = [f"output/measure_{name}_rate.csv" for name in names]
-dfs = [import_timeseries(path, name) for path, name in zip(files, names)]
-df_to_plot = pd.concat(dfs, axis=1)
+def grammar_decider(word):
+    if word == "died":
+        return "who died"
+    return f"with a recorded {word}"
 
-## Draw plots
-fig, axes = plt.subplots(ncols=1, nrows=3, sharex=True, figsize=[8, 10])
+
+fig, axes = plt.subplots(ncols=3, nrows=2, sharex=True, figsize=[22, 8])
 for i, ax in enumerate(axes.flat):
-    df_to_plot[names[i]].plot.area(ax=ax, linewidth=0, alpha=0.8)
-    title = f"{chr(97 + i)}) Patients with a {names[i]} event each month:"
+    m = measures[i]
+    import_timeseries(m).plot.area(
+        ax=ax,
+        linewidth=0,
+        alpha=0.9,
+        color=COLOUR_PALETTE[len(m.group_by) * 2],
+    )
+    ax.grid(b=True, which="both", color="#666666", linestyle="-", alpha=0.1)
+    title = f"{chr(97 + i)}) People {grammar_decider(m.numerator)} each month:"
     ax.set_title(title, loc="left")
-    ax.legend().set_title("")
     ax.set_ylim = (0, None)
-    ax.set_ylabel(f"patients with a {names[i]} event")
-    ax.grid(b=True, which="both", color="#666666", linestyle="-", alpha=0.2)
+    ax.set_ylabel(f"people {grammar_decider(m.numerator)}")
+    handles, labels = ax.get_legend_handles_labels()
+    handles, labels = list(reversed(handles)), list(reversed(labels))
+    ax.legend(handles, labels, prop={"size": 9}).set_title("")
+    plt.tight_layout()
 
 plt.savefig("output/event_count_time_series.svg")
