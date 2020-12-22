@@ -4,14 +4,29 @@ expectations:
   population_size: 20000
 
 actions:
-  generate_cohorts:
-    run: cohortextractor:latest generate_cohort
+  generate_covid_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_covid
     outputs:
       highly_sensitive:
-        covid_cohort: output/input_covid.csv
-        pneumonia_cohort: output/input_pneumonia.csv
-        ctrl_2019_cohort: output/input_control_2019.csv
-        ctrl_2020_cohort: output/input_control_2020.csv
+        cohort: output/input_covid.csv
+
+  generate_pneumonia_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_pneumonia
+    outputs:
+      highly_sensitive:
+        cohort: output/input_pneumonia.csv
+
+  generate_control_2019_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_control_2019
+    outputs:
+      highly_sensitive:
+        cohort: output/input_control_2019.csv
+
+  generate_control_2020_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_control_2020
+    outputs:
+      highly_sensitive:
+        cohort: output/input_control_2020.csv
 
   generate_measure_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_measures --index-date-range "2019-01-01 to 2020-10-01 by month"
