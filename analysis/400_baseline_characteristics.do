@@ -54,7 +54,7 @@ end
 foreach v in covid pneumonia control_2019 control_2020 {
 *Set up output file
 cap file close tablecontent
-file open tablecontent using ./output/an_descriptiveTable_`v'.txt, write text replace
+file open tablecontent using $tabfigdir/an_descriptiveTable_`v'.txt, write text replace
 
 if "`v'" == "covid" {
 use $outdir/matched_cohort_pneumonia.dta, clear 

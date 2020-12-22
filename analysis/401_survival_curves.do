@@ -44,7 +44,7 @@ local a = "in_hosp"
 		* Survival curve
 		#delimit ; 
 		stcurv, surv at1(case=0) at2(case=1)
-	    title("")
+		title("")
 		legend(
 			order(1 "`graphLab'" 2 "Covid-19")
 			rows(1)
@@ -59,7 +59,7 @@ local a = "in_hosp"
 		  ;
 		 #delimit cr
 		
-		graph export $outdir/tabfig/survcurv_`a'_`v'_$group.svg , as(svg) replace
+		graph export $tabfigdir/survcurv_`a'_`v'_$group.svg , as(svg) replace
 		
 		forvalues s = 0/1 {
 				* Survival curve
@@ -82,10 +82,10 @@ local a = "in_hosp"
 		  ;
 		 #delimit cr
 		
-		graph export $outdir/tabfig/survcurv_`a'_`v'_$group_history_`s'.svg , as(svg) replace
+		graph export $tabfigdir/survcurv_`a'_`v'_history_`s'_$group.svg , as(svg) replace
 			
-		}
 	}
+	
 
 	* DROP Patients who have the event in hospital
 	drop if `v'_in_hosp == 1
@@ -122,7 +122,7 @@ local a = "in_hosp"
 		  ;
 		 #delimit cr
 		 
-		 graph export $outdir/tabfig/survcurv_`a'_`v'_$group.svg , as(svg) replace
+		 graph export $tabfigdir/survcurv_`a'_`v'_$group.svg , as(svg) replace
 		
 		
 
@@ -148,8 +148,7 @@ local a = "in_hosp"
 		  ;
 		 #delimit cr
 		
-		graph export $outdir/tabfig/survcurv_`a'_`v'_$group_history_`s'.svg , as(svg) replace
-			}
+		graph export $tabfigdir/survcurv_`a'_`v'_history_`s'_$group.svg , as(svg) replace
 		}
 	}
 restore			
