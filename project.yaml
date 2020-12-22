@@ -4,14 +4,29 @@ expectations:
   population_size: 20000
 
 actions:
-  generate_cohorts:
-    run: cohortextractor:latest generate_cohort
+  generate_covid_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_covid
     outputs:
       highly_sensitive:
-        covid_cohort: output/input_covid.csv
-        pneumonia_cohort: output/input_pneumonia.csv
-        ctrl_2019_cohort: output/input_control_2019.csv
-        ctrl_2020_cohort: output/input_control_2020.csv
+        cohort: output/input_covid.csv
+
+  generate_pneumonia_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_pneumonia
+    outputs:
+      highly_sensitive:
+        cohort: output/input_pneumonia.csv
+
+  generate_control_2019_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_control_2019
+    outputs:
+      highly_sensitive:
+        cohort: output/input_control_2019.csv
+
+  generate_control_2020_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_control_2020
+    outputs:
+      highly_sensitive:
+        cohort: output/input_control_2020.csv
 
   generate_measure_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_measures --index-date-range "2019-01-01 to 2020-10-01 by month"
@@ -19,7 +34,7 @@ actions:
       highly_sensitive:
         measure_data: output/input_measures*.csv
 
-  generate_measures:
+  calculate_measures:
     run: cohortextractor:latest  generate_measures --study-definition study_definition_measures
     needs: [generate_measure_cohort]
     outputs:
@@ -28,14 +43,14 @@ actions:
 
   draw_timeseries:
     run: python:latest python analysis/time_series_plots.py
-    needs: [generate_measures]
+    needs: [calculate_measures]
     outputs:
       moderately_sensitive:
         graph: output/event_count_time_series.svg
 
   000_covid:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
-    needs: [generate_cohorts]
+    needs: [generate_covid_cohort]
     outputs:
       moderately_sensitive:
         graph: output/length_of_stay_covid.svg
@@ -44,7 +59,7 @@ actions:
 
   000_pneumonia:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
-    needs: [generate_cohorts]
+    needs: [generate_pneumonia_cohort]
     outputs:
       moderately_sensitive:
         graph: output/length_of_stay_pneumonia.svg
@@ -67,7 +82,7 @@ actions:
 
   matching_control_2019:
     run: python:latest python analysis/match_running.py "control_2019"
-    needs: [generate_cohorts]
+    needs: [generate_covid_cohort, generate_control_2019_cohort]
     outputs:
       moderately_sensitive:
         matching_report: output/matching_report_control_2019.txt
@@ -76,7 +91,7 @@ actions:
 
   matching_control_2020:
     run: python:latest python analysis/match_running.py "control_2020"
-    needs: [generate_cohorts]
+    needs: [generate_covid_cohort, generate_control_2020_cohort]
     outputs:
       moderately_sensitive:
         matching_report: output/matching_report_control_2020.txt
@@ -85,7 +100,7 @@ actions:
 
   matching_data_management:
     run: stata-mp:latest analysis/300_cr_data_management_matching.do 
-    needs: [generate_cohorts, matching_control_2019, matching_control_2020]
+    needs: [generate_covid_cohort, generate_pneumonia_cohort, matching_control_2019, matching_control_2020]
     outputs:
       highly_sensitive:
         combined3: output/matched_combined_pneumonia.dta
