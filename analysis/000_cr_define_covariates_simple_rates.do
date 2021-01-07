@@ -282,7 +282,7 @@ drop min_end_date
 **** Tidy dataset
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-keep  patient_id previous_dvt previous_pe /// 
+keep  patient_id hosp_expo_date previous_dvt previous_pe /// 
  previous_stroke agegroup ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  icu_admission stroke_end_date pe_end_date dvt_end_date long_hosp_stay

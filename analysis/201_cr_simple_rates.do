@@ -19,7 +19,6 @@
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-global group = "covid"
 use $outdir/cohort_rates_$group, clear 
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
