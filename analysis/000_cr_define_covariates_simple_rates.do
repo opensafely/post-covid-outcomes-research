@@ -314,13 +314,13 @@ drop min_end_date
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 keep  patient_id icu_admission previous_dvt previous_pe /// 
- previous_stroke age ethnicity af /// 
+ previous_stroke agegroup ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  icu_admission stroke_end_date pe_end_date dvt_end_date long_hosp_stay
  }
 else { 
 keep  patient_id icu_admission previous_dvt previous_pe /// 
- previous_stroke age ethnicity af /// 
+ previous_stroke agegroup ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  icu_admission stroke_end_date pe_end_date dvt_end_date
 }
