@@ -290,6 +290,7 @@ def common_variable_define(dynamic_date_variables):
         af=patients.with_these_clinical_events(
             af_codes,
             on_or_before="patient_index_date",
+            return_expectations={"incidence": 0.05},
         ),
         anticoag_rx=patients.with_these_medications(
             combine_codelists(doac_codes, warfarin_codes),
