@@ -19,11 +19,19 @@
 do `c(pwd)'/analysis/global.do
 global group `1'
 
+global group = "covid"
 use $outdir/cohort_rates_$group, clear 
+
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx "
+}
+else {
+global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx"
+}
 
 tempname measures
 																	 
-	postfile `measures' str16(group) str20(outcome) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
+	postfile `measures' str16(group) str20(outcome) str12(time) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
 
 
 foreach v in stroke dvt pe {
@@ -36,13 +44,13 @@ preserve
 		* Overall rate 
 		stptime  
 		* Save measure
-		post `measures' ("$group") ("`v'") ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`v'") ("Full period") ("Overall") (0) (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
-							(`r(lb)') (`r(ub))')
+							(`r(lb)') (`r(ub)')
 		
 		* Stratified - additionally include long_hosp_stay for hosp patients
-		if "$group" == "covid" | "$group" == "pneumonia"  { 
-		foreach c in previous_`v' agegroup male ethnicity af anticoag_rx icu_admission long_hosp_stay {
+		
+		foreach c of global stratifiers {
 		
 			qui levelsof `c' , local(cats) 
 			di `cats'
@@ -53,46 +61,54 @@ preserve
 				stptime if `c'==`l' 
 
 				* Save measures
-				post `measures' ("$group") ("`v'") ("`c'") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (`r(ptime)')	///
 								(`r(failures)') (`r(rate)') 							///
-								(`r(lb)') (`r(ub))')
+								(`r(lb)') (`r(ub)')
 				}
 
 				else {
-				post `measures' ("$group") ("`v'") ("`c'") (`l') (.) 	///
+				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
 					
 			}
-		   }
 		}
-		else { 
-		foreach c in previous_`v' agegroup male ethnicity af anticoag_rx icu_admission {
+* Stsplit data into 30 day periods
+	stsplit time, at(30(30)120)
 		
-			qui levelsof `c' , local(cats) 
+		* Overall rate 
+		forvalues t = 30(30)120 {
+		stptime if time ==`t'
+		* Save measure
+		post `measures' ("$group") ("`v'") ("`t' days") ("Overall") (0) (`r(ptime)') 	///
+							(`r(failures)') (`r(rate)') 								///
+							(`r(lb)') (`r(ub)')
+		
+		* Stratified 
+			qui levelsof agegroup , local(cats) 
 			di `cats'
 			foreach l of local cats {
-				noi di "$group: Calculate rate for variable `c' and level `l'" 
-				qui  count if `c' ==`l'
+				noi di "$group: Calculate rate for variable `c' and level `l' over time = `t'" 
+				qui  count if time ==`t' & agegroup ==`l' 
 				if `r(N)' > 0 {
-				stptime if `c'==`l' 
+				stptime if time ==`t' & agegroup ==`l' 
 
 				* Save measures
-				post `measures' ("$group") ("`v'") ("`c'") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`v'") ("`t' days")  ("agegroup") (`l') (`r(ptime)')	///
 								(`r(failures)') (`r(rate)') 							///
-								(`r(lb)') (`r(ub))')
+								(`r(lb)') (`r(ub)')
 				}
 
 				else {
-				post `measures' ("$group") ("`v'") ("`c'") (`l') (.) 	///
+				post `measures' ("$group") ("`v'") ("`t' days") ("agegroup") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
 					
 			}
-		   }
-		 }  
+		}
+		
 restore
 }
 

@@ -25,7 +25,7 @@ local start_date  td(01/02/2020)
 local last_year   td(01/02/2019)
 local four_years_ago td(01/02/2015)	 
 local fifteen_months_ago td(01/09/2019)
-local end_date td(01/10/2020)
+local end_date td(01/11/2020)
 
 }
 else {
@@ -33,7 +33,7 @@ local start_date  td(01/02/2019)
 local last_year   td(01/02/2018)	
 local four_years_ago td(01/02/2014)	 
 local fifteen_months_ago td(01/09/2018)
-local end_date td(01/10/2019)
+local end_date td(01/11/2019)
 }
 
 import delimited $outdir/input_$group.csv
@@ -208,17 +208,13 @@ drop `v'_2
 
 * Create categorised age
 recode 	age 			min/49.9999=1 	///
-						50/59.9999=2 	///
-						60/69.9999=3 	///
-						70/79.9999=4 	///
-						80/max=5, 		///
+						50/79.9999=2 	///
+						80/max=3, 		///
 				        gen(agegroup) 
 
 label define agegroup 	1 "18-<50" 		///
-						2 "50-<60" 		///
-						3 "60-<70" 		///
-						4 "70-<80" 		///
-						5 "80+"
+						2 "50-<80" 		///
+						3 "80+"
 label values agegroup agegroup
 
 
@@ -259,38 +255,13 @@ replace egfr=egfr*1.018 if male==0
 label var egfr "egfr calculated using CKD-EPI formula with no eth"
 
 * Categorise into ckd stages
-egen egfr_cat = cut(egfr), at(0, 15, 30, 45, 60, 5000)
-recode egfr_cat 0=5 15=4 30=3 45=2 60=0, generate(ckd)
-* 0 = "No CKD" 	2 "stage 3a" 3 "stage 3b" 4 "stage 4" 5 "stage 5"
-label define ckd 0 "No CKD" 1 "CKD"
-label values ckd ckd
-label var ckd "CKD stage calc without eth"
-
-* Convert into CKD group
-*recode ckd 2/5=1, gen(chronic_kidney_disease)
-*replace chronic_kidney_disease = 0 if creatinine==. 
-
-recode ckd 0=1 2/3=2 4/5=3, gen(reduced_kidney_function_cat)
-replace reduced_kidney_function_cat = 1 if creatinine==. 
-label define reduced_kidney_function_catlab ///
-	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4/5 egfr<30"
-label values reduced_kidney_function_cat reduced_kidney_function_catlab 
-
-*More detailed version incorporating stage 5 or dialysis as a separate category	
-recode ckd 0=1 2/3=2 4=3 5=4, gen(reduced_kidney_function_cat2)
-replace reduced_kidney_function_cat2 = 1 if creatinine==. 
-replace reduced_kidney_function_cat2 = 5 if dialysis==1 
-
-label define reduced_kidney_function_cat2lab ///
-	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4 egfr 15-<30" 4 "Stage 4 egfr <15-<30" 5 "Stage 5 egfr <15 or dialysis"
-label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab 
- 
-******************************************
-* Admitted to ICU during hospitalisation *	
-******************************************
-
-gen icu_admission = cond(icu_admission_date <= indexdate , 1, 0) 
-
+gen egfr_flag = 1 if egfr <15
+replace egfr_flag = 0 if egfr ==.
+* dialysis
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
+gen dialysis_flag = 0 if dialysis_flag ==.
+}
 
 **************
 *  Outcomes  *
@@ -301,9 +272,7 @@ foreach out in stroke dvt pe {
 gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date)
 * Define outcome 
 	gen 	`out'_end_date = `end_date' // relevant end date
-	replace `out'_end_date = min_end_date if min_end_date > indexdate & ///  // after indexdate
-											 min_end_date!=. 				 // and not missing
-
+	replace `out'_end_date = min_end_date if  min_end_date!=.	 // not missing
 	replace `out'_end_date = `out'_end_date + 1 
 	format %td `out'_end_date 
 
@@ -313,13 +282,13 @@ drop min_end_date
 **** Tidy dataset
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-keep  patient_id icu_admission previous_dvt previous_pe /// 
+keep  patient_id previous_dvt previous_pe /// 
  previous_stroke agegroup ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  icu_admission stroke_end_date pe_end_date dvt_end_date long_hosp_stay
  }
 else { 
-keep  patient_id icu_admission previous_dvt previous_pe /// 
+keep  patient_id previous_dvt previous_pe /// 
  previous_stroke agegroup ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  icu_admission stroke_end_date pe_end_date dvt_end_date
