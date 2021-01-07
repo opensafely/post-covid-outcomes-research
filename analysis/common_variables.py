@@ -5,21 +5,6 @@ from datetime import datetime, timedelta
 
 def common_variable_define(dynamic_date_variables):
     common_variables = dict(
-        af=patients.with_these_clinical_events(
-            af_codes,
-            return_first_date_in_period=True,
-            date_format="YYYY-MM-DD",
-        ),
-        anticoag_rx=patients.with_these_medications(
-            combine_codelists(doac_codes, warfarin_codes),
-            between=["patient_index_date - 3 months", "patient_index_date"],
-            return_expectations={
-                "date": {
-                    "earliest": "index_date - 3 months",
-                    "latest": "index_date",
-                }
-            },
-        ),
         # Outcomes
         ## DVT
         dvt_gp=patients.with_these_clinical_events(
@@ -201,7 +186,6 @@ def common_variable_define(dynamic_date_variables):
             ),
         ),
         died_date_ons=patients.died_from_any_cause(
-            on_or_after="patient_index_date",
             returning="date_of_death",
             date_format="YYYY-MM-DD",
             return_expectations={
@@ -301,6 +285,20 @@ def common_variable_define(dynamic_date_variables):
                         "1000": 0.1,
                     }
                 },
+            },
+        ),
+        af=patients.with_these_clinical_events(
+            af_codes,
+            on_or_before="patient_index_date",
+        ),
+        anticoag_rx=patients.with_these_medications(
+            combine_codelists(doac_codes, warfarin_codes),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+            return_expectations={
+                "date": {
+                    "earliest": "index_date - 3 months",
+                    "latest": "index_date",
+                }
             },
         ),
         creatinine=patients.with_these_clinical_events(
