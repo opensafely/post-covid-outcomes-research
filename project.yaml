@@ -10,23 +10,17 @@ actions:
       highly_sensitive:
         cohort: output/input_covid.csv
 
+  generate_covid_community_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_covid_community
+    outputs:
+      highly_sensitive:
+        cohort: output/input_covid_community.csv
+
   generate_pneumonia_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_pneumonia
     outputs:
       highly_sensitive:
         cohort: output/input_pneumonia.csv
-
-  generate_control_2019_cohort:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_control_2019
-    outputs:
-      highly_sensitive:
-        cohort: output/input_control_2019.csv
-
-  generate_control_2020_cohort:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_control_2020
-    outputs:
-      highly_sensitive:
-        cohort: output/input_control_2020.csv
 
   generate_measure_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_measures --index-date-range "2019-01-01 to 2020-10-01 by month"
@@ -48,134 +42,41 @@ actions:
       moderately_sensitive:
         graph: output/event_count_time_series.svg
 
-  000_covid:
-    run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
-    needs: [generate_covid_cohort]
-    outputs:
-      moderately_sensitive:
-        graph: output/length_of_stay_covid.svg
-      highly_sensitive:
-        analysis_dataset: output/cohort_rates_covid.dta
-
-  000_pneumonia:
-    run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
-    needs: [generate_pneumonia_cohort]
-    outputs:
-      moderately_sensitive:
-        graph: output/length_of_stay_pneumonia.svg
-      highly_sensitive:
-        analysis_dataset: output/cohort_rates_pneumonia.dta
-
-  201_covid:
-    run: stata-mp:latest analysis/201_cr_simple_rates.do "covid"
-    needs: [000_covid]
-    outputs:
-      moderately_sensitive:
-        graph: output/tabfig/rates_summary_covid.csv
-
-  201_pneumonia:
-    run: stata-mp:latest analysis/201_cr_simple_rates.do "pneumonia"
-    needs: [000_pneumonia]
-    outputs:
-      moderately_sensitive:
-        graph: output/tabfig/rates_summary_pneumonia.csv
-
-  matching_control_2019:
-    run: python:latest python analysis/match_running.py "control_2019"
-    needs: [generate_covid_cohort, generate_control_2019_cohort]
-    outputs:
-      moderately_sensitive:
-        matching_report: output/matching_report_control_2019.txt
-      highly_sensitive:
-        combined: output/matched_combined_control_2019.csv
-
-  matching_control_2020:
-    run: python:latest python analysis/match_running.py "control_2020"
-    needs: [generate_covid_cohort, generate_control_2020_cohort]
-    outputs:
-      moderately_sensitive:
-        matching_report: output/matching_report_control_2020.txt
-      highly_sensitive:
-        combined: output/matched_combined_control_2020.csv
-
-  matching_data_management:
-    run: stata-mp:latest analysis/300_cr_data_management_matching.do 
-    needs: [generate_covid_cohort, generate_pneumonia_cohort, matching_control_2019, matching_control_2020]
-    outputs:
-      highly_sensitive:
-        combined3: output/matched_combined_pneumonia.dta
-        combined4: output/matched_combined_control_2019.dta
-        combined5: output/matched_combined_control_2020.dta
-
-  301_pneumonia:
-    run: stata-mp:latest analysis/301_cr_define_covariates_matched_groups.do "pneumonia"
-    needs: [matching_data_management]
-    outputs:
-      highly_sensitive:
-        combined1: output/matched_cohort_pneumonia.dta
-
-  301_control_2019:
-    run: stata-mp:latest analysis/301_cr_define_covariates_matched_groups.do "control_2019"
-    needs: [matching_data_management]
-    outputs:
-      highly_sensitive:
-        combined1: output/matched_cohort_control_2019.dta
-
-  301_control_2020:
-    run: stata-mp:latest analysis/301_cr_define_covariates_matched_groups.do "control_2020"
-    needs: [matching_data_management]
-    outputs:
-      highly_sensitive:
-        combined1: output/matched_cohort_control_2020.dta
-
-  302_pneumonia:
-    run: stata-mp:latest analysis/302_cox_models.do "pneumonia"
-    needs: [301_pneumonia]
-    outputs:
-      moderately_sensitive:
-        log: output/cox_model_pneumonia.log
-        combined1: output/tabfig/cox_model_summary_pneumonia.csv
-
-  302_control_2019:
-    run: stata-mp:latest analysis/302_cox_models.do "control_2019"
-    needs: [301_control_2019]
-    outputs:
-      moderately_sensitive:
-        log: output/cox_model_control_2019.log
-        combined1: output/tabfig/cox_model_summary_control_2019.csv
-
-  302_control_2020:
-    run: stata-mp:latest analysis/302_cox_models.do "control_2020"
-    needs: [301_control_2020]
-    outputs:
-      moderately_sensitive:
-        log: output/cox_model_control_2020.log
-        combined1: output/tabfig/cox_model_summary_control_2020.csv
-
-  400_baseline_characteristics:
-    run: stata-mp:latest analysis/400_baseline_characteristics.do
-    needs: [301_pneumonia, 301_control_2019, 301_control_2020]
-    outputs:
-      moderately_sensitive:
-        tables: output/tabfig/an_descriptiveTable_*.txt
-
-  401_survival_curves_pneumonia:
-    run: stata-mp:latest analysis/401_survival_curves.do "pneumonia"
-    needs: [301_pneumonia]
-    outputs:
-      moderately_sensitive:
-        covid: output/tabfig/survcurv_*pneumonia.svg
-
-  # 401_survival_curves_control_2019:
-  #   run: stata-mp:latest analysis/401_survival_curves.do "control_2019"
-  #   needs: [301_control_2019]
+  # 000_covid:
+  #   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
+  #   needs: [generate_covid_cohort]
   #   outputs:
   #     moderately_sensitive:
-  #       covid: output/tabfig/survcurv_*control_2019.svg
+  #       graph: output/length_of_stay_covid.svg
+  #     highly_sensitive:
+  #       analysis_dataset: output/cohort_rates_covid.dta
 
-  # 401_survival_curves_control_2020:
-  #   run: stata-mp:latest analysis/401_survival_curves.do "control_2020"
-  #   needs: [301_control_2020]
+  # 000_pneumonia:
+  #   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
+  #   needs: [generate_pneumonia_cohort]
   #   outputs:
   #     moderately_sensitive:
-  #       covid: output/tabfig/survcurv_*control_2020.svg
+  #       graph: output/length_of_stay_pneumonia.svg
+  #     highly_sensitive:
+  #       analysis_dataset: output/cohort_rates_pneumonia.dta
+
+  # 201_covid:
+  #   run: stata-mp:latest analysis/201_cr_simple_rates.do "covid"
+  #   needs: [000_covid]
+  #   outputs:
+  #     moderately_sensitive:
+  #       graph: output/tabfig/rates_summary_covid.csv
+
+  # 201_pneumonia:
+  #   run: stata-mp:latest analysis/201_cr_simple_rates.do "pneumonia"
+  #   needs: [000_pneumonia]
+  #   outputs:
+  #     moderately_sensitive:
+  #       graph: output/tabfig/rates_summary_pneumonia.csv
+
+  # 400_baseline_characteristics:
+  #   run: stata-mp:latest analysis/400_baseline_characteristics.do
+  #   needs: [301_pneumonia, 301_control_2019, 301_control_2020]
+  #   outputs:
+  #     moderately_sensitive:
+  #       tables: output/tabfig/an_descriptiveTable_*.txt
