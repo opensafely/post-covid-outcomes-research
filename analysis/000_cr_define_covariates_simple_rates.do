@@ -295,73 +295,23 @@ gen icu_admission = cond(icu_admission_date <= indexdate , 1, 0)
 
 foreach out in stroke dvt pe {
 
+gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date)
 * Define outcome 
-	di "post-hospital (hosp + ons)"
-	gen `out'_post_hosp = cond( ///
-		( ///
-			  `out'_hospital > indexdate /// after hosp discharge/test positive
-			& `out'_hospital != . /// and not missing
-		) | ( ///
-			  `out'_ons != . /// not missing means this COD is on death cert
-			& died_date_ons_date > indexdate /// after hosp discharge/test positive
-			& died_date_ons_date != . /// and not missing - this may be redundant
-		), ///
-		1, 0 ///
-	)
+	gen 	`out'_end_date = `end_date' // relevant end date
+	replace `out'_end_date = min_end_date if min_end_date > indexdate & ///  // after indexdate
+											 min_end_date!=. 				 // and not missing
 
-	gen 	`out'_post_hosp_end_date = `end_date' // relevant end date
-	replace  `out'_post_hosp_end_date = `out'_hospital if /// replace with hosp
-		  `out'_hospital > indexdate /// after hosp discharge/test positive
-		& `out'_hospital != . // and not missing
-	replace `out'_post_hosp_end_date = died_date_ons_date if /// replace with death date
-		  died_date_ons > indexdate /// after hosp discharge/test positive
-		& died_date_ons_date != . /// and not missing
-		& died_date_ons_date < `out'_post_hosp_end_date // otherwise it would overwrite earlier hosp dates
-	replace `out'_post_hosp_end_date = `out'_post_hosp_end_date + 1 
-	format %td `out'_post_hosp_end_date 
+	replace `out'_end_date = `out'_end_date + 1 
+	format %td `out'_end_date 
 
-
-
-	di "post-hospital (+ primary care)"
-	gen `out'_post_hosp_gp = cond( ///
-		( ///
-			  `out'_hospital > indexdate /// after hosp discharge/test positive
-			& `out'_hospital != . /// and not missing
-		) | ( ///
-			  `out'_gp > indexdate /// after hosp discharge/test positive
-			& `out'_gp != . /// and not missing
-		) | ( ///
-			  `out'_ons != . /// not missing means this COD is on death cert
-			& died_date_ons_date > indexdate /// after hosp discharge/test positive
-			& died_date_ons_date != . /// and not missing - this may be redundant
-		), ///
-		1, 0 ///
-	)
-
-	gen 	`out'_post_hosp_gp_end_date = `end_date' // relevant end date
-	replace  `out'_post_hosp_gp_end_date = `out'_hospital if ///
-		  `out'_hospital > indexdate /// after hosp discharge/test positive
-		& `out'_hospital != . // and not missing
-	replace  `out'_post_hosp_gp_end_date = `out'_gp if ///
-		  `out'_gp > indexdate /// after hosp discharge/test positive
-		& `out'_gp != . /// and not missing
-		& `out'_gp < `out'_post_hosp_gp_end_date // otherwise it would overwrite earlier gp dates
-	replace `out'_post_hosp_gp_end_date = died_date_ons_date if ///
-		  died_date_ons > indexdate ///
-		& died_date_ons_date != . ///
-		& died_date_ons_date < `out'_post_hosp_gp_end_date // otherwise it would overwrite earlier gp & hosp dates
-	replace `out'_post_hosp_gp_end_date = `out'_post_hosp_gp_end_date + 1 
-	format %td `out'_post_hosp_gp_end_date 
+drop min_end_date	
 }
 										
 **** Tidy dataset
 keep  patient_id icu_admission previous_dvt previous_pe /// 
  previous_stroke age ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
- icu_admission stroke_post_hosp stroke_post_hosp_end_date stroke_post_hosp_gp ///
- stroke_post_hosp_gp_end_date dvt_post_hosp dvt_post_hosp_end_date dvt_post_hosp_gp ///
- dvt_post_hosp_gp_end_date pe_post_hosp pe_post_hosp_end_date pe_post_hosp_gp /// 
- pe_post_hosp_gp_end_date
+ icu_admission stroke_end_date pe_end_date dvt_end_date
  
 order patient_id indexdate
 

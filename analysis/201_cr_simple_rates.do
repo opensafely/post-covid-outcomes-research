@@ -23,20 +23,20 @@ use $outdir/cohort_rates_$group, clear
 
 tempname measures
 																	 
-	postfile `measures' str16(group) str20(outcome) str12(analysis) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
+	postfile `measures' str16(group) str20(outcome) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
 
 
 foreach v in stroke dvt pe {
 preserve	
-	foreach a in post_hosp post_hosp_gp {
-		noi di "$group: stset in `a'" 
+
+		noi di "$group: stset in post_hosp_gp" 
 		
-			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(indexdate)  origin(indexdate)
+			stset `v'_end_date , id(patient_id) failure(`v') enter(indexdate)  origin(indexdate)
 		
 		* Overall rate 
 		stptime  
 		* Save measure
-		post `measures' ("$group") ("`v'") ("`a'") ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`v'") ("Overall") (0) (`r(ptime)') 	///
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))')
 		
@@ -51,20 +51,20 @@ preserve
 				stptime if `c'==`l' 
 
 				* Save measures
-				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`v'") ("`c'") (`l') (`r(ptime)')	///
 								(`r(failures)') (`r(rate)') 							///
 								(`r(lb)') (`r(ub))')
 				}
 
 				else {
-				post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (.) 	///
+				post `measures' ("$group") ("`v'") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
 					
 			}
 		}
-	}
+	
 restore
 }
 
