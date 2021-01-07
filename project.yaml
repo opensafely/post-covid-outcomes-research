@@ -90,38 +90,3 @@ actions:
     outputs:
       moderately_sensitive:
         tables: output/tabfig/an_descriptiveTable_*.txt
-
-
-
-  # 000_covid:
-  #   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
-  #   needs: [generate_covid_cohort]
-  #   outputs:
-  #     moderately_sensitive:
-  #       graph: output/length_of_stay_covid.svg
-  #     highly_sensitive:
-  #       analysis_dataset: output/cohort_rates_covid.dta
-
-  # 000_pneumonia:
-  #   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
-  #   needs: [generate_pneumonia_cohort]
-  #   outputs:
-  #     moderately_sensitive:
-  #       graph: output/length_of_stay_pneumonia.svg
-  #     highly_sensitive:
-  #       analysis_dataset: output/cohort_rates_pneumonia.dta
-
-  # 201_covid:
-  #   run: stata-mp:latest analysis/201_cr_simple_rates.do "covid"
-  #   needs: [000_covid]
-  #   outputs:
-  #     moderately_sensitive:
-  #       graph: output/tabfig/rates_summary_covid.csv
-
-  # 201_pneumonia:
-  #   run: stata-mp:latest analysis/201_cr_simple_rates.do "pneumonia"
-  #   needs: [000_pneumonia]
-  #   outputs:
-  #     moderately_sensitive:
-  #       graph: output/tabfig/rates_summary_pneumonia.csv
-
