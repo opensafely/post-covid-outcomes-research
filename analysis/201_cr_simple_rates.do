@@ -17,7 +17,7 @@
 *	Note:			
 ********************************************************************************
 do `c(pwd)'/analysis/global.do
-global group `1'
+global group 1
 
 use $outdir/cohort_rates_$group, clear 
 
@@ -27,53 +27,11 @@ tempname measures
 
 
 foreach v in stroke dvt pe {
-preserve
-	noi di "Starting analysis for $group: `v' Outcome ..." 
-	noi di "$group: stset in hospital" 
-																	 
-		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date) origin(hospitalised_expo_date)
-
-
-	* Overall rate 
-	stptime 
-	* Save measure
-	post `measures' ("$group") ("`v'") ("in_hosp") ("Overall") (0) (`r(ptime)') 	///
-							(`r(failures)') (`r(rate)') 								///
-							(`r(lb)') (`r(ub))')
-	
-	* Stratified by history of...
-	foreach c in hist_`v' agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission {
-		qui levelsof `c' , local(cats) 
-		di `cats'
-		foreach l of local cats {
-			noi di "$group: Calculate rate for variable `c' and level `l'" 
-			
-			qui  count if `c' ==`l'
-			if `r(N)' > 0 {
-			stptime if `c'==`l' 
-			* Save measures
-			post `measures' ("$group") ("`v'") ("in_hosp") ("`c'") (`l') (`r(ptime)') 	///
-							(`r(failures)') (`r(rate)') 								///
-							(`r(lb)') (`r(ub))') 
-			}
-			else {
-			post `measures' ("$group") ("`v'") ("`a'") ("`c'") (`l') (.) 	///
-							(.) (.) 								///
-							(.) (.) 
-			}
-					
-					
-		}
-	}
-	
-	* DROP Patients who have the event in hospital
-	drop if `v'_in_hosp == 1
-	drop if died_date_ons_date <= discharged_expo_date
-	
+preserve	
 	foreach a in post_hosp post_hosp_gp {
 		noi di "$group: stset in `a'" 
 		
-			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date)  origin(discharged_expo_date)
+			stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(indexdate)  origin(indexdate)
 		
 		* Overall rate 
 		stptime  
@@ -83,7 +41,7 @@ preserve
 							(`r(lb)') (`r(ub))')
 		
 		* Stratified
-		foreach c in hist_`v' agegroup gender ethnicity hist_of_af hist_of_anticoag long_hosp_stay icu_admission  {
+		foreach c in previous_`v' agegroup male ethnicity af anticoag_rx icu_admission  {
 			qui levelsof `c' , local(cats) 
 			di `cats'
 			foreach l of local cats {

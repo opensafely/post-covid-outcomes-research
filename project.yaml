@@ -42,6 +42,50 @@ actions:
       moderately_sensitive:
         graph: output/event_count_time_series.svg
 
+  covid_rates_cohort:
+   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
+   needs: [generate_covid_cohort]
+   outputs:
+     highly_sensitive:
+        analysis_dataset: output/cohort_rates_covid.dta
+
+  covid_community_rates_cohort:
+   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid_community"
+   needs: [generate_covid_community_cohort]
+   outputs:
+     highly_sensitive:
+        analysis_dataset: output/cohort_rates_covid_community.dta
+
+  pneumonia_rates_cohort:
+   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
+   needs: [generate_pneumonia_cohort]
+   outputs:
+     highly_sensitive:
+        analysis_dataset: output/cohort_rates_pneumonia.dta
+
+  covid_rates:
+    run: stata-mp:latest analysis/201_cr_simple_rates.do "covid"
+    needs: [covid_rates_cohort]
+    outputs:
+      moderately_sensitive:
+        rates: output/tabfig/rates_summary_covid.csv
+
+  covid_comm_rates:
+    run: stata-mp:latest analysis/201_cr_simple_rates.do "covid_community"
+    needs: [covid_community_rates_cohort]
+    outputs:
+      moderately_sensitive:
+        rates: output/tabfig/rates_summary_covid_community.csv
+
+  pneumonia_rates:
+    run: stata-mp:latest analysis/201_cr_simple_rates.do "pneumonia"
+    needs: [pneumonia_rates_cohort]
+    outputs:
+      moderately_sensitive:
+        rates: output/tabfig/rates_summary_pneumonia.csv
+
+
+
   # 000_covid:
   #   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
   #   needs: [generate_covid_cohort]
