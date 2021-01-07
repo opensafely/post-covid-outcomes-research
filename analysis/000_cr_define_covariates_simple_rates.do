@@ -18,7 +18,7 @@
 ********************************************************************************
 clear
 do `c(pwd)'/analysis/global.do
-global group 1
+global group `1'
 
 if "$group" == "covid" | "$group" == "covid_community"  { 
 local start_date  td(01/02/2020)

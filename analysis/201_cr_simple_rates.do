@@ -17,7 +17,7 @@
 *	Note:			
 ********************************************************************************
 do `c(pwd)'/analysis/global.do
-global group 1
+global group `1'
 
 use $outdir/cohort_rates_$group, clear 
 
