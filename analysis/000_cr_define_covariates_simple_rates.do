@@ -55,7 +55,7 @@ if "$group" == "covid" | "$group" == "pneumonia"  {
 gen hosp_expo_date = date(exposure_hospitalisation, "YMD")
 format hosp_expo_date %td
 * Length of stay
-gen length_of_stay = indexdate - hospitalised_expo_date + 1
+gen length_of_stay = indexdate - hosp_expo_date + 1
 label var length_of_stay "Length of stay in hospital (days)"
 hist length , name(length_of_stay_$group, replace) graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
 graph export $tabfigdir/length_of_stay_$group.svg , as(svg) replace
