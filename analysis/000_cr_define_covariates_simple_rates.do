@@ -66,8 +66,7 @@ gen long_hosp_stay = cond(length_of_stay >= `r(p50)' , 1, 0)
 *  Convert strings to dates  *
 ******************************
 * To be added: dates related to outcomes
-foreach var of varlist af 					///	
-					   date_icu_admission   ///
+foreach var of varlist date_icu_admission   ///
 					   dvt_gp				///
 					   pe_gp				///
 					   dvt_hospital		 	///
@@ -190,7 +189,8 @@ drop region_string
 
 
 * Recode true/false variables
-foreach v of varlist dvt 		///
+foreach v of varlist af 		///
+					 dvt 		///
 					 pe		    ///
 					stroke 		///
 					anticoag_rx { 
@@ -198,10 +198,7 @@ rename `v' `v'_2
 gen `v' = (`v'_2=="True")
 drop `v'_2
 }		
-
-* AF
-gen af = 1 if af_date <= indexdate
-replace af = 0 if af ==.		
+	
 **************************
 *  Categorise variables  *
 **************************
