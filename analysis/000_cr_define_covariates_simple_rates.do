@@ -260,7 +260,7 @@ replace egfr_flag = 0 if egfr ==.
 * dialysis
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
-gen dialysis_flag = 0 if dialysis_flag ==.
+replace dialysis_flag = 0 if dialysis_flag ==.
 }
 
 **************
