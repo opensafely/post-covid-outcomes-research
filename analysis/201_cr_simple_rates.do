@@ -19,8 +19,7 @@
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-*use $outdir/cohort_rates_$group, clear 
-use $outdir/cohort_rates_covid, clear 
+use $outdir/cohort_rates_$group, clear 
 
 tempname measures
 																	 
