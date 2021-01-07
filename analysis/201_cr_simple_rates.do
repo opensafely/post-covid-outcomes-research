@@ -19,7 +19,8 @@
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-use $outdir/cohort_rates_$group, clear 
+*use $outdir/cohort_rates_$group, clear 
+use $outdir/cohort_rates_covid, clear 
 
 tempname measures
 																	 
@@ -40,8 +41,10 @@ preserve
 							(`r(failures)') (`r(rate)') 								///
 							(`r(lb)') (`r(ub))')
 		
-		* Stratified
-		foreach c in previous_`v' agegroup male ethnicity af anticoag_rx icu_admission  {
+		* Stratified - additionally include long_hosp_stay for hosp patients
+		if "$group" == "covid" | "$group" == "pneumonia"  { 
+		foreach c in previous_`v' agegroup male ethnicity af anticoag_rx icu_admission long_hosp_stay {
+		
 			qui levelsof `c' , local(cats) 
 			di `cats'
 			foreach l of local cats {
@@ -63,8 +66,34 @@ preserve
 				}
 					
 			}
+		   }
 		}
-	
+		else { 
+		foreach c in previous_`v' agegroup male ethnicity af anticoag_rx icu_admission {
+		
+			qui levelsof `c' , local(cats) 
+			di `cats'
+			foreach l of local cats {
+				noi di "$group: Calculate rate for variable `c' and level `l'" 
+				qui  count if `c' ==`l'
+				if `r(N)' > 0 {
+				stptime if `c'==`l' 
+
+				* Save measures
+				post `measures' ("$group") ("`v'") ("`c'") (`l') (`r(ptime)')	///
+								(`r(failures)') (`r(rate)') 							///
+								(`r(lb)') (`r(ub))')
+				}
+
+				else {
+				post `measures' ("$group") ("`v'") ("`c'") (`l') (.) 	///
+							(.) (.) 								///
+							(.) (.) 
+				}
+					
+			}
+		   }
+		 }  
 restore
 }
 

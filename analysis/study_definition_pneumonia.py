@@ -49,14 +49,7 @@ study = StudyDefinition(
         find_first_match_in_period=True,
         return_expectations={"date": {"earliest": "index_date"}},
     ),
-    exposure_hosp_primary_dx=patients.admitted_to_hospital(
-        returning="date_admitted",
-        with_these_primary_diagnoses=pneumonia_codelist,
-        on_or_after="index_date",
-        date_format="YYYY-MM-DD",
-        find_first_match_in_period=True,
-        return_expectations={"date": {"earliest": "index_date"}},
-    ),
+
     date_icu_admission=patients.admitted_to_icu(
         find_first_match_in_period=True,
         on_or_after="index_date",

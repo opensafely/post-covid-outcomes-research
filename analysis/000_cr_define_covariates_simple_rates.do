@@ -41,7 +41,7 @@ import delimited $outdir/input_$group.csv
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
 
-* Hospitalised with exposure (expo -> covid or pneumonia)
+* Indexdate
 gen indexdate = date(patient_index_date, "YMD")
 format indexdate %td
 
@@ -51,16 +51,19 @@ drop patient_index_date
 * remove any patient discharged after end date
 drop if indexdate > `end_date'
 
-/* Length of stay
-gen length_of_stay = discharged_expo_date - hospitalised_expo_date + 1
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+gen hosp_expo_date = date(exposure_hospitalisation, "YMD")
+format hosp_expo_date %td
+* Length of stay
+gen length_of_stay = indexdate - hospitalised_expo_date + 1
 label var length_of_stay "Length of stay in hospital (days)"
 hist length , name(length_of_stay_$group, replace) graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
-graph export $outdir/length_of_stay_$group.svg , as(svg) replace
+graph export $tabfigdir/length_of_stay_$group.svg , as(svg) replace
 
 * Create flag for patients staying in hospital longer than the median length
 summ length, detail
 gen long_hosp_stay = cond(length_of_stay >= `r(p50)' , 1, 0)
-*/
+}
 
 ******************************
 *  Convert strings to dates  *
@@ -308,11 +311,19 @@ drop min_end_date
 }
 										
 **** Tidy dataset
+
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+keep  patient_id icu_admission previous_dvt previous_pe /// 
+ previous_stroke age ethnicity af /// 
+ indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
+ icu_admission stroke_end_date pe_end_date dvt_end_date long_hosp_stay
+ }
+else { 
 keep  patient_id icu_admission previous_dvt previous_pe /// 
  previous_stroke age ethnicity af /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  icu_admission stroke_end_date pe_end_date dvt_end_date
- 
+}
 order patient_id indexdate
 
 save $outdir/cohort_rates_$group, replace 
