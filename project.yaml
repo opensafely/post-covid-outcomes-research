@@ -85,6 +85,14 @@ actions:
         rates: output/tabfig/rates_summary_pneumonia.csv
 
 
+  baseline_characteristics:
+    run: stata-mp:latest analysis/400_baseline_characteristics.do
+    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort]
+    outputs:
+      moderately_sensitive:
+        tables: output/tabfig/an_descriptiveTable_*.txt
+
+
 
   # 000_covid:
   #   run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
@@ -118,9 +126,9 @@ actions:
   #     moderately_sensitive:
   #       graph: output/tabfig/rates_summary_pneumonia.csv
 
-  # 400_baseline_characteristics:
-  #   run: stata-mp:latest analysis/400_baseline_characteristics.do
-  #   needs: [301_pneumonia, 301_control_2019, 301_control_2020]
-  #   outputs:
-  #     moderately_sensitive:
-  #       tables: output/tabfig/an_descriptiveTable_*.txt
+   baseline_characteristics:
+     run: stata-mp:latest analysis/400_baseline_characteristics.do
+     needs: [301_pneumonia, 301_control_2019, 301_control_2020]
+     outputs:
+       moderately_sensitive:
+         tables: output/tabfig/an_descriptiveTable_*.txt

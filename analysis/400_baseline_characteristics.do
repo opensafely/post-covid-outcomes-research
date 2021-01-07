@@ -51,19 +51,12 @@ end
 
 *******************************************************************************
 
-foreach v in covid pneumonia control_2019 control_2020 {
+foreach v in covid covid_community pneumonia  {
 *Set up output file
 cap file close tablecontent
 file open tablecontent using $tabfigdir/an_descriptiveTable_`v'.txt, write text replace
 
-if "`v'" == "covid" {
-use $outdir/matched_cohort_pneumonia.dta, clear 
-keep if case == 1
-}
-else {
-use $outdir/matched_cohort_`v'.dta, clear 
-keep if case == 0
-}
+use "$outdir/cohort_rates_`v'", clear
 
 gen byte cons=1
 tabulatevariable, variable(cons) start(1) end(1) 
@@ -72,10 +65,16 @@ file write tablecontent _n
 tabulatevariable, variable(agegroup) start(1) end(5)  
 file write tablecontent _n 
 
-tabulatevariable, variable(gender) start(0) end(1) 
+tabulatevariable, variable(male) start(0) end(1) 
 file write tablecontent _n 
 
-tabulatevariable, variable(obese4cat) start(1) end(4) 
+tabulatevariable, variable(ethnicity) start(1) end(5) missing 
+file write tablecontent _n 
+
+tabulatevariable, variable(ethnicity) start(1) end(7) 
+file write tablecontent _n 
+
+/*tabulatevariable, variable(obese4cat) start(1) end(4) 
 file write tablecontent _n 
 
 tabulatevariable, variable(smoke_nomiss) start(1) end(3) 
@@ -132,7 +131,7 @@ local bmimissing=r(N)
 cou if smoke==.
 local smokmissing=r(N)
 file write tablecontent _n ("*missing BMI included in 'not obese' (n = ") (`bmimissing') (" (") %3.1f (100*`bmimissing'/`denom') ("%); missing smoking included in 'never smoker' (n = ") (`smokmissing') (" (") %3.1f (100*`smokmissing'/`denom') ("%))") 
-
+*/
 
 file close tablecontent
 }
