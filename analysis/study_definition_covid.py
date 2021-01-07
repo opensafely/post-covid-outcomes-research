@@ -5,22 +5,9 @@ from cohortextractor import (
     codelist_from_csv,
     combine_codelists,
 )
-from common_variables import common_variable_define
+from common_variables import common_variables
 from codelists import *
 
-dynamic_date_variables = dict(
-    index_date="2020-02-01",
-    patient_index_date=patients.admitted_to_hospital(
-        returning="date_discharged",
-        with_these_diagnoses=covid_codelist,
-        on_or_after="index_date",
-        date_format="YYYY-MM-DD",
-        find_first_match_in_period=True,
-        return_expectations={"date": {"earliest": "index_date"}},
-    ),
-)
-
-common_variables = common_variable_define(dynamic_date_variables)
 
 study = StudyDefinition(
     default_expectations={
@@ -41,7 +28,16 @@ study = StudyDefinition(
             "patient_index_date - 1 year", "patient_index_date"
         ),
     ),
-	exposure_hospitalisation=patients.admitted_to_hospital(
+    index_date="2020-02-01",
+    patient_index_date=patients.admitted_to_hospital(
+        returning="date_discharged",
+        with_these_diagnoses=covid_codelist,
+        on_or_after="index_date",
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    exposure_hospitalisation=patients.admitted_to_hospital(
         returning="date_admitted",
         with_these_diagnoses=covid_codelist,
         on_or_after="index_date",
@@ -56,6 +52,5 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         return_expectations={"date": {"earliest": "index_date"}},
     ),
-    **dynamic_date_variables,
     **common_variables
 )
