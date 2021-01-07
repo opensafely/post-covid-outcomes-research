@@ -204,6 +204,9 @@ foreach v of varlist af 		///
 					 dvt 		///
 					 pe		    ///
 					stroke 		///
+					heart_failure ///
+					mi ///
+					renal_failure ///
 					anticoag_rx { 
 rename `v' `v'_2
 gen `v' = (`v'_2=="True")
