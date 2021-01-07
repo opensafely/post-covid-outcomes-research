@@ -1,0 +1,60 @@
+CTV3Code,Description
+G300.,Acute anterolateral myocardial infarction
+G301.,Other specified anterior myocardial infarction
+G3010,Acute anteroapical infarction
+G3011,Acute anteroseptal myocardial infarction
+G301z,Anterior myocardial infarction NOS
+G302.,Acute inferolateral myocardial infarction
+G303.,Acute inferoposterior infarction
+G304.,Posterior myocardial infarction NOS
+G305.,Lateral myocardial infarction NOS
+G306.,True posterior myocardial infarction
+G307.,Acute subendocardial infarction
+G308.,Inferior myocardial infarction NOS
+G30y.,Other acute myocardial infarction
+G30y0,Acute atrial infarction
+G30y1,Acute papillary muscle infarction
+G30y2,Acute septal infarction
+G30yz,Other acute myocardial infarction NOS
+G30z.,Acute myocardial infarction NOS
+G35..,Subsequent myocardial infarction
+G350.,Subsequent myocardial infarction of anterior wall
+G351.,Subsequent myocardial infarction of inferior wall
+G353.,Subsequent myocardial infarction of other sites
+Gyu34,[X]Acute transmural myocardial infarction of unspecif site
+Gyu35,[X]Subsequent myocardial infarction of other sites
+Gyu36,[X]Subsequent myocardial infarction of unspecified site
+X200E,Myocardial infarction
+X200G,Acute Q wave infarction - anteroseptal
+X200H,Acute non-Q wave infarction - anteroseptal
+X200I,Acute Q wave infarction - anterolateral
+X200J,Acute non-Q wave infarction - anterolateral
+X200K,Acute inferior myocardial infarction
+X200L,Acute Q wave infarction - inferior
+X200M,Acute non-Q wave infarction - inferior
+X200N,Acute Q wave infarction - inferolateral
+X200O,Acute non-Q wave infarction - inferolateral
+X200P,Acute lateral myocardial infarction
+X200Q,Acute Q wave infarction - lateral
+X200R,Acute non-Q wave infarction - lateral
+X200S,Acute widespread myocardial infarction
+X200T,Acute Q wave infarction - widespread
+X200U,Acute non-Q wave infarction - widespread
+X200V,Acute posterior myocardial infarction
+X200a,Silent myocardial infarction
+XE0Uh,Acute myocardial infarction
+Xa0YL,Acute anterior myocardial infarction
+XaAC3,Acute Q wave myocardial infarction
+XaAzi,Acute non-Q wave infarction
+XaD2b,Postoperative myocardial infarction
+XaD2d,Postoperative transmural myocardial infarction anterior wall
+XaD2e,Postoperative transmural myocardial infarction inferior wall
+XaD2f,Postoperative transmural myocardial infarction other sites
+XaD2g,Postoperative transmural myocardial infarction unspec site
+XaD2h,Postoperative subendocardial myocardial infarction
+XaD2i,"Postoperative myocardial infarction, unspecified"
+XaEgZ,Non-Q wave myocardial infarction
+XaIf1,First myocardial infarction
+XaIwM,Acute ST segment elevation myocardial infarction
+XaIwY,Acute non-ST segment elevation myocardial infarction
+XaJX0,Acute posterolateral myocardial infarction

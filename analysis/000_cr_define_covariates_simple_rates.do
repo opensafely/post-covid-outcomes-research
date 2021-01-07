@@ -77,7 +77,15 @@ foreach var of varlist date_icu_admission   ///
 					   stroke_gp			///
 					   stroke_ons			///
 					   pe_ons 				///
-					   dvt_ons				///
+					   dvt_ons		 		///
+					   renal_failure_hospital ///
+					   renal_failure_ons	///
+					   heart_failure_gp		///
+					   heart_failure_hospital ///
+					   heart_failure_ons    ///
+					   mi_gp				///
+					   mi_hospital			///
+					   mi_ons				///
 					   stroke_hospital  	///
 					   died_date_ons 		///
 					   creatinine_date  	///
@@ -196,6 +204,9 @@ foreach v of varlist af 		///
 					 dvt 		///
 					 pe		    ///
 					stroke 		///
+					heart_failure ///
+					mi ///
+					renal_failure ///
 					anticoag_rx { 
 rename `v' `v'_2
 gen `v' = (`v'_2=="True")
@@ -255,21 +266,32 @@ replace egfr=egfr*1.018 if male==0
 label var egfr "egfr calculated using CKD-EPI formula with no eth"
 
 * Categorise into ckd stages
-gen egfr_flag = 1 if egfr <15
-replace egfr_flag = 0 if egfr ==.
+
 * dialysis
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
 replace dialysis_flag = 0 if dialysis_flag ==.
 }
+if "$group" == "covid_community" {
+gen dialysis_flag = 1 if dialysis_date < indexdate
+replace dialysis_flag = 0 if dialysis_flag ==.
+}
+
+gen renal_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
+replace renal_exclusion_flag = 0 if renal_exclusion_flag ==.
 
 **************
 *  Outcomes  *
 **************	
 
-foreach out in stroke dvt pe {
+foreach out in stroke dvt pe heart_failure mi renal_failure {
 
-gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date)
+if "`out'" == "renal_failure" {
+gen min_end_date = min(`out'_hospital, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
+}
+else {
+gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
+}
 * Define outcome 
 	gen 	`out'_end_date = `end_date' // relevant end date
 	replace `out'_end_date = min_end_date if  min_end_date!=.	 // not missing
@@ -283,15 +305,17 @@ drop min_end_date
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 keep  patient_id hosp_expo_date previous_dvt previous_pe /// 
- previous_stroke agegroup ethnicity af /// 
+ previous_stroke agegroup ethnicity af renal_exclusion_flag /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
- icu_admission stroke_end_date pe_end_date dvt_end_date long_hosp_stay
+ stroke_end_date pe_end_date dvt_end_date long_hosp_stay ///
+ mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date
  }
 else { 
 keep  patient_id previous_dvt previous_pe /// 
- previous_stroke agegroup ethnicity af /// 
+ previous_stroke agegroup ethnicity af renal_exclusion_flag /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
- icu_admission stroke_end_date pe_end_date dvt_end_date
+ stroke_end_date pe_end_date dvt_end_date ///
+ mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date
 }
 order patient_id indexdate
 

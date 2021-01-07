@@ -87,6 +87,78 @@ common_variables = dict(
     ),
     stroke=patients.satisfying("stroke_gp OR stroke_hospital OR stroke_ons"),
     # stroke_date=patients.minimum_of("stroke_gp", "stroke_hospital", "stroke_ons"),
+    # Renal failure
+    renal_failure_hospital=patients.admitted_to_hospital(
+        returning="date_admitted",
+        with_these_diagnoses=renal_failure_codes,
+        on_or_after="patient_index_date",
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    renal_failure_ons=patients.with_these_codes_on_death_certificate(
+        renal_failure_codes,
+        returning="date_of_death",
+        date_format="YYYY-MM-DD",
+        match_only_underlying_cause=False,
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    renal_failure=patients.satisfying("renal_failure_hospital OR renal_failure_ons"),
+    # MI
+    mi_gp=patients.with_these_clinical_events(
+        mi_codes,
+        return_first_date_in_period=True,
+        date_format="YYYY-MM-DD",
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    mi_hospital=patients.admitted_to_hospital(
+        returning="date_admitted",
+        with_these_diagnoses=filter_codes_by_category(mi_codes_hospital, include=["1"]),
+        on_or_after="patient_index_date",
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    mi_ons=patients.with_these_codes_on_death_certificate(
+        filter_codes_by_category(mi_codes_hospital, include=["1"]),
+        returning="date_of_death",
+        date_format="YYYY-MM-DD",
+        match_only_underlying_cause=False,
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    mi=patients.satisfying("mi_gp OR mi_hospital OR mi_ons"),
+    # Heart failure
+    heart_failure_gp=patients.with_these_clinical_events(
+        heart_failure_codes,
+        return_first_date_in_period=True,
+        date_format="YYYY-MM-DD",
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    heart_failure_hospital=patients.admitted_to_hospital(
+        returning="date_admitted",
+        with_these_diagnoses=filter_codes_by_category(
+            heart_failure_codes_hospital, include=["1"]
+        ),
+        on_or_after="patient_index_date",
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    heart_failure_ons=patients.with_these_codes_on_death_certificate(
+        filter_codes_by_category(heart_failure_codes_hospital, include=["1"]),
+        returning="date_of_death",
+        date_format="YYYY-MM-DD",
+        match_only_underlying_cause=False,
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    heart_failure=patients.satisfying(
+        "heart_failure_gp OR heart_failure_hospital OR heart_failure_ons"
+    ),
     # History of outcomes
     previous_dvt=patients.categorised_as(
         {
