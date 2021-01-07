@@ -13,3 +13,6 @@ opensafely/direct-acting-oral-anticoagulants-doac/2020-10-05
 opensafely/warfarin/2020-10-05
 opensafely/chronic-kidney-disease/2020-04-14
 opensafely/stroke-updated/2020-06-02
+opensafely/myocardial-infarction-2/2020-07-09
+opensafely/heart-failure/2020-05-05
+opensafely/cardiovascular-secondary-care/20b63bd4
