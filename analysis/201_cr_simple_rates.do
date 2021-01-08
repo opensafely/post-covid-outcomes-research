@@ -33,10 +33,13 @@ tempname measures
 	postfile `measures' str16(group) str20(outcome) str12(time) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
 
 
-foreach v in stroke dvt pe heart_failure mi renal_failure {
+foreach v in stroke dvt pe heart_failure mi renal_failure t1dm t2dm {
 preserve	
 if "`v'" == "renal_failure" {
 drop if renal_exclusion_flag == 1
+}
+if "`v'" == "t1dm" | "`v'" == "t2dm" {
+drop if previous_diabetes == 1
 }
 		noi di "$group: stset in post_hosp_gp" 
 		

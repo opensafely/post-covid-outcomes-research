@@ -90,6 +90,12 @@ foreach var of varlist date_icu_admission   ///
 					   died_date_ons 		///
 					   creatinine_date  	///
 					   dialysis 			///
+					   t1dm_gp				///
+					   t1dm_hospital  		///
+					   t1dm_ons 			///
+					   t2dm_gp				///
+					   t2dm_hospital  		///
+					   t2dm_ons 			///
 					   {
 
 capture confirm string variable `var'
@@ -207,7 +213,7 @@ foreach v of varlist af 		///
 					heart_failure ///
 					mi ///
 					renal_failure ///
-					anticoag_rx { 
+					anticoag_rx  { 
 rename `v' `v'_2
 gen `v' = (`v'_2=="True")
 drop `v'_2
@@ -284,7 +290,7 @@ replace renal_exclusion_flag = 0 if renal_exclusion_flag ==.
 *  Outcomes  *
 **************	
 
-foreach out in stroke dvt pe heart_failure mi renal_failure {
+foreach out in stroke dvt pe heart_failure mi renal_failure t1dm t2dm {
 
 if "`out'" == "renal_failure" {
 gen min_end_date = min(`out'_hospital, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
@@ -308,14 +314,16 @@ keep  patient_id hosp_expo_date previous_dvt previous_pe ///
  previous_stroke agegroup ethnicity af renal_exclusion_flag /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  stroke_end_date pe_end_date dvt_end_date long_hosp_stay ///
- mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date
+ mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date /// 
+ t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
  }
 else { 
 keep  patient_id previous_dvt previous_pe /// 
  previous_stroke agegroup ethnicity af renal_exclusion_flag /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  stroke_end_date pe_end_date dvt_end_date ///
- mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date
+ mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date ///
+ t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
 }
 order patient_id indexdate
 
