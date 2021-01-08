@@ -380,7 +380,7 @@ common_variables = dict(
         },
     ),
     practice_id=patients.registered_practice_as_of(
-        "patient_index_date",
+        "2020-02-01",
         returning="pseudo_id",
         return_expectations={
             "int": {"distribution": "normal", "mean": 1000, "stddev": 100},
@@ -388,7 +388,7 @@ common_variables = dict(
         },
     ),
     stp=patients.registered_practice_as_of(
-        "patient_index_date",
+        "2020-02-01",
         returning="stp_code",
         return_expectations={
             "rate": "universal",
@@ -409,7 +409,7 @@ common_variables = dict(
         },
     ),
     region=patients.registered_practice_as_of(
-        "patient_index_date",
+        "2020-02-01",
         returning="nuts1_region_name",
         return_expectations={
             "rate": "universal",
@@ -429,7 +429,7 @@ common_variables = dict(
         },
     ),
     imd=patients.address_as_of(
-        "patient_index_date",
+        "2020-02-01",
         returning="index_of_multiple_deprivation",
         round_to_nearest=100,
         return_expectations={
