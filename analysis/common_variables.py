@@ -165,18 +165,21 @@ common_variables = dict(
         on_or_after="patient_index_date",
         find_first_match_in_period=True,
         date_format="YYYY-MM-DD",
+        return_expectations={"date": {"earliest": "index_date"}},
     ),
     t2dm_gp=patients.with_these_clinical_events(
         diabetes_t2_codes,
         on_or_after="patient_index_date",
         find_first_match_in_period=True,
         date_format="YYYY-MM-DD",
+        return_expectations={"date": {"earliest": "index_date"}},
     ),
     unknown_diabetes_gp=patients.with_these_clinical_events(
         diabetes_unknown_codes,
         on_or_after="patient_index_date",
         find_first_match_in_period=True,
         date_format="YYYY-MM-DD",
+        return_expectations={"date": {"earliest": "index_date"}},
     ),
     t1dm_hospital=patients.admitted_to_hospital(
         returning="date_admitted",
@@ -213,10 +216,12 @@ common_variables = dict(
     oad_lastyear_meds=patients.with_these_medications(
         oad_med_codes,
         between=["patient_index_date - 1 year", "patient_index_date"],
+        return_expectations={"incidence": 0.05},
     ),
     insulin_lastyear_meds=patients.with_these_medications(
         insulin_med_codes,
         between=["patient_index_date - 1 year", "patient_index_date"],
+        return_expectations={"incidence": 0.05},
     ),
     type1_agg=patients.satisfying("t1dm_gp OR t1dm_hospital OR t1dm_ons"),
     type2_agg=patients.satisfying("t2dm_gp OR t2dm_hospital OR t2dm_ons"),
