@@ -1,0 +1,148 @@
+{
+  "files": {
+    "opensafely-covid-identification.csv": {
+      "id": "opensafely/covid-identification/2020-06-03",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/covid-identification/2020-06-03/",
+      "downloaded_at": "2021-01-08 17:06:52.147433Z",
+      "sha": "124db6929439379b7dacd55ba26ae4f2ed9370bc"
+    },
+    "opensafely-diabetes.csv": {
+      "id": "opensafely/diabetes/2020-04-15",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/diabetes/2020-04-15/",
+      "downloaded_at": "2021-01-08 17:06:52.282244Z",
+      "sha": "605104b3e3770b7ab703d12943f5f15fa8eafe77"
+    },
+    "opensafely-ethnicity.csv": {
+      "id": "opensafely/ethnicity/2020-04-27",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/ethnicity/2020-04-27/",
+      "downloaded_at": "2021-01-08 17:06:52.412513Z",
+      "sha": "3d2f3998b71863a80b24d60f6f4282e14191ae13"
+    },
+    "opensafely-hypertension.csv": {
+      "id": "opensafely/hypertension/2020-04-28",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/hypertension/2020-04-28/",
+      "downloaded_at": "2021-01-08 17:06:52.560997Z",
+      "sha": "b0d7bbf6ea767366db458bc6f6d37955ae331cc7"
+    },
+    "opensafely-incident-venous-thromboembolic-disease.csv": {
+      "id": "opensafely/incident-venous-thromboembolic-disease/2020-09-30",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/incident-venous-thromboembolic-disease/2020-09-30/",
+      "downloaded_at": "2021-01-08 17:06:52.680503Z",
+      "sha": "688e9ecdd59f1f0a7b1d5633677388a621f456a7"
+    },
+    "opensafely-pneumonia-secondary-care.csv": {
+      "id": "opensafely/pneumonia-secondary-care/2020-10-05",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/pneumonia-secondary-care/2020-10-05/",
+      "downloaded_at": "2021-01-08 17:06:52.816003Z",
+      "sha": "866ab4f0ff144330c1a0ea28116c9d2073cf379a"
+    },
+    "opensafely-smoking-clear.csv": {
+      "id": "opensafely/smoking-clear/2020-04-29",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/smoking-clear/2020-04-29/",
+      "downloaded_at": "2021-01-08 17:06:52.940949Z",
+      "sha": "0b5f3afe1db96dcce5141220e893a42ba2e5a8f7"
+    },
+    "opensafely-incident-non-traumatic-stroke.csv": {
+      "id": "opensafely/incident-non-traumatic-stroke/0be6efb3",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/incident-non-traumatic-stroke/0be6efb3/",
+      "downloaded_at": "2021-01-08 17:06:53.063473Z",
+      "sha": "0ab55320f1c9251bda2712164927dd40debfea9f"
+    },
+    "opensafely-stroke-secondary-care.csv": {
+      "id": "opensafely/stroke-secondary-care/2020-10-05",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/stroke-secondary-care/2020-10-05/",
+      "downloaded_at": "2021-01-08 17:06:53.189381Z",
+      "sha": "04aeb4b87dcf27651e34c287fdffe023bce38591"
+    },
+    "opensafely-venous-thromboembolic-disease-hospital.csv": {
+      "id": "opensafely/venous-thromboembolic-disease-hospital/2020-10-01",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/venous-thromboembolic-disease-hospital/2020-10-01/",
+      "downloaded_at": "2021-01-08 17:06:53.339219Z",
+      "sha": "5dd9d60df2ad93e622d76e0d7d90f71d14168af1"
+    },
+    "opensafely-atrial-fibrillation-clinical-finding.csv": {
+      "id": "opensafely/atrial-fibrillation-clinical-finding/2020-07-09",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/atrial-fibrillation-clinical-finding/2020-07-09/",
+      "downloaded_at": "2021-01-08 17:06:53.478521Z",
+      "sha": "edccc1a96570988b7e92a7a6e44cdee70a0ac179"
+    },
+    "opensafely-direct-acting-oral-anticoagulants-doac.csv": {
+      "id": "opensafely/direct-acting-oral-anticoagulants-doac/2020-10-05",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/direct-acting-oral-anticoagulants-doac/2020-10-05/",
+      "downloaded_at": "2021-01-08 17:06:53.607471Z",
+      "sha": "50f69d9c0bcb0e58aadb76fb4749d33f74f66253"
+    },
+    "opensafely-warfarin.csv": {
+      "id": "opensafely/warfarin/2020-10-05",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/warfarin/2020-10-05/",
+      "downloaded_at": "2021-01-08 17:06:53.746123Z",
+      "sha": "971d819a24d4c04bea3000390e9fb2f718fb3b22"
+    },
+    "opensafely-chronic-kidney-disease.csv": {
+      "id": "opensafely/chronic-kidney-disease/2020-04-14",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/chronic-kidney-disease/2020-04-14/",
+      "downloaded_at": "2021-01-08 17:06:53.869239Z",
+      "sha": "08e003f1222fe26781288b2eeff22db99780f202"
+    },
+    "opensafely-stroke-updated.csv": {
+      "id": "opensafely/stroke-updated/2020-06-02",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/stroke-updated/2020-06-02/",
+      "downloaded_at": "2021-01-08 17:06:54.010829Z",
+      "sha": "e62a8af49698022220de1e1e438d6b6c611e666e"
+    },
+    "opensafely-myocardial-infarction-2.csv": {
+      "id": "opensafely/myocardial-infarction-2/2020-07-09",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/myocardial-infarction-2/2020-07-09/",
+      "downloaded_at": "2021-01-08 17:06:54.144628Z",
+      "sha": "392939dc703299be6e01daae092b1543ffc933fd"
+    },
+    "opensafely-heart-failure.csv": {
+      "id": "opensafely/heart-failure/2020-05-05",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/heart-failure/2020-05-05/",
+      "downloaded_at": "2021-01-08 17:06:54.279662Z",
+      "sha": "6139df4911534868bc5ade1ada53395606651064"
+    },
+    "opensafely-cardiovascular-secondary-care.csv": {
+      "id": "opensafely/cardiovascular-secondary-care/20b63bd4",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/cardiovascular-secondary-care/20b63bd4/",
+      "downloaded_at": "2021-01-08 17:06:54.409271Z",
+      "sha": "2058b84c281a623ad71793e9b5058aea9079612f"
+    },
+    "opensafely-type-1-diabetes.csv": {
+      "id": "opensafely/type-1-diabetes/2020-06-29",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/type-1-diabetes/2020-06-29/",
+      "downloaded_at": "2021-01-08 17:06:54.553598Z",
+      "sha": "dc4ce0fbdb8500cc7dc6288e8eec9c783e31de57"
+    },
+    "opensafely-type-2-diabetes.csv": {
+      "id": "opensafely/type-2-diabetes/2020-06-29",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/type-2-diabetes/2020-06-29/",
+      "downloaded_at": "2021-01-08 17:06:54.683302Z",
+      "sha": "21a0fd8e041c19abd876970d75b389b6904dc901"
+    },
+    "opensafely-diabetes-unknown-type.csv": {
+      "id": "opensafely/diabetes-unknown-type/2020-06-29",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/diabetes-unknown-type/2020-06-29/",
+      "downloaded_at": "2021-01-08 17:06:54.827386Z",
+      "sha": "eaaa1867e6bbcb436df91e8b75189d7ff1ca4b0c"
+    },
+    "opensafely-type-1-diabetes-secondary-care.csv": {
+      "id": "opensafely/type-1-diabetes-secondary-care/2020-09-27",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/type-1-diabetes-secondary-care/2020-09-27/",
+      "downloaded_at": "2021-01-08 17:06:54.951637Z",
+      "sha": "ba80f00dceaeebc19bd4ef76cd0a4a7c3ab5e70c"
+    },
+    "opensafely-antidiabetic-drugs.csv": {
+      "id": "opensafely/antidiabetic-drugs/2020-07-16",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/antidiabetic-drugs/2020-07-16/",
+      "downloaded_at": "2021-01-08 17:06:55.096139Z",
+      "sha": "f0b93b0054d673e8dcfbeba8fea0cd54239f0725"
+    },
+    "opensafely-insulin-medication.csv": {
+      "id": "opensafely/insulin-medication/2020-04-26",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/insulin-medication/2020-04-26/",
+      "downloaded_at": "2021-01-08 17:06:55.229454Z",
+      "sha": "9d4c57c0b8738962da04b32ab43b7659cd64d774"
+    }
+  }
+}
