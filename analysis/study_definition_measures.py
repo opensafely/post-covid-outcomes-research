@@ -67,7 +67,7 @@ study = StudyDefinition(
             "": "DEFAULT",
         },
         return_expectations={
-            "incidence": 0.95,
+            "incidence": 1,
             "category": {
                 "ratios": {
                     "General population": 0.8,
@@ -139,53 +139,58 @@ study = StudyDefinition(
             return_expectations={"incidence": 0.05},
         ),
     ),
-    died_stroke=patients.categorised_as(
-        {
-            "Stroke on death certificate": "stroke_ons",
-            "Stroke not on death certificate": "NOT stroke_ons",
-            "": "DEFAULT",
-        },
-        return_expectations={
-            "incidence": 0.95,
-            "category": {
-                "ratios": {
-                    "Stroke on death certificate": 0.2,
-                    "Stroke not on death certificate": 0.8,
-                }
-            },
-        },
+    renal_failure_ons=patients.with_these_codes_on_death_certificate(
+        renal_failure_codes,
+        between=["index_date", "last_day_of_month(index_date)"],
+        return_expectations={"incidence": 0.05},
     ),
-    died_DVT=patients.categorised_as(
-        {
-            "DVT on death certificate": "dvt_ons",
-            "DVT not on death certificate": "NOT dvt_ons",
-            "": "DEFAULT",
-        },
-        return_expectations={
-            "incidence": 0.95,
-            "category": {
-                "ratios": {
-                    "DVT on death certificate": 0.2,
-                    "DVT not on death certificate": 0.8,
-                }
-            },
-        },
+    renal_failure=patients.satisfying(
+        "renal_failure_hospital OR renal_failure_ons",
+        renal_failure_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=renal_failure_codes,
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
-    died_PE=patients.categorised_as(
-        {
-            "PE on death certificate": "pe_ons",
-            "PE not on death certificate": "NOT pe_ons",
-            "": "DEFAULT",
-        },
-        return_expectations={
-            "incidence": 0.95,
-            "category": {
-                "ratios": {
-                    "PE on death certificate": 0.2,
-                    "PE not on death certificate": 0.8,
-                }
-            },
-        },
+    mi_ons=patients.with_these_codes_on_death_certificate(
+        filter_codes_by_category(mi_codes_hospital, include=["1"]),
+        between=["index_date", "last_day_of_month(index_date)"],
+        return_expectations={"incidence": 0.05},
+    ),
+    MI=patients.satisfying(
+        "mi_gp OR mi_hospital OR mi_ons",
+        mi_gp=patients.with_these_clinical_events(
+            mi_codes,
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
+        mi_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                mi_codes_hospital, include=["1"]
+            ),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
+    ),
+    heart_failure_ons=patients.with_these_codes_on_death_certificate(
+        filter_codes_by_category(heart_failure_codes_hospital, include=["1"]),
+        between=["index_date", "last_day_of_month(index_date)"],
+        return_expectations={"incidence": 0.05},
+    ),
+    heart_failure=patients.satisfying(
+        "pe_gp OR pe_hospital OR pe_ons",
+        heart_failure_gp=patients.with_these_clinical_events(
+            heart_failure_codes,
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
+        heart_failure_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                heart_failure_codes_hospital, include=["1"]
+            ),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
     died=patients.died_from_any_cause(
         between=["index_date", "last_day_of_month(index_date)"],
@@ -214,21 +219,27 @@ measures = [
         group_by=["covid_hospitalisation"],
     ),
     Measure(
-        id="died_stroke_rate",
-        numerator="died",
+        id="MI_rate",
+        numerator="MI",
         denominator="population",
-        group_by=["covid_hospitalisation", "died_stroke"],
+        group_by=["covid_hospitalisation"],
     ),
     Measure(
-        id="died_DVT_rate",
-        numerator="died",
+        id="heart_failure_rate",
+        numerator="heart_failure",
         denominator="population",
-        group_by=["covid_hospitalisation", "died_DVT"],
+        group_by=["covid_hospitalisation"],
     ),
     Measure(
-        id="died_PE_rate",
+        id="renal_failure_rate",
+        numerator="renal_failure",
+        denominator="population",
+        group_by=["covid_hospitalisation"],
+    ),
+    Measure(
+        id="died_rate",
         numerator="died",
         denominator="population",
-        group_by=["covid_hospitalisation", "died_PE"],
+        group_by=["covid_hospitalisation"],
     ),
 ]
