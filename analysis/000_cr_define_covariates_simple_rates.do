@@ -95,8 +95,7 @@ foreach var of varlist date_icu_admission   ///
 					   t1dm_ons 			///
 					   t2dm_gp				///
 					   t2dm_hospital  		///
-					   t2dm_ons 			///
-					   {
+					   t2dm_ons 			 {
 
 capture confirm string variable `var'
 	if _rc!=0 {
