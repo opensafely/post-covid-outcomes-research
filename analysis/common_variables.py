@@ -159,6 +159,99 @@ common_variables = dict(
     heart_failure=patients.satisfying(
         "heart_failure_gp OR heart_failure_hospital OR heart_failure_ons"
     ),
+    # Diabetes
+    t1dm_gp=patients.with_these_clinical_events(
+        diabetes_t1_codes,
+        on_or_after="patient_index_date",
+        return_first_date_in_period=True,
+        date_format="YYYY-MM-DD",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    t2dm_gp=patients.with_these_clinical_events(
+        diabetes_t2_codes,
+        on_or_after="patient_index_date",
+        return_first_date_in_period=True,
+        date_format="YYYY-MM-DD",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    unknown_diabetes_gp=patients.with_these_clinical_events(
+        diabetes_unknown_codes,
+        on_or_after="patient_index_date",
+        return_first_date_in_period=True,
+        date_format="YYYY-MM-DD",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    t1dm_hospital=patients.admitted_to_hospital(
+        returning="date_admitted",
+        with_these_diagnoses=diabetes_t1_codes_hospital,
+        on_or_after="patient_index_date",
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    t2dm_hospital=patients.admitted_to_hospital(
+        returning="date_admitted",
+        with_these_diagnoses=diabetes_t2_codes_hospital,
+        on_or_after="patient_index_date",
+        date_format="YYYY-MM-DD",
+        find_first_match_in_period=True,
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    t1dm_ons=patients.with_these_codes_on_death_certificate(
+        diabetes_t1_codes_hospital,
+        returning="date_of_death",
+        date_format="YYYY-MM-DD",
+        match_only_underlying_cause=False,
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    t2dm_ons=patients.with_these_codes_on_death_certificate(
+        diabetes_t2_codes_hospital,
+        returning="date_of_death",
+        date_format="YYYY-MM-DD",
+        match_only_underlying_cause=False,
+        on_or_after="patient_index_date",
+        return_expectations={"date": {"earliest": "index_date"}},
+    ),
+    oad_lastyear_meds=patients.with_these_medications(
+        oad_med_codes,
+        between=["patient_index_date - 1 year", "patient_index_date"],
+        return_expectations={"incidence": 0.05},
+    ),
+    insulin_lastyear_meds=patients.with_these_medications(
+        insulin_med_codes,
+        between=["patient_index_date - 1 year", "patient_index_date"],
+        return_expectations={"incidence": 0.05},
+    ),
+    type1_agg=patients.satisfying("t1dm_gp OR t1dm_hospital OR t1dm_ons"),
+    type2_agg=patients.satisfying("t2dm_gp OR t2dm_hospital OR t2dm_ons"),
+    t1dm=patients.satisfying(
+        """
+            (type1_agg AND NOT
+            type2_agg)
+        OR
+            (((type1_agg AND type2_agg) OR
+            (type1_agg AND unknown_diabetes_gp AND NOT type2_agg) OR
+            (unknown_diabetes_gp AND NOT type1_agg AND NOT type2_agg))
+            AND
+            (insulin_lastyear_meds AND NOT
+            oad_lastyear_meds))
+        """,
+        return_expectations={"incidence": 0.05},
+    ),
+    t2dm=patients.satisfying(
+        """
+            (type2_agg AND NOT
+            type1_agg)
+        OR
+            (((type1_agg AND type2_agg) OR
+            (type2_agg AND unknown_diabetes_gp AND NOT type1_agg) OR
+            (unknown_diabetes_gp AND NOT type1_agg AND NOT type2_agg))
+            AND
+            (oad_lastyear_meds))
+        """,
+        return_expectations={"incidence": 0.05},
+    ),
     # History of outcomes
     previous_dvt=patients.categorised_as(
         {
@@ -249,6 +342,11 @@ common_variables = dict(
             with_these_diagnoses=stroke_hospital,
             between=["patient_index_date - 3 months", "patient_index_date"],
         ),
+    ),
+    previous_diabetes=patients.with_these_clinical_events(
+        combine_codelists(diabetes_t1_codes, diabetes_t2_codes, diabetes_unknown_codes),
+        on_or_before="patient_index_date",
+        return_expectations={"incidence": 0.05},
     ),
     died_date_ons=patients.died_from_any_cause(
         returning="date_of_death",

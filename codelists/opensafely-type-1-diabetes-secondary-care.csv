@@ -1,0 +1,12 @@
+icd10_code,name,detail
+E10,Insulin-dependent diabetes mellitus,
+E10.0,Insulin-dependent diabetes mellitus,With coma
+E10.1,Insulin-dependent diabetes mellitus,With ketoacidosis
+E10.2,Insulin-dependent diabetes mellitus,With renal complications
+E10.3,Insulin-dependent diabetes mellitus,With ophthalmic complications
+E10.4,Insulin-dependent diabetes mellitus,With neurological complications
+E10.5,Insulin-dependent diabetes mellitus,With peripheral circulatory complications
+E10.6,Insulin-dependent diabetes mellitus,With other specified complications
+E10.7,Insulin-dependent diabetes mellitus,With multiple complications
+E10.8,Insulin-dependent diabetes mellitus,With unspecified complications
+E10.9,Insulin-dependent diabetes mellitus,Without complications

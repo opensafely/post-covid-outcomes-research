@@ -16,3 +16,9 @@ opensafely/stroke-updated/2020-06-02
 opensafely/myocardial-infarction-2/2020-07-09
 opensafely/heart-failure/2020-05-05
 opensafely/cardiovascular-secondary-care/20b63bd4
+opensafely/type-1-diabetes/2020-06-29
+opensafely/type-2-diabetes/2020-06-29
+opensafely/diabetes-unknown-type/2020-06-29
+opensafely/type-1-diabetes-secondary-care/2020-09-27
+opensafely/antidiabetic-drugs/2020-07-16
+opensafely/insulin-medication/2020-04-26

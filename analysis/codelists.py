@@ -27,8 +27,29 @@ doac_codes = codelist_from_csv(
     column="id",
 )
 
-diabetes_codes = codelist_from_csv(
-    "codelists/opensafely-diabetes.csv", system="ctv3", column="CTV3ID"
+diabetes_t1_codes = codelist_from_csv(
+    "codelists/opensafely-type-1-diabetes.csv", system="ctv3", column="CTV3ID"
+)
+diabetes_t2_codes = codelist_from_csv(
+    "codelists/opensafely-type-2-diabetes.csv", system="ctv3", column="CTV3ID"
+)
+diabetes_unknown_codes = codelist_from_csv(
+    "codelists/opensafely-diabetes-unknown-type.csv", system="ctv3", column="CTV3ID"
+)
+diabetes_t1_codes_hospital = codelist_from_csv(
+    "codelists/opensafely-type-1-diabetes-secondary-care.csv",
+    system="icd10",
+    column="icd10_code",
+)
+diabetes_t2_codes_hospital = codelist(
+    ["E11", "E110", "E112", "E113", "E114", "E115", "E116", "E118", "E119"],
+    system="icd10",
+)
+oad_med_codes = codelist_from_csv(
+    "codelists/opensafely-antidiabetic-drugs.csv", system="snomed", column="id"
+)
+insulin_med_codes = codelist_from_csv(
+    "codelists/opensafely-insulin-medication.csv", system="snomed", column="id"
 )
 
 hba1c_new_codes = codelist(["XaPbt", "Xaeze", "Xaezd"], system="ctv3")
@@ -47,7 +68,9 @@ stroke_hospital = codelist_from_csv(
     "codelists/opensafely-stroke-secondary-care.csv", system="icd10", column="icd"
 )
 
-renal_failure_codes = codelist(["N17", "N170", "N171", "N172", "N178", "N179"], system="icd10")
+renal_failure_codes = codelist(
+    ["N17", "N170", "N171", "N172", "N178", "N179"], system="icd10"
+)
 
 mi_codes = codelist_from_csv(
     "codelists/opensafely-myocardial-infarction-2.csv",
