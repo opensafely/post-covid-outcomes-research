@@ -204,20 +204,6 @@ label values region_7 region_7
 label var region_7 "Region of England (7 regions)"
 drop region_string
 
-
-* Recode true/false variables
-foreach v of varlist af 		///
-					 dvt 		///
-					 pe		    ///
-					stroke 		///
-					heart_failure ///
-					mi ///
-					renal_failure ///
-					anticoag_rx  { 
-rename `v' `v'_2
-gen `v' = (`v'_2=="True")
-drop `v'_2
-}		
 	
 **************************
 *  Categorise variables  *
