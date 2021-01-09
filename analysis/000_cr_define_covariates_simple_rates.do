@@ -123,7 +123,7 @@ replace `v' = 0 if `v' ==.
 * drop if died before discharge date
 drop if died_date_ons < indexdate
 
-* Note: There may be deaths recorded after end of our study (08 Oct)
+* Note: There may be deaths recorded after end of our study 
 * Set these to missing
 replace died_date_ons_date = . if died_date_ons_date>`end_date'
 
@@ -278,9 +278,12 @@ replace renal_exclusion_flag = 0 if renal_exclusion_flag ==.
 foreach out in stroke dvt pe heart_failure mi renal_failure t1dm t2dm {
 
 if "`out'" == "renal_failure" {
+replace `out'_hospital = . if `out'_hospital > `end_date'
 gen min_end_date = min(`out'_hospital, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
 }
 else {
+replace `out'_hospital = . if `out'_hospital > `end_date'
+replace `out'_gp = . if `out'_gp > `end_date'
 gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
 }
 * Define outcome 
