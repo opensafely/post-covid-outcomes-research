@@ -48,8 +48,10 @@ drop if previous_diabetes == 1
 		* Overall rate 
 		stptime  
 		* Save measure
+		local events .
+		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
 		post `measures' ("$group") ("`v'") ("Full period") ("Overall") (0) (`r(ptime)') 	///
-							(`r(failures)') (`r(rate)') 								///
+							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
 		* Stratified - additionally include long_hosp_stay for hosp patients
@@ -62,11 +64,12 @@ drop if previous_diabetes == 1
 				noi di "$group: Calculate rate for variable `c' and level `l'" 
 				qui  count if `c' ==`l'
 				if `r(N)' > 0 {
-				stptime if `c'==`l' 
-
+				stptime if `c'==`l'
 				* Save measures
+				local events .
+				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
 				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (`r(ptime)')	///
-								(`r(failures)') (`r(rate)') 							///
+								(`events') (`r(rate)') 							///
 								(`r(lb)') (`r(ub)')
 				}
 
@@ -85,8 +88,10 @@ drop if previous_diabetes == 1
 		forvalues t = 30(30)120 {
 		stptime if time ==`t'
 		* Save measure
+		local events .
+		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
 		post `measures' ("$group") ("`v'") ("`t' days") ("Overall") (0) (`r(ptime)') 	///
-							(`r(failures)') (`r(rate)') 								///
+							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
 		* Stratified 
@@ -96,11 +101,12 @@ drop if previous_diabetes == 1
 				noi di "$group: Calculate rate for variable `c' and level `l' over time = `t'" 
 				qui  count if time ==`t' & agegroup ==`l' 
 				if `r(N)' > 0 {
-				stptime if time ==`t' & agegroup ==`l' 
-
+				stptime if time ==`t' & agegroup ==`l'
 				* Save measures
+				local events .
+				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
 				post `measures' ("$group") ("`v'") ("`t' days")  ("agegroup") (`l') (`r(ptime)')	///
-								(`r(failures)') (`r(rate)') 							///
+								(`events') (`r(rate)') 							///
 								(`r(lb)') (`r(ub)')
 				}
 
