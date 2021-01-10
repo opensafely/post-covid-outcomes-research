@@ -59,32 +59,35 @@ study = StudyDefinition(
             },
         ),
     ),
-    everyone=patients.satisfying("1=1", return_expectations={"incidence": 0.7}),
+    everyone=patients.satisfying("1=1", return_expectations={"incidence": 1}),
     covid_hospitalisation=patients.categorised_as(
         {
-            "General population": "NOT hospitalised_with_covid",
-            "Hospitalised with COVID-19": "hospitalised_with_covid",
-            "": "DEFAULT",
+            "COVID-19 positive": "covid_positive AND NOT covid_hospitalised",
+            "COVID-19 hospitalised": "covid_hospitalised",
+            "General population": "DEFAULT",
         },
         return_expectations={
             "incidence": 1,
             "category": {
                 "ratios": {
+                    "COVID-19 positive": 0.1,
+                    "COVID-19 hospitalised": 0.1,
                     "General population": 0.8,
-                    "Hospitalised with COVID-19": 0.2,
                 }
             },
         },
-        hospitalised_with_covid=patients.admitted_to_hospital(
+        covid_positive=patients.with_test_result_in_sgss(
+            pathogen="SARS-CoV-2",
+            test_result="positive",
+            between=["2020-01-01", "last_day_of_month(index_date)"],
+            date_format="YYYY-MM-DD",
+            return_expectations={"date": {"earliest": "index_date"}},
+        ),
+        covid_hospitalised=patients.admitted_to_hospital(
             with_these_diagnoses=covid_codelist,
-            between=["2019-01-01", "last_day_of_month(index_date)"],
+            between=["2020-01-01", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.20},
         ),
-    ),
-    stroke_ons=patients.with_these_codes_on_death_certificate(
-        stroke_hospital,
-        between=["index_date", "last_day_of_month(index_date)"],
-        return_expectations={"incidence": 0.05},
     ),
     stroke=patients.satisfying(
         "stroke_gp OR stroke_hospital OR stroke_ons",
@@ -98,11 +101,11 @@ study = StudyDefinition(
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
-    ),
-    dvt_ons=patients.with_these_codes_on_death_certificate(
-        filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
-        between=["index_date", "last_day_of_month(index_date)"],
-        return_expectations={"incidence": 0.05},
+        stroke_ons=patients.with_these_codes_on_death_certificate(
+            stroke_hospital,
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
     DVT=patients.satisfying(
         "dvt_gp OR dvt_hospital OR dvt_ons",
@@ -118,11 +121,11 @@ study = StudyDefinition(
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
-    ),
-    pe_ons=patients.with_these_codes_on_death_certificate(
-        filter_codes_by_category(vte_codes_hospital, include=["pe"]),
-        between=["index_date", "last_day_of_month(index_date)"],
-        return_expectations={"incidence": 0.05},
+        dvt_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
     PE=patients.satisfying(
         "pe_gp OR pe_hospital OR pe_ons",
@@ -138,11 +141,11 @@ study = StudyDefinition(
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
-    ),
-    renal_failure_ons=patients.with_these_codes_on_death_certificate(
-        renal_failure_codes,
-        between=["index_date", "last_day_of_month(index_date)"],
-        return_expectations={"incidence": 0.05},
+        pe_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(vte_codes_hospital, include=["pe"]),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
     renal_failure=patients.satisfying(
         "renal_failure_hospital OR renal_failure_ons",
@@ -151,11 +154,11 @@ study = StudyDefinition(
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
-    ),
-    mi_ons=patients.with_these_codes_on_death_certificate(
-        filter_codes_by_category(mi_codes_hospital, include=["1"]),
-        between=["index_date", "last_day_of_month(index_date)"],
-        return_expectations={"incidence": 0.05},
+        renal_failure_ons=patients.with_these_codes_on_death_certificate(
+            renal_failure_codes,
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
     MI=patients.satisfying(
         "mi_gp OR mi_hospital OR mi_ons",
@@ -171,14 +174,14 @@ study = StudyDefinition(
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
-    ),
-    heart_failure_ons=patients.with_these_codes_on_death_certificate(
-        filter_codes_by_category(heart_failure_codes_hospital, include=["1"]),
-        between=["index_date", "last_day_of_month(index_date)"],
-        return_expectations={"incidence": 0.05},
+        mi_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(mi_codes_hospital, include=["1"]),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
     ),
     heart_failure=patients.satisfying(
-        "pe_gp OR pe_hospital OR pe_ons",
+        "heart_failure_gp OR heart_failure_hospital OR heart_failure_ons",
         heart_failure_gp=patients.with_these_clinical_events(
             heart_failure_codes,
             between=["index_date", "last_day_of_month(index_date)"],
@@ -188,6 +191,24 @@ study = StudyDefinition(
             with_these_diagnoses=filter_codes_by_category(
                 heart_failure_codes_hospital, include=["1"]
             ),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
+        heart_failure_ons=patients.with_these_codes_on_death_certificate(
+            filter_codes_by_category(heart_failure_codes_hospital, include=["1"]),
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
+    ),
+    ketoacidosis=patients.satisfying(
+        "ketoacidosis_hospital OR ketoacidosis_ons",
+        ketoacidosis_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=ketoacidosis_codes,
+            between=["index_date", "last_day_of_month(index_date)"],
+            return_expectations={"incidence": 0.05},
+        ),
+        ketoacidosis_ons=patients.with_these_codes_on_death_certificate(
+            ketoacidosis_codes,
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
@@ -201,8 +222,8 @@ study = StudyDefinition(
 
 measures = [
     Measure(
-        id="stroke_rate",
-        numerator="stroke",
+        id="died_rate",
+        numerator="died",
         denominator="population",
         group_by=["covid_hospitalisation"],
     ),
@@ -215,6 +236,12 @@ measures = [
     Measure(
         id="PE_rate",
         numerator="PE",
+        denominator="population",
+        group_by=["covid_hospitalisation"],
+    ),
+    Measure(
+        id="stroke_rate",
+        numerator="stroke",
         denominator="population",
         group_by=["covid_hospitalisation"],
     ),
@@ -237,8 +264,8 @@ measures = [
         group_by=["covid_hospitalisation"],
     ),
     Measure(
-        id="died_rate",
-        numerator="died",
+        id="ketoacidosis_rate",
+        numerator="ketoacidosis",
         denominator="population",
         group_by=["covid_hospitalisation"],
     ),
