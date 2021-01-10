@@ -42,6 +42,6 @@ for i, ax in enumerate(axes.flat):
         ax.set_ylabel(f"people {grammar_decider(m.numerator)}")
         handles, labels = ax.get_legend_handles_labels()
         handles, labels = list(reversed(handles)), list(reversed(labels))
-        ax.legend(handles, labels, prop={"size": 9}).set_title("")
+        ax.legend(handles, labels, loc=3, prop={"size": 9}).set_title("")
         plt.tight_layout()
 plt.savefig("output/event_count_time_series.svg")
