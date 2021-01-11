@@ -1,0 +1,26 @@
+cons	==1	68340 (100.0)
+
+agegroup	==1	8281 (12.1)
+agegroup	==2	36176 (52.9)
+agegroup	==3	23883 (34.9)
+agegroup	==4	0 (0.0)
+agegroup	==5	0 (0.0)
+
+male	==0	34499 (50.5)
+male	==1	33841 (49.5)
+
+ethnicity	==1	45668 (66.8)
+ethnicity	==2	273 (0.4)
+ethnicity	==3	2672 (3.9)
+ethnicity	==4	687 (1.0)
+ethnicity	==5	429 (0.6)
+ethnicity	>=.	18611 (27.2)
+
+ethnicity	==1	45668 (66.8)
+ethnicity	==2	273 (0.4)
+ethnicity	==3	2672 (3.9)
+ethnicity	==4	687 (1.0)
+ethnicity	==5	429 (0.6)
+ethnicity	==6	0 (0.0)
+ethnicity	==7	0 (0.0)
+
