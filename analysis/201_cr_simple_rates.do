@@ -85,7 +85,7 @@ drop if previous_diabetes == 1
 	stsplit time, at(30(30)120)
 		
 		* Overall rate 
-		forvalues t = 30(30)120 {
+		forvalues t = 0(30)120 {
 		stptime if time ==`t'
 		* Save measure
 		local events .
