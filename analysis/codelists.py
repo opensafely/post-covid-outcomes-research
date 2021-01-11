@@ -73,7 +73,7 @@ stroke_hospital = codelist_from_csv(
     "codelists/opensafely-stroke-secondary-care.csv", system="icd10", column="icd"
 )
 
-renal_failure_codes = codelist(
+aki_codes = codelist(
     ["N17", "N170", "N171", "N172", "N178", "N179"], system="icd10"
 )
 
