@@ -275,6 +275,11 @@ replace renal_exclusion_flag = 0 if renal_exclusion_flag ==.
 *  Outcomes  *
 **************	
 
+* Post outcome distribution 
+tempname outcomeDist
+																	 
+	postfile `outcomeDist' str20(outcome) str12(type) numEvents percent using $tabfigdir/outcome_distribution_$group.dta, replace
+	
 foreach out in stroke dvt pe heart_failure mi renal_failure t1dm t2dm {
 
 if "`out'" == "renal_failure" {
@@ -294,7 +299,38 @@ gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_on
 	format %td `out'_end_date 
 
 drop min_end_date	
+
+* Overall
+safecount if `out' == 1 
+local tot_events = `r(N)'
+post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
+
+if "`out'" != "renal_failure" {
+* GP
+safecount if `out' == 1 & `out'_end_date == `out'_gp
+local events = `r(N)' 
+local percent= `r(N)' /tot_events *100
+post `outcomeDist' ("`out'") ("GP") (`events') (`percent') 
 }
+
+* Hospital
+safecount if `out' == 1 & `out'_end_date == `out'_hospital
+local events = `r(N)' 
+local percent= `r(N)' /tot_events *100
+post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
+
+* ONS
+safecount if `out' == 1 & `out'_end_date == died_date_ons_date
+local events = `r(N)' 
+local percent= `r(N)' /tot_events *100
+post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
+
+
+}
+
+postclose `outcomeDist'
+
+
 										
 **** Tidy dataset
 
@@ -317,3 +353,9 @@ keep  patient_id previous_dvt previous_pe ///
 order patient_id indexdate
 
 save $outdir/cohort_rates_$group, replace 
+
+
+
+* Tidy outcome dist data 
+use $tabfigdir/outcome_distribution_$group.dta, replace
+export delimited using $tabfigdir/outcome_distribution_$group.csv, replace
