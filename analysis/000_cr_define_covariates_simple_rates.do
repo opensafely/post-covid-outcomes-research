@@ -309,20 +309,20 @@ if "`out'" != "aki" {
 * GP
 safecount if `out' == 1 & `out'_end_date == `out'_gp
 local events = `r(N)' 
-local percent= `r(N)' /tot_events *100
+local percent= `r(N)' /`tot_events' *100
 post `outcomeDist' ("`out'") ("GP") (`events') (`percent') 
 }
 
 * Hospital
 safecount if `out' == 1 & `out'_end_date == `out'_hospital
 local events = `r(N)' 
-local percent= `r(N)' /tot_events *100
+local percent= `r(N)' /`tot_events' *100
 post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
 
 * ONS
 safecount if `out' == 1 & `out'_end_date == died_date_ons_date
 local events = `r(N)' 
-local percent= `r(N)' /tot_events *100
+local percent= `r(N)' /`tot_events' *100
 post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
 
 
@@ -340,7 +340,7 @@ keep  patient_id hosp_expo_date previous_dvt previous_pe ///
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  stroke_end_date pe_end_date dvt_end_date long_hosp_stay ///
  mi heart_failure aki mi_end_date aki_end_date heart_failure_end_date /// 
- t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes tot_events
+ t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
  }
 else { 
 keep  patient_id previous_dvt previous_pe /// 
@@ -348,7 +348,7 @@ keep  patient_id previous_dvt previous_pe ///
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  stroke_end_date pe_end_date dvt_end_date ///
  mi heart_failure aki mi_end_date aki_end_date heart_failure_end_date ///
- t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes tot_events
+ t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
 }
 order patient_id indexdate
 
