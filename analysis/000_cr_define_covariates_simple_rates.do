@@ -78,8 +78,8 @@ foreach var of varlist date_icu_admission   ///
 					   stroke_ons			///
 					   pe_ons 				///
 					   dvt_ons		 		///
-					   renal_failure_hospital ///
-					   renal_failure_ons	///
+					   aki_hospital ///
+					   aki_ons	///
 					   heart_failure_gp		///
 					   heart_failure_hospital ///
 					   heart_failure_ons    ///
@@ -268,8 +268,8 @@ gen dialysis_flag = 1 if dialysis_date < indexdate
 replace dialysis_flag = 0 if dialysis_flag ==.
 }
 
-gen renal_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
-replace renal_exclusion_flag = 0 if renal_exclusion_flag ==.
+gen aki_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
+replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
 
 **************
 *  Outcomes  *
@@ -280,9 +280,9 @@ tempname outcomeDist
 																	 
 	postfile `outcomeDist' str20(outcome) str12(type) numEvents percent using $tabfigdir/outcome_distribution_$group.dta, replace
 	
-foreach out in stroke dvt pe heart_failure mi renal_failure t1dm t2dm {
+foreach out in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
-if "`out'" == "renal_failure" {
+if "`out'" == "aki" {
 replace `out'_hospital = . if `out'_hospital > `end_date'
 gen min_end_date = min(`out'_hospital, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
 }
@@ -305,7 +305,7 @@ safecount if `out' == 1
 local tot_events = `r(N)'
 post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
 
-if "`out'" != "renal_failure" {
+if "`out'" != "aki" {
 * GP
 safecount if `out' == 1 & `out'_end_date == `out'_gp
 local events = `r(N)' 
@@ -336,20 +336,18 @@ postclose `outcomeDist'
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 keep  patient_id hosp_expo_date previous_dvt previous_pe /// 
- previous_stroke agegroup ethnicity af renal_exclusion_flag /// 
+ previous_stroke agegroup ethnicity af aki_exclusion_flag /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  stroke_end_date pe_end_date dvt_end_date long_hosp_stay ///
- mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date /// 
- t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
+ mi heart_failure aki mi_end_date aki_end_date heart_failure_end_date /// 
  t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes tot_events
  }
 else { 
 keep  patient_id previous_dvt previous_pe /// 
- previous_stroke agegroup ethnicity af renal_exclusion_flag /// 
+ previous_stroke agegroup ethnicity af aki_exclusion_flag /// 
  indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
  stroke_end_date pe_end_date dvt_end_date ///
- mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date ///
- t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
+ mi heart_failure aki mi_end_date aki_end_date heart_failure_end_date ///
  t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes tot_events
 }
 order patient_id indexdate

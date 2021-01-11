@@ -87,24 +87,24 @@ common_variables = dict(
     ),
     stroke=patients.satisfying("stroke_gp OR stroke_hospital OR stroke_ons"),
     # stroke_date=patients.minimum_of("stroke_gp", "stroke_hospital", "stroke_ons"),
-    # Renal failure
-    renal_failure_hospital=patients.admitted_to_hospital(
+    # Acute kidney injury
+    aki_hospital=patients.admitted_to_hospital(
         returning="date_admitted",
-        with_these_diagnoses=renal_failure_codes,
-        on_or_after="patient_index_date",
+        with_these_diagnoses=aki_codes,
+        on_or_after="patient_index_date + 1 days",
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={"date": {"earliest": "index_date"}},
     ),
-    renal_failure_ons=patients.with_these_codes_on_death_certificate(
-        renal_failure_codes,
+    aki_ons=patients.with_these_codes_on_death_certificate(
+        aki_codes,
         returning="date_of_death",
         date_format="YYYY-MM-DD",
         match_only_underlying_cause=False,
         on_or_after="patient_index_date",
         return_expectations={"date": {"earliest": "index_date"}},
     ),
-    renal_failure=patients.satisfying("renal_failure_hospital OR renal_failure_ons"),
+    aki=patients.satisfying("aki_hospital OR aki_ons"),
     # MI
     mi_gp=patients.with_these_clinical_events(
         mi_codes,
