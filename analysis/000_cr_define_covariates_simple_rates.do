@@ -341,6 +341,7 @@ keep  patient_id hosp_expo_date previous_dvt previous_pe ///
  stroke_end_date pe_end_date dvt_end_date long_hosp_stay ///
  mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date /// 
  t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
+ t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes tot_events
  }
 else { 
 keep  patient_id previous_dvt previous_pe /// 
@@ -349,6 +350,7 @@ keep  patient_id previous_dvt previous_pe ///
  stroke_end_date pe_end_date dvt_end_date ///
  mi heart_failure renal_failure mi_end_date renal_failure_end_date heart_failure_end_date ///
  t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
+ t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes tot_events
 }
 order patient_id indexdate
 
