@@ -47,7 +47,7 @@ actions:
    needs: [generate_covid_cohort]
    outputs:
      moderately_sensitive: 
-	outcome_dist: output/tabfig/outcome_distribution_covid.csv
+     	outcome_dist: output/tabfig/outcome_distribution_covid.csv
      highly_sensitive:
         analysis_dataset: output/cohort_rates_covid.dta
 
@@ -64,8 +64,8 @@ actions:
    run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "pneumonia"
    needs: [generate_pneumonia_cohort]
    outputs:
-     moderately_sensitive: 
-	outcome_dist: output/tabfig/outcome_distribution_pneumonia.csv
+     moderately_sensitive:
+     	outcome_dist: output/tabfig/outcome_distribution_pneumonia.csv
      highly_sensitive:
         analysis_dataset: output/cohort_rates_pneumonia.dta
 
