@@ -22,7 +22,7 @@ global group `1'
 use $outdir/cohort_rates_$group, clear 
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx "
+global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx long_hosp_stay"
 }
 else {
 global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx"
@@ -85,7 +85,7 @@ drop if previous_diabetes == 1
 	stsplit time, at(30(30)120)
 		
 		* Overall rate 
-		forvalues t = 30(30)120 {
+		forvalues t = 0(30)120 {
 		stptime if time ==`t'
 		* Save measure
 		local events .
