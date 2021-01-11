@@ -47,7 +47,7 @@ actions:
    needs: [generate_covid_cohort]
    outputs:
      moderately_sensitive: 
-	     outcome_dist: output/outcome_distribution_covid.csv
+	outcome_dist: output/outcome_distribution_covid.csv
      highly_sensitive:
         analysis_dataset: output/cohort_rates_covid.dta
 
@@ -56,7 +56,7 @@ actions:
    needs: [generate_covid_community_cohort]
    outputs:
      moderately_sensitive: 
-	     outcome_dist: output/outcome_distribution_covid_community.csv
+	outcome_dist: output/outcome_distribution_covid_community.csv
      highly_sensitive:
         analysis_dataset: output/cohort_rates_covid_community.dta
 
@@ -65,7 +65,7 @@ actions:
    needs: [generate_pneumonia_cohort]
    outputs:
      moderately_sensitive: 
-	     outcome_dist: output/outcome_distribution_pneumonia.csv
+	outcome_dist: output/outcome_distribution_pneumonia.csv
      highly_sensitive:
         analysis_dataset: output/cohort_rates_pneumonia.dta
 
