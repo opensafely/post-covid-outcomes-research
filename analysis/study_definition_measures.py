@@ -147,15 +147,15 @@ study = StudyDefinition(
             return_expectations={"incidence": 0.05},
         ),
     ),
-    renal_failure=patients.satisfying(
-        "renal_failure_hospital OR renal_failure_ons",
-        renal_failure_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=renal_failure_codes,
+    AKI=patients.satisfying(
+        "aki_hospital OR aki_ons",
+        aki_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=aki_codes,
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
-        renal_failure_ons=patients.with_these_codes_on_death_certificate(
-            renal_failure_codes,
+        aki_ons=patients.with_these_codes_on_death_certificate(
+            aki_codes,
             between=["index_date", "last_day_of_month(index_date)"],
             return_expectations={"incidence": 0.05},
         ),
@@ -258,8 +258,8 @@ measures = [
         group_by=["covid_hospitalisation"],
     ),
     Measure(
-        id="renal_failure_rate",
-        numerator="renal_failure",
+        id="AKI_rate",
+        numerator="AKI",
         denominator="population",
         group_by=["covid_hospitalisation"],
     ),
