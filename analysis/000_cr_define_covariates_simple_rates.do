@@ -300,18 +300,75 @@ gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_on
 
 drop min_end_date	
 
+if "`out'" == "aki" {
+replace `out'_hospital = `out'_hospital + 1 
+replace died_date_ons_date = died_date_ons_date + 1 
+}
+else {
+replace `out'_hospital = `out'_hospital + 1 
+replace `out'_gp = `out'_gp + 1 
+replace died_date_ons_date = died_date_ons_date + 1 
+}
+
+if "`out'" == "aki" {
+* Overall
+safecount if `out' == 1 & aki_exclusion_flag == 0
+local tot_events = `r(N)'
+post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
+
+* Hospital
+safecount if `out' == 1 & `out'_end_date == `out'_hospital & aki_exclusion_flag == 0
+local events = `r(N)' 
+local percent= `r(N)' /`tot_events' *100
+post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
+
+* ONS
+safecount if `out' == 1 & `out'_end_date == died_date_ons_date & aki_exclusion_flag == 0
+local events = `r(N)' 
+local percent= `r(N)' /`tot_events' *100
+post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
+
+
+}
+
+if "`out'" == "t2dm" | "`out'" == "t1dm" {
+* Overall
+safecount if `out' == 1 & previous_diabetes == 0
+local tot_events = `r(N)'
+post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
+
+* GP
+safecount if `out' == 1 & `out'_end_date == `out'_gp & previous_diabetes == 0
+local events = `r(N)' 
+local percent= `r(N)' /`tot_events' *100
+post `outcomeDist' ("`out'") ("GP") (`events') (`percent') 
+
+* Hospital
+safecount if `out' == 1 & `out'_end_date == `out'_hospital & previous_diabetes == 0
+local events = `r(N)' 
+local percent= `r(N)' /`tot_events' *100
+post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
+
+* ONS
+safecount if `out' == 1 & `out'_end_date == died_date_ons_date & previous_diabetes == 0
+local events = `r(N)' 
+local percent= `r(N)' /`tot_events' *100
+post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
+
+
+}
+
+if "`out'" != "aki" & "`out'" != "t2dm" & "`out'" != "t1dm" {
 * Overall
 safecount if `out' == 1 
 local tot_events = `r(N)'
 post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
 
-if "`out'" != "aki" {
 * GP
 safecount if `out' == 1 & `out'_end_date == `out'_gp
 local events = `r(N)' 
 local percent= `r(N)' /`tot_events' *100
 post `outcomeDist' ("`out'") ("GP") (`events') (`percent') 
-}
 
 * Hospital
 safecount if `out' == 1 & `out'_end_date == `out'_hospital
@@ -324,7 +381,7 @@ safecount if `out' == 1 & `out'_end_date == died_date_ons_date
 local events = `r(N)' 
 local percent= `r(N)' /`tot_events' *100
 post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
-
+}
 
 }
 
