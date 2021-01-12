@@ -300,7 +300,7 @@ gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_on
 
 drop min_end_date	
 
-if "`out'" == "renal_failure" {
+if "`out'" == "aki" {
 replace `out'_hospital = `out'_hospital + 1 
 replace died_date_ons_date = died_date_ons_date + 1 
 }
@@ -358,13 +358,12 @@ post `outcomeDist' ("`out'") ("ONS") (`events') (`percent')
 
 }
 
-if "`out'" != "aki" & "`out'" == "t2dm" {
+if "`out'" != "aki" & "`out'" != "t2dm" & "`out'" != "t1dm" {
 * Overall
 safecount if `out' == 1 
 local tot_events = `r(N)'
 post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
 
-if "`out'" != "aki" {
 * GP
 safecount if `out' == 1 & `out'_end_date == `out'_gp
 local events = `r(N)' 
