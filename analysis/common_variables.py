@@ -5,6 +5,78 @@ from datetime import datetime, timedelta
 
 common_variables = dict(
     # Outcomes
+    # History of outcomes
+    recent_dvt=patients.satisfying(
+        "recent_dvt_gp OR recent_dvt_hospital",
+        recent_dvt_gp=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+        recent_dvt_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+    ),
+    recent_pe=patients.satisfying(
+        "recent_pe_gp OR recent_pe_hospital",
+        recent_pe_gp=patients.with_these_clinical_events(
+            filter_codes_by_category(vte_codes_gp, include=["pe"]),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+        recent_pe_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+    ),
+    recent_stroke=patients.satisfying(
+        "recent_stroke_gp OR recent_stroke_hospital",
+        recent_stroke_gp=patients.with_these_clinical_events(
+            stroke,
+            between=["patient_index_date - 3 months", "patient_index_date"],
+            return_expectations={"incidence": 0.05},
+        ),
+        recent_stroke_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=stroke_hospital,
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+    ),
+    recent_mi=patients.satisfying(
+        "recent_mi_gp OR recent_mi_hospital",
+        recent_mi_gp=patients.with_these_clinical_events(
+            mi_codes,
+            between=["patient_index_date - 3 months", "patient_index_date"],
+            return_expectations={"incidence": 0.05},
+        ),
+        recent_mi_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                mi_codes_hospital, include=["1"]
+            ),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+    ),
+    recent_heart_failure=patients.satisfying(
+        "recent_heart_failure_gp OR recent_heart_failure_hospital",
+        recent_heart_failure_gp=patients.with_these_clinical_events(
+            heart_failure_codes,
+            between=["patient_index_date - 3 months", "patient_index_date"],
+            return_expectations={"incidence": 0.05},
+        ),
+        recent_heart_failure_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                heart_failure_codes_hospital, include=["1"]
+            ),
+            between=["patient_index_date - 3 months", "patient_index_date"],
+        ),
+    ),
+    previous_diabetes=patients.with_these_clinical_events(
+        combine_codelists(diabetes_t1_codes, diabetes_t2_codes, diabetes_unknown_codes),
+        on_or_before="patient_index_date",
+        return_expectations={"incidence": 0.05},
+    ),
     ## DVT
     dvt_gp=patients.with_these_clinical_events(
         filter_codes_by_category(vte_codes_gp, include=["dvt"]),
@@ -32,6 +104,10 @@ common_variables = dict(
         return_expectations={"date": {"earliest": "index_date"}},
     ),
     dvt=patients.satisfying("dvt_gp OR dvt_hospital OR dvt_ons"),
+    dvt_no_gp=patients.satisfying("dvt_hospital OR dvt_ons"),
+    dvt_cens_gp=patients.satisfying(
+        "(dvt_gp AND NOT recent_dvt) OR dvt_hospital OR dvt_ons"
+    ),
     # dvt_date=patients.minimum_of("dvt_gp", "dvt_hospital", "dvt_ons"),
     # PE
     pe_gp=patients.with_these_clinical_events(
@@ -60,6 +136,10 @@ common_variables = dict(
         return_expectations={"date": {"earliest": "index_date"}},
     ),
     pe=patients.satisfying("pe_gp OR pe_hospital OR pe_ons"),
+    pe_no_gp=patients.satisfying("pe_hospital OR pe_ons"),
+    pe_cens_gp=patients.satisfying(
+        "(pe_gp AND NOT recent_pe) OR pe_hospital OR pe_ons"
+    ),
     # pe_date=patients.minimum_of("pe_gp", "pe_hospital", "pe_ons"),
     ## Stroke
     stroke_gp=patients.with_these_clinical_events(
@@ -86,6 +166,10 @@ common_variables = dict(
         return_expectations={"date": {"earliest": "index_date"}},
     ),
     stroke=patients.satisfying("stroke_gp OR stroke_hospital OR stroke_ons"),
+    stroke_no_gp=patients.satisfying("stroke_hospital OR stroke_ons"),
+    stroke_cens_gp=patients.satisfying(
+        "(stroke_gp AND NOT recent_stroke) OR stroke_hospital OR stroke_ons"
+    ),
     # stroke_date=patients.minimum_of("stroke_gp", "stroke_hospital", "stroke_ons"),
     # Acute kidney injury
     aki_hospital=patients.admitted_to_hospital(
@@ -130,6 +214,10 @@ common_variables = dict(
         return_expectations={"date": {"earliest": "index_date"}},
     ),
     mi=patients.satisfying("mi_gp OR mi_hospital OR mi_ons"),
+    mi_no_gp=patients.satisfying("mi_hospital OR mi_ons"),
+    mi_cens_gp=patients.satisfying(
+        "(mi_gp AND NOT recent_mi) OR mi_hospital OR mi_ons"
+    ),
     # Heart failure
     heart_failure_gp=patients.with_these_clinical_events(
         heart_failure_codes,
@@ -158,6 +246,15 @@ common_variables = dict(
     ),
     heart_failure=patients.satisfying(
         "heart_failure_gp OR heart_failure_hospital OR heart_failure_ons"
+    ),
+    heart_failure_no_gp=patients.satisfying(
+        "heart_failure_hospital OR heart_failure_ons"
+    ),
+    heart_failure_cens_gp=patients.satisfying(
+        """
+          (heart_failure_gp AND NOT recent_heart_failure)
+        OR heart_failure_hospital OR heart_failure_ons
+        """
     ),
     # Diabetes
     t1dm_gp=patients.with_these_clinical_events(
@@ -250,102 +347,6 @@ common_variables = dict(
             AND
             (oad_lastyear_meds))
         """,
-        return_expectations={"incidence": 0.05},
-    ),
-    # History of outcomes
-    previous_dvt=patients.categorised_as(
-        {
-            "0": "DEFAULT",
-            "1": """
-                        (historic_dvt_gp OR historic_dvt_hospital) 
-                AND NOT (recent_dvt_gp OR recent_dvt_hospital)
-                """,
-            "2": "recent_dvt_gp OR recent_dvt_hospital",
-        },
-        return_expectations={"category": {"ratios": {"0": 0.7, "1": 0.1, "2": 0.2}}},
-        historic_dvt_gp=patients.with_these_clinical_events(
-            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
-            on_or_before="patient_index_date - 3 months",
-        ),
-        recent_dvt_gp=patients.with_these_clinical_events(
-            filter_codes_by_category(vte_codes_gp, include=["dvt"]),
-            between=["patient_index_date - 3 months", "patient_index_date"],
-        ),
-        historic_dvt_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=filter_codes_by_category(
-                vte_codes_hospital, include=["dvt"]
-            ),
-            on_or_before="patient_index_date - 3 months",
-        ),
-        recent_dvt_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=filter_codes_by_category(
-                vte_codes_hospital, include=["dvt"]
-            ),
-            between=["patient_index_date - 3 months", "patient_index_date"],
-        ),
-    ),
-    previous_pe=patients.categorised_as(
-        {
-            "0": "DEFAULT",
-            "1": """
-                        (historic_pe_gp OR historic_pe_hospital) 
-                AND NOT (recent_pe_gp OR recent_pe_hospital)
-                """,
-            "2": "recent_pe_gp OR recent_pe_hospital",
-        },
-        return_expectations={"category": {"ratios": {"0": 0.7, "1": 0.1, "2": 0.2}}},
-        historic_pe_gp=patients.with_these_clinical_events(
-            filter_codes_by_category(vte_codes_gp, include=["pe"]),
-            on_or_before="patient_index_date - 3 months",
-        ),
-        recent_pe_gp=patients.with_these_clinical_events(
-            filter_codes_by_category(vte_codes_gp, include=["pe"]),
-            between=["patient_index_date - 3 months", "patient_index_date"],
-        ),
-        historic_pe_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=filter_codes_by_category(
-                vte_codes_hospital, include=["pe"]
-            ),
-            on_or_after="patient_index_date - 3 months",
-        ),
-        recent_pe_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=filter_codes_by_category(
-                vte_codes_hospital, include=["pe"]
-            ),
-            between=["patient_index_date - 3 months", "patient_index_date"],
-        ),
-    ),
-    previous_stroke=patients.categorised_as(
-        {
-            "0": "DEFAULT",
-            "1": """
-                        (historic_pe_gp OR historic_pe_hospital) 
-                AND NOT (recent_pe_gp OR recent_pe_hospital)
-                """,
-            "2": "recent_pe_gp OR recent_pe_hospital",
-        },
-        return_expectations={"category": {"ratios": {"0": 0.7, "1": 0.1, "2": 0.2}}},
-        historic_stroke_gp=patients.with_these_clinical_events(
-            stroke,
-            on_or_after="patient_index_date - 3 months",
-        ),
-        recent_stroke_gp=patients.with_these_clinical_events(
-            stroke,
-            between=["patient_index_date - 3 months", "patient_index_date"],
-            return_expectations={"incidence": 0.05},
-        ),
-        historic_stroke_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=stroke_hospital,
-            on_or_after="patient_index_date - 3 months",
-        ),
-        recent_stroke_hospital=patients.admitted_to_hospital(
-            with_these_diagnoses=stroke_hospital,
-            between=["patient_index_date - 3 months", "patient_index_date"],
-        ),
-    ),
-    previous_diabetes=patients.with_these_clinical_events(
-        combine_codelists(diabetes_t1_codes, diabetes_t2_codes, diabetes_unknown_codes),
-        on_or_before="patient_index_date",
         return_expectations={"incidence": 0.05},
     ),
     died_date_ons=patients.died_from_any_cause(
