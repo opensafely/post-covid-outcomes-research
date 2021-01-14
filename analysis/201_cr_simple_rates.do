@@ -34,9 +34,12 @@ tempname measures
 
 
 foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
-    preserve
-	
+
 	forvalues i = 1/3 {
+	
+	 preserve
+	cap drop time
+	
 	local skip_1 = 0
 	local skip_2 = 0
 	local skip_3 = 0
@@ -53,21 +56,18 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	}	
 	
 	if `i' == 1 {
-	local analysis = "Full"
-	local out = `v'
-	local end_date = `v'_end_date
+	local out  `v'
+	local end_date  `v'_end_date
 	}
 	
 	if `i' == 2 {
-	local analysis = "no_gp"
-	local out = `v'_no_gp
-	local end_date = `v'_no_gp_end_date
+	local out `v'_no_gp
+	local end_date `v'_no_gp_end_date
 	}
 	
 	if `i' == 3 {
-	local analysis  = "cens_gp"
-	local out = `v'_cens_gp
-	local end_date = `v'_cens_gp_end_date
+	local out  `v'_cens_gp
+	local end_date `v'_cens_gp_end_date
 	}
 	
 	if `skip_`i'' == 0 {
@@ -114,6 +114,8 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 		
 		* Overall rate 
 		forvalues t = 0(30)120 {
+		qui  count if time ==`t'
+		if `r(N)' > 0 {
 		stptime if time ==`t'
 		* Save measure
 		local events .
@@ -122,34 +124,19 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
-		* Stratified 
-			qui levelsof agegroup , local(cats) 
-			di `cats'
-			foreach l of local cats {
-				noi di "$group: Calculate rate for variable `c' and level `l' over time = `t'" 
-				qui  count if time ==`t' & agegroup ==`l' 
-				if `r(N)' > 0 {
-				stptime if time ==`t' & agegroup ==`l'
-				* Save measures
-				local events .
-				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-				post `measures' ("$group") ("`out'") ("`t' days")  ("agegroup") (`l') (`r(ptime)')	///
-								(`events') (`r(rate)') 							///
-								(`r(lb)') (`r(ub)')
-				}
-
-				else {
-				post `measures' ("$group") ("`out'") ("`t' days") ("agegroup") (`l') (.) 	///
+	
+		}
+		else {
+		post `measures' ("$group") ("`out'") ("`t' days") ("Overall") (0) (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
-					
-			}
-		}
-	}	
+	}
+  }
+restore  
 		
 }
-restore
+
 }
 
 postclose `measures'

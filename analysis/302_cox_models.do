@@ -24,21 +24,23 @@ use $outdir/combined_covid_pneumonia.dta, replace
 cap log close
 log using $outdir/cox_models, replace t
 global crude i.case
-global age_sex i.case i.gender age1 age2 age3
+global age_sex i.case i.male age1 age2 age3
 
 tempname measures
 	postfile `measures' ///
-		str12(outcome) str12(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
+		str12(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
 		ptime_pneumonia num_events_pneumonia rate_pneumonia hr lc uc ///
 		using $tabfigdir/cox_model_summary, replace
 
 foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
-	preserve
 	
 	noi di "Starting analysis for `v' Outcome ..." 
 	
 	forvalues i = 1/3 {
+	
+	preserve
+	
 	local skip_1 = 0
 	local skip_2 = 0
 	local skip_3 = 0
@@ -57,21 +59,18 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	}	
 	
 	if `i' == 1 {
-	local analysis = "Full"
-	local out = `v'
-	local end_date = `v'_end_date
+	local out `v'
+	local end_date `v'_end_date
 	}
 	
 	if `i' == 2 {
-	local analysis = "no_gp"
-	local out = `v'_no_gp
-	local end_date = `v'_no_gp_end_date
+	local out `v'_no_gp
+	local end_date `v'_no_gp_end_date
 	}
 	
 	if `i' == 3 {
-	local analysis  = "cens_gp"
-	local out = `v'_cens_gp
-	local end_date = `v'_cens_gp_end_date
+	local out `v'_cens_gp
+	local end_date `v'_cens_gp_end_date
 	}
 	
 		if `skip_`i'' == 0 {
@@ -101,14 +100,14 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 			if `r(failures)' == 0 | `r(failures)' > 5 local events_pneum `r(failures)'
 
 			post `measures'  ("`v'") ("`out'") ("`adjust'")  ///
-							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_pneum') (`events_pnuem')  (`rate_pneum')  ///
+							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_pneum') (`events_pneum')  (`rate_pneum')  ///
 							(`hr') (`lc') (`uc')
 			
 			}
 		}
-		
+restore			
 }
-restore		
+	
 }
 
 
