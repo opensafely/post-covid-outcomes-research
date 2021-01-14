@@ -112,7 +112,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: output/cox_models.txt
-      highly_sensitive: 
         dataset: output/tabfig/cox_model_summary.csv
 
 
