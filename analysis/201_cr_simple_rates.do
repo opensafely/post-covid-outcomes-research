@@ -30,7 +30,7 @@ global stratifiers "agegroup male ethnicity af anticoag_rx"
 
 tempname measures
 																	 
-	postfile `measures' str16(group) str20(outcome) str12(time) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
+	postfile `measures' str16(group) str25(outcome) str12(time) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
 
 
 foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {

@@ -28,7 +28,7 @@ global age_sex i.case i.male age1 age2 age3
 
 tempname measures
 	postfile `measures' ///
-		str12(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
+		str20(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
 		ptime_pneumonia num_events_pneumonia rate_pneumonia hr lc uc ///
 		using $tabfigdir/cox_model_summary, replace
 

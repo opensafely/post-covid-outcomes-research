@@ -24,7 +24,7 @@ do `c(pwd)'/analysis/global.do
 ls $outdir/
 
 cap log close
-log using $outdir/append_cohorts, replace t
+log using $outdir/append_cohorts.txt, replace t
 
 * Gen flag for covid patients  (case = 1)
 use $outdir/cohort_rates_covid, replace
