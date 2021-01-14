@@ -39,13 +39,20 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	noi di "Starting analysis for `v' Outcome ..." 
 	
 	forvalues i = 1/3 {
+	local skip_1 = 0
+	local skip_2 = 0
+	local skip_3 = 0
 	
 	* Apply exclusion for AKI and diabetes outcomes 
 	if "`v'" == "aki" {	
 	drop if aki_exclusion_flag == 1
+	local skip_2 = 1 
+	local skip_3 = 1 
 	}
+	
 	if "`v'" == "t1dm" | "`v'" == "t2dm" {
 	drop if previous_diabetes == 1
+	local skip_3 = 1 
 	}	
 	
 	if `i' == 1 {
@@ -66,6 +73,8 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	local end_date = `v'_cens_gp_end_date
 	}
 	
+		if `skip_`i'' == 0 {
+		
 		noi di "$group: stset in `a'" 
 		
 		stset `end_date' , id(patient_id) failure(`out') enter(indexdate)  origin(indexdate)
@@ -94,7 +103,8 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_pneum') (`events_pnuem')  (`rate_pneum')  ///
 							(`hr') (`lc') (`uc')
 			
-	}
+			}
+		}
 		
 }
 restore		

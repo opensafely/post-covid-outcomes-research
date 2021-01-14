@@ -303,6 +303,7 @@ format %td `out'_end_date
 drop min_end_date	
 
 * 2) Define outcome using hospital data only
+if "`out'"!="aki"  {
 gen min_end_date = min(`out'_hospital, died_date_ons_date)
 replace `out'_no_gp= 0 if min_end_date > `end_date'
 gen 	`out'_no_gp_end_date = `end_date' // relevant end date
@@ -311,6 +312,7 @@ replace `out'_no_gp_end_date = `out'_no_gp_end_date + 1
 format %td `out'_no_gp_end_date 
 
 drop min_end_date	
+}
 
 * 3) Define outcome avoiding GP 'outcomes' if patient has a recent history
 if "`out'"!="aki" & "`out'"!="t1dm" & "`out'"!="t2dm" {
