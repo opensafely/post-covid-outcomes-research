@@ -1,10 +1,10 @@
 cons	==1	68339 (100.0)
 
 agegroup	==1	8281 (12.1)
-agegroup	==2	36177 (52.9)
-agegroup	==3	23881 (34.9)
-agegroup	==4	0 (0.0)
-agegroup	==5	0 (0.0)
+agegroup	==2	7153 (10.5)
+agegroup	==3	11194 (16.4)
+agegroup	==4	17830 (26.1)
+agegroup	==5	23881 (34.9)
 
 male	==0	34498 (50.5)
 male	==1	33841 (49.5)
