@@ -52,6 +52,7 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	
 	if "`v'" == "t1dm" | "`v'" == "t2dm" {
 	drop if previous_diabetes == 1
+	local skip_2 = 1 
 	local skip_3 = 1 
 	}	
 	
