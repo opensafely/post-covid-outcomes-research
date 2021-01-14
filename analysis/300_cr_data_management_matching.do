@@ -19,42 +19,26 @@
 clear
 do `c(pwd)'/analysis/global.do
 ********************************************************************************
-* Append covid/pneumonia groups matched datasets
+* Append covid/pneumonia cohorts 
 ********************************************************************************
 ls $outdir/
-foreach v in covid pneumonia  {
-import delimited $outdir/input_`v'.csv, clear
-save $outdir/patients_`v'.dta, replace
-}
+
+cap log close
+log using $outdir/append_cohorts, replace t
 
 * Gen flag for covid patients  (case = 1)
-use $outdir/patients_covid.dta, replace
+use $outdir/cohort_rates_covid, replace
 gen case = 1 
-append using $outdir/patients_pneumonia.dta, force
+append using $outdir/cohort_rates_pneumonia, force
 replace case = 0 if case ==.
-* Remove patients from pneumonia group who are among Covid group
+
+* count patients from pneumonia group who are among Covid group
 bysort patient_id: gen flag = _n
-bysort patient_id: egen tot = max(flag)
-drop if tot == 2 & case ==0 
-drop flag tot
-gen year_20 = 1 if case == 1
-replace year_20 = 0 if case == 0
-save $outdir/matched_combined_pneumonia.dta, replace
+safecount if flag == 2
 
+noi di "number of patients in both cohorts is `r(N)'"
 
-********************************************************************************
-* Format controls_2019 matched sets 
-********************************************************************************
+drop flag 
+save $outdir/combined_covid_pneumonia.dta, replace
 
-import delimited $outdir/matched_combined_control_2019.csv, clear
-gen year_20 = 1 if case == 1
-replace year_20 = 0 if case == 0
-save $outdir/matched_combined_control_2019.dta, replace
-
-********************************************************************************
-* Format controls_2020 matched sets 
-********************************************************************************
-
-import delimited $outdir/matched_combined_control_2020.csv, clear
-gen year_20 = 1
-save $outdir/matched_combined_control_2020.dta, replace
+log close

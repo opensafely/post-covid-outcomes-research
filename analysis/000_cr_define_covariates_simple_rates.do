@@ -210,19 +210,26 @@ drop region_string
 
 * Create categorised age
 recode 	age 			min/49.9999=1 	///
-						50/79.9999=2 	///
-						80/max=3, 		///
-				        gen(agegroup) 
+						50/59.9999=2 	///
+						60/69.9999=3 	///
+						70/79.9999=4 	///
+						80/max=5, 		///
+						gen(agegroup) 
 
 label define agegroup 	1 "18-<50" 		///
-						2 "50-<80" 		///
-						3 "80+"
+						2 "50-<60" 		///
+						3 "60-<70" 		///
+						4 "70-<80" 		///
+						5 "80+"
 label values agegroup agegroup
 
 
 * Check there are no missing ages
 assert age<.
 assert agegroup<.
+
+* Create restricted cubic splines fir age
+mkspline age = age, cubic nknots(4)
 
 ***************************
 *  Grouped comorbidities  *
@@ -291,14 +298,40 @@ replace `out'_hospital = . if `out'_hospital > `end_date'
 replace `out'_gp = . if `out'_gp > `end_date'
 gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
 }
-* Define outcome 
-	replace `out' = 0 if min_end_date > `end_date'
-	gen 	`out'_end_date = `end_date' // relevant end date
-	replace `out'_end_date = min_end_date if  min_end_date!=.	 // not missing
-	replace `out'_end_date = `out'_end_date + 1 
-	format %td `out'_end_date 
+
+* 1) Define outcome using all data
+replace `out' = 0 if min_end_date > `end_date'
+gen 	`out'_end_date = `end_date' // relevant end date
+replace `out'_end_date = min_end_date if  min_end_date!=.	 // not missing
+replace `out'_end_date = `out'_end_date + 1 
+format %td `out'_end_date 
 
 drop min_end_date	
+
+* 2) Define outcome using hospital data only
+gen min_end_date = min(`out'_hospital, died_date_ons_date)
+replace `out'_no_gp= 0 if min_end_date > `end_date'
+gen 	`out'_no_gp_end_date = `end_date' // relevant end date
+replace `out'_no_gp_end_date = min_end_date if  min_end_date!=.	 // not missing
+replace `out'_no_gp_end_date = `out'_no_gp_end_date + 1 
+format %td `out'_no_gp_end_date 
+
+drop min_end_date	
+
+* 3) Define outcome avoiding GP 'outcomes' if patient has a recent history
+if "`out'"!="aki" & "`out'"!="t1dm" & "`out'"!="t2dm" {
+gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) if recent_`out' == 0
+replace min_end_date = min(`out'_hospital, died_date_ons_date) if recent_`out' == 1
+replace `out'_cens_gp= 0 if min_end_date > `end_date'
+gen 	`out'_cens_gp_end_date = `end_date' // relevant end date
+replace `out'_cens_gp_end_date = min_end_date if  min_end_date!=.	 // not missing
+replace `out'_cens_gp_end_date = `out'_cens_gp_end_date + 1 
+format %td `out'_cens_gp_end_date 
+
+drop min_end_date	
+}
+
+* Count overall outcomes by type 
 
 if "`out'" == "aki" {
 replace `out'_hospital = `out'_hospital + 1 
@@ -392,20 +425,15 @@ postclose `outcomeDist'
 **** Tidy dataset
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-keep  patient_id hosp_expo_date previous_dvt previous_pe /// 
- previous_stroke agegroup ethnicity af aki_exclusion_flag /// 
- indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
- stroke_end_date pe_end_date dvt_end_date long_hosp_stay ///
- mi heart_failure aki mi_end_date aki_end_date heart_failure_end_date /// 
- t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
+keep  patient_id hosp_expo_date previous_* agegroup ethnicity af aki_exclusion_flag /// 
+ indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
+ af *_end_date long_hosp_stay mi* heart_failure* aki* mi* t1dm* t2dm* age*
  }
 else { 
-keep  patient_id previous_dvt previous_pe /// 
- previous_stroke agegroup ethnicity af aki_exclusion_flag /// 
- indexdate male region_7 dvt pe stroke anticoag_rx agegroup ///
- stroke_end_date pe_end_date dvt_end_date ///
- mi heart_failure aki mi_end_date aki_end_date heart_failure_end_date ///
- t1dm t2dm t1dm_end_date t2dm_end_date previous_diabetes
+keep patient_id previous_* agegroup ethnicity af aki_exclusion_flag /// 
+ indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
+ af *_end_date long_hosp_stay mi* heart_failure* aki* mi* t1dm* t2dm* age*
+ 
 }
 order patient_id indexdate
 

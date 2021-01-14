@@ -34,23 +34,43 @@ tempname measures
 
 
 foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
-preserve	
-if "`v'" == "aki" {
-drop if aki_exclusion_flag == 1
-}
-if "`v'" == "t1dm" | "`v'" == "t2dm" {
-drop if previous_diabetes == 1
-}
-		noi di "$group: stset in post_hosp_gp" 
-		
-			stset `v'_end_date , id(patient_id) failure(`v') enter(indexdate)  origin(indexdate)
+    preserve
+	
+	forvalues i = 1/3 {
+	* Apply exclusion for AKI and diabetes outcomes 
+	if "`v'" == "aki" {	
+	drop if aki_exclusion_flag == 1
+	}
+	if "`v'" == "t1dm" | "`v'" == "t2dm" {
+	drop if previous_diabetes == 1
+	}	
+	
+	if `i' == 1 {
+	local analysis = "Full"
+	local out = `v'
+	local end_date = `v'_end_date
+	}
+	
+	if `i' == 2 {
+	local analysis = "no_gp"
+	local out = `v'_no_gp
+	local end_date = `v'_no_gp_end_date
+	}
+	
+	if `i' == 3 {
+	local analysis  = "cens_gp"
+	local out = `v'_cens_gp
+	local end_date = `v'_cens_gp_end_date
+	}
+	
+		stset `end_date' , id(patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
 		* Overall rate 
 		stptime  
 		* Save measure
 		local events .
 		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-		post `measures' ("$group") ("`v'") ("Full period") ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`out'") ("Full period") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
@@ -68,13 +88,13 @@ drop if previous_diabetes == 1
 				* Save measures
 				local events .
 				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`out'") ("Full period") ("`c'") (`l') (`r(ptime)')	///
 								(`events') (`r(rate)') 							///
 								(`r(lb)') (`r(ub)')
 				}
 
 				else {
-				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (.) 	///
+				post `measures' ("$group") ("`out'") ("Full period") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
@@ -90,7 +110,7 @@ drop if previous_diabetes == 1
 		* Save measure
 		local events .
 		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-		post `measures' ("$group") ("`v'") ("`t' days") ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`out'") ("`t' days") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
@@ -105,13 +125,13 @@ drop if previous_diabetes == 1
 				* Save measures
 				local events .
 				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-				post `measures' ("$group") ("`v'") ("`t' days")  ("agegroup") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`out'") ("`t' days")  ("agegroup") (`l') (`r(ptime)')	///
 								(`events') (`r(rate)') 							///
 								(`r(lb)') (`r(ub)')
 				}
 
 				else {
-				post `measures' ("$group") ("`v'") ("`t' days") ("agegroup") (`l') (.) 	///
+				post `measures' ("$group") ("`out'") ("`t' days") ("agegroup") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
