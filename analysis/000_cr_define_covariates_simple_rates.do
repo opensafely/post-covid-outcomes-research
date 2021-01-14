@@ -428,7 +428,7 @@ keep  patient_id hosp_expo_date previous_* agegroup ethnicity af aki_exclusion_f
 else { 
 keep patient_id previous_* agegroup ethnicity af aki_exclusion_flag /// 
  indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
- af *_end_date long_hosp_stay mi* heart_failure* aki* mi* t1dm* t2dm* age*
+ af *_end_date mi* heart_failure* aki* mi* t1dm* t2dm* age*
  
 }
 order patient_id indexdate
