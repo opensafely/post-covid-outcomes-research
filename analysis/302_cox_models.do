@@ -71,7 +71,7 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 		stset `end_date' , id(patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
 		foreach adjust in crude age_sex {
-			stcox $`adjust'
+			stcox $`adjust', vce(robust)
 
 			matrix b = r(table)
 			local hr= b[1,2]
