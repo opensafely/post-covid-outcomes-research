@@ -22,10 +22,10 @@ global group `1'
 use $outdir/cohort_rates_$group, clear 
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx long_hosp_stay"
+global stratifiers "agegroup male ethnicity af anticoag_rx long_hosp_stay"
 }
 else {
-global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx"
+global stratifiers "agegroup male ethnicity af anticoag_rx"
 }
 
 tempname measures

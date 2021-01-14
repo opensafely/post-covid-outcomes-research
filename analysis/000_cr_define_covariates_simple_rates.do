@@ -114,12 +114,6 @@ capture confirm string variable `var'
 * Clean 
 rename date_icu_admission_date icu_admission_date
 
-foreach v of varlist previous_pe   ///
-					 previous_stroke ///
-					 previous_dvt {
-replace `v' = 0 if `v' ==. 
-}
-	
 * drop if died before discharge date
 drop if died_date_ons < indexdate
 
