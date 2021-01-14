@@ -19,136 +19,103 @@
 
 clear
 do `c(pwd)'/analysis/global.do
-global group `1'
 
-use $outdir/matched_cohort_$group.dta, replace
+use $outdir/combined_covid_pneumonia.dta, replace
 cap log close
-log using $outdir/cox_model_$group, replace t
+log using $outdir/cox_models.txt, replace t
 global crude i.case
-global age_sex i.case i.gender age1 age2 age3
-global full i.case i.gender age1 age2 age3 i.obese4cat i.smoke_nomiss i.ethnicity i.imd i.htdiag_or_highbp  /// 
-				i.chronic_respiratory_disease i.asthmacat i.chronic_cardiac_disease ///		
-				i.diabcat i.cancer_exhaem_cat i.cancer_haem_cat i.chronic_liver_disease /// 		
-				i.stroke_dementia i.other_neuro i.reduced_kidney_function_cat2 i.organ_transplant ///				
-				i.spleen i.ra_sle_psoriasis i.other_immunosuppression
+global age_sex i.case i.male age1 age2 age3
 
 tempname measures
 	postfile `measures' ///
-		str13(comparison) str12(outcome) str12(analysis) str10(adjustment) str20(variable) ///
-		category rate_ppm_covid rate_ppm_$group ///
-		hr lc uc ///
-		using $tabfigdir/cox_model_summary_$group, replace
+		str20(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
+		ptime_pneumonia num_events_pneumonia rate_pneumonia hr lc uc ///
+		using $tabfigdir/cox_model_summary, replace
 
-foreach v in stroke dvt pe  {
-preserve
-* In hosp
-noi di "Starting analysis for $group: `v' Outcome ..." 
-	noi di "$group: stset in hospital" 
-local a = "in_hosp"	
-																	 
-		stset `v'_in_hosp_end_date , id(patient_id) failure(`v'_in_hosp) enter(hospitalised_expo_date) origin(hospitalised_expo_date)
-		
-		foreach adjust in crude age_sex full {
-			stcox $`adjust'
-		
-			matrix b = r(table)
-			local hr= b[1,2]
-			local lc = b[5,2] 
-			local uc = b[6,2]
-			local c = "Overall"
-			local s = 0
+foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
-			cap stptime if case == 1
-			local rate_covid = 1000*(r(rate) * 365.25 / 12)
-			cap stptime if case == 0
-			local rate_control = 1000*(r(rate) * 365.25 / 12)
-
-			* Save measures
-			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
-							(`rate_covid') (`rate_control') ///
-							(`hr') (`lc') (`uc')
-
-		forvalues s = 0/1 {
-			stcox $`adjust' if hist_`v' == `s'
-
-			matrix b = r(table)
-			local hr= b[1,2]
-			local lc = b[5,2] 
-			local uc = b[6,2]
-			local c = "History of `v'"
-
-			cap stptime if hist_`v' == `s' & case == 1
-			local rate_covid = 1000*(r(rate) * 365.25 / 12)
-			cap stptime if hist_`v' == `s' & case == 0
-			local rate_control = 1000*(r(rate) * 365.25 / 12)
-
-			post `measures' ("$group") ("`v'") ("`a'")  ("`adjust'") ("`c'") (`s') ///
-						(`rate_covid') (`rate_control') ///
-						(`hr') (`lc') (`uc')
-			
-		}
+	
+	noi di "Starting analysis for `v' Outcome ..." 
+	
+	forvalues i = 1/3 {
+	
+	preserve
+	
+	local skip_1 = 0
+	local skip_2 = 0
+	local skip_3 = 0
+	
+	* Apply exclusion for AKI and diabetes outcomes 
+	if "`v'" == "aki" {	
+	drop if aki_exclusion_flag == 1
+	local skip_2 = 1 
+	local skip_3 = 1 
 	}
-
-	* DROP Patients who have the event in hospital
-	drop if `v'_in_hosp == 1
-	drop if died_date_ons_date <= discharged_expo_date
-
-	* post-hosp
-	foreach a in post_hosp post_hosp_gp  {
+	
+	if "`v'" == "t1dm" | "`v'" == "t2dm" {
+	drop if previous_diabetes == 1
+	local skip_2 = 1 
+	local skip_3 = 1 
+	}	
+	
+	if `i' == 1 {
+	local out `v'
+	local end_date `v'_end_date
+	}
+	
+	if `i' == 2 {
+	local out `v'_no_gp
+	local end_date `v'_no_gp_end_date
+	}
+	
+	if `i' == 3 {
+	local out `v'_cens_gp
+	local end_date `v'_cens_gp_end_date
+	}
+	
+		if `skip_`i'' == 0 {
+		
 		noi di "$group: stset in `a'" 
 		
-		stset `v'_`a'_end_date , id(patient_id) failure(`v'_`a') enter(discharged_expo_date) origin(discharged_expo_date)
+		stset `end_date' , id(patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
-		foreach adjust in crude age_sex full {
-			stcox $`adjust'
+		foreach adjust in crude age_sex {
+			stcox $`adjust', vce(robust)
 
 			matrix b = r(table)
 			local hr= b[1,2]
 			local lc = b[5,2] 
 			local uc = b[6,2]
-			local c = "Overall"
-			local s = 0
 
 			cap stptime if case == 1
 			local rate_covid = 1000*(r(rate) * 365.25 / 12)
+			local ptime_covid = `r(ptime)'
+			local events_covid .
+			if `r(failures)' == 0 | `r(failures)' > 5 local events_covid `r(failures)'
+			
 			cap stptime if case == 0
-			local rate_control = 1000*(r(rate) * 365.25 / 12)
+			local rate_pneum = 1000*(r(rate) * 365.25 / 12)
+			local ptime_pneum = `r(ptime)'
+			local events_pneum .
+			if `r(failures)' == 0 | `r(failures)' > 5 local events_pneum `r(failures)'
 
-			post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
-							(`rate_covid') (`rate_control') ///
+			post `measures'  ("`v'") ("`out'") ("`adjust'")  ///
+							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_pneum') (`events_pneum')  (`rate_pneum')  ///
 							(`hr') (`lc') (`uc')
 			
-
-			forvalues s = 0/1 {
-			
-				stcox $`adjust' if hist_`v' == `s'
-
-				matrix b = r(table)
-				local hr= b[1,2]
-				local lc = b[5,2] 
-				local uc = b[6,2]
-				local c = "History of `v'"
-
-				cap stptime if hist_`v' == `s' & case == 1
-				local rate_covid = 1000*(r(rate) * 365.25 / 12)
-				cap stptime if hist_`v' == `s' & case == 0
-				local rate_control = 1000*(r(rate) * 365.25 / 12)
-
-				post `measures' ("$group") ("`v'") ("`a'") ("`adjust'") ("`c'") (`s') ///
-							(`rate_covid') (`rate_control') ///
-							(`hr') (`lc') (`uc')
 			}
 		}
-	}
 restore			
+}
+	
 }
 
 
 postclose `measures'
 
 * Change postfiles to csv
-use $tabfigdir/cox_model_summary_$group, replace
+use $tabfigdir/cox_model_summary, replace
 
-export delimited using $tabfigdir/cox_model_summary_$group.csv, replace
+export delimited using $tabfigdir/cox_model_summary.csv, replace
 
 log close

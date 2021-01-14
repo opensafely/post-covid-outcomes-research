@@ -22,35 +22,63 @@ global group `1'
 use $outdir/cohort_rates_$group, clear 
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx long_hosp_stay"
+global stratifiers "agegroup male ethnicity af anticoag_rx long_hosp_stay"
 }
 else {
-global stratifiers "previous_stroke previous_dvt previous_pe agegroup male ethnicity af anticoag_rx"
+global stratifiers "agegroup male ethnicity af anticoag_rx"
 }
 
 tempname measures
 																	 
-	postfile `measures' str16(group) str20(outcome) str12(time) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
+	postfile `measures' str16(group) str25(outcome) str12(time) str20(variable) category personTime numEvents rate lc uc using $tabfigdir/rates_summary_$group, replace
 
 
 foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
-preserve	
-if "`v'" == "aki" {
-drop if aki_exclusion_flag == 1
-}
-if "`v'" == "t1dm" | "`v'" == "t2dm" {
-drop if previous_diabetes == 1
-}
-		noi di "$group: stset in post_hosp_gp" 
-		
-			stset `v'_end_date , id(patient_id) failure(`v') enter(indexdate)  origin(indexdate)
+
+	forvalues i = 1/3 {
+	
+	 preserve
+	cap drop time
+	
+	local skip_1 = 0
+	local skip_2 = 0
+	local skip_3 = 0
+	* Apply exclusion for AKI and diabetes outcomes 
+	if "`v'" == "aki" {	
+	drop if aki_exclusion_flag == 1
+	local skip_2 = 1 
+	local skip_3 = 1 
+	}
+	if "`v'" == "t1dm" | "`v'" == "t2dm" {
+	drop if previous_diabetes == 1
+	local skip_2 = 1 
+	local skip_3 = 1 
+	}	
+	
+	if `i' == 1 {
+	local out  `v'
+	local end_date  `v'_end_date
+	}
+	
+	if `i' == 2 {
+	local out `v'_no_gp
+	local end_date `v'_no_gp_end_date
+	}
+	
+	if `i' == 3 {
+	local out  `v'_cens_gp
+	local end_date `v'_cens_gp_end_date
+	}
+	
+	if `skip_`i'' == 0 {
+		stset `end_date' , id(patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
 		* Overall rate 
 		stptime  
 		* Save measure
 		local events .
 		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-		post `measures' ("$group") ("`v'") ("Full period") ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`out'") ("Full period") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
@@ -68,13 +96,13 @@ drop if previous_diabetes == 1
 				* Save measures
 				local events .
 				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (`r(ptime)')	///
+				post `measures' ("$group") ("`out'") ("Full period") ("`c'") (`l') (`r(ptime)')	///
 								(`events') (`r(rate)') 							///
 								(`r(lb)') (`r(ub)')
 				}
 
 				else {
-				post `measures' ("$group") ("`v'") ("Full period") ("`c'") (`l') (.) 	///
+				post `measures' ("$group") ("`out'") ("Full period") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
@@ -86,40 +114,29 @@ drop if previous_diabetes == 1
 		
 		* Overall rate 
 		forvalues t = 0(30)120 {
+		qui  count if time ==`t'
+		if `r(N)' > 0 {
 		stptime if time ==`t'
 		* Save measure
 		local events .
 		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-		post `measures' ("$group") ("`v'") ("`t' days") ("Overall") (0) (`r(ptime)') 	///
+		post `measures' ("$group") ("`out'") ("`t' days") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
-		* Stratified 
-			qui levelsof agegroup , local(cats) 
-			di `cats'
-			foreach l of local cats {
-				noi di "$group: Calculate rate for variable `c' and level `l' over time = `t'" 
-				qui  count if time ==`t' & agegroup ==`l' 
-				if `r(N)' > 0 {
-				stptime if time ==`t' & agegroup ==`l'
-				* Save measures
-				local events .
-				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-				post `measures' ("$group") ("`v'") ("`t' days")  ("agegroup") (`l') (`r(ptime)')	///
-								(`events') (`r(rate)') 							///
-								(`r(lb)') (`r(ub)')
-				}
-
-				else {
-				post `measures' ("$group") ("`v'") ("`t' days") ("agegroup") (`l') (.) 	///
+	
+		}
+		else {
+		post `measures' ("$group") ("`out'") ("`t' days") ("Overall") (0) (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
-					
-			}
-		}
+	}
+  }
+restore  
 		
-restore
+}
+
 }
 
 postclose `measures'

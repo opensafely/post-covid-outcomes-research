@@ -96,3 +96,23 @@ actions:
     outputs:
       moderately_sensitive:
         tables: output/tabfig/an_descriptiveTable_*.txt
+
+  append_cohorts:
+    run: stata-mp:latest analysis/300_cr_data_management_matching.do
+    needs: [covid_rates_cohort, pneumonia_rates_cohort]
+    outputs:
+      moderately_sensitive:
+        log: output/append_cohorts.txt
+      highly_sensitive: 
+        dataset: output/combined_covid_pneumonia.dta
+
+  cox_models:
+    run: stata-mp:latest analysis/302_cox_models.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/cox_models.txt
+      highly_sensitive: 
+        dataset: output/tabfig/cox_model_summary.csv
+
+
