@@ -22,7 +22,7 @@ do `c(pwd)'/analysis/global.do
 
 use $outdir/combined_covid_pneumonia.dta, replace
 cap log close
-log using $outdir/cox_models, replace t
+log using $outdir/cox_models.txt, replace t
 global crude i.case
 global age_sex i.case i.male age1 age2 age3
 
