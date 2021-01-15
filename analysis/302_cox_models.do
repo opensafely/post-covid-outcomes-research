@@ -21,6 +21,9 @@ clear
 do `c(pwd)'/analysis/global.do
 
 use $outdir/combined_covid_pneumonia.dta, replace
+drop patient_id
+gen new_patient_id = _n
+
 cap log close
 log using $outdir/cox_models.txt, replace t
 global crude i.case
@@ -77,7 +80,7 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 		
 		noi di "$group: stset in `a'" 
 		
-		stset `end_date' , id(patient_id) failure(`out') enter(indexdate)  origin(indexdate)
+		stset `end_date' , id(new_patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
 		foreach adjust in crude age_sex {
 			stcox $`adjust', vce(robust)
@@ -87,14 +90,14 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 			local lc = b[5,2] 
 			local uc = b[6,2]
 
-			cap stptime if case == 1
-			local rate_covid = 1000*(r(rate) * 365.25 / 12)
+			stptime if case == 1
+			local rate_covid = `r(rate)'
 			local ptime_covid = `r(ptime)'
 			local events_covid .
 			if `r(failures)' == 0 | `r(failures)' > 5 local events_covid `r(failures)'
 			
-			cap stptime if case == 0
-			local rate_pneum = 1000*(r(rate) * 365.25 / 12)
+			stptime if case == 0
+			local rate_pneum = `r(rate)'
 			local ptime_pneum = `r(ptime)'
 			local events_pneum .
 			if `r(failures)' == 0 | `r(failures)' > 5 local events_pneum `r(failures)'
