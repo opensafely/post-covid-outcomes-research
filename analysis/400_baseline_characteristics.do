@@ -68,7 +68,7 @@ file write tablecontent _n
 tabulatevariable, variable(male) start(0) end(1) 
 file write tablecontent _n 
 
-tabulatevariable, variable(ethnicity) start(1) end(5) missing 
+tabulatevariable, variable(ethnicity) start(1) end(6)
 file write tablecontent _n 
 
 tabulatevariable, variable(ethnicity) start(1) end(7) 

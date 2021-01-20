@@ -115,7 +115,7 @@ capture confirm string variable `var'
 rename date_icu_admission_date icu_admission_date
 
 * drop if died before discharge date
-drop if died_date_ons < indexdate
+drop if died_date_ons <= indexdate
 
 * Note: There may be deaths recorded after end of our study 
 * Set these to missing
@@ -136,13 +136,13 @@ label values male sexLab
 label var male "sex = 0 F, 1 M"
 
 * Ethnicity (5 category)
-replace ethnicity = .u if ethnicity==.
+replace ethnicity = 6 if ethnicity==.
 label define ethnicity_lab 	1 "White"  								///
 						2 "Mixed" 								///
 						3 "Asian or Asian British"				///
 						4 "Black"  								///
 						5 "Other"								///
-						.u "Unknown"
+						6 "Unknown"
 label values ethnicity ethnicity_lab
 
 
@@ -327,90 +327,7 @@ format %td `out'_cens_gp_end_date
 drop min_end_date	
 }
 
-* Count overall outcomes by type 
 
-if "`out'" == "aki" {
-replace `out'_hospital = `out'_hospital + 1 
-replace died_date_ons_date = died_date_ons_date + 1 
-}
-else {
-replace `out'_hospital = `out'_hospital + 1 
-replace `out'_gp = `out'_gp + 1 
-replace died_date_ons_date = died_date_ons_date + 1 
-}
-
-if "`out'" == "aki" {
-* Overall
-safecount if `out' == 1 & aki_exclusion_flag == 0
-local tot_events = `r(N)'
-post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
-
-* Hospital
-safecount if `out' == 1 & `out'_end_date == `out'_hospital & aki_exclusion_flag == 0
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
-
-* ONS
-safecount if `out' == 1 & `out'_end_date == died_date_ons_date & aki_exclusion_flag == 0
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
-
-
-}
-
-if "`out'" == "t2dm" | "`out'" == "t1dm" {
-* Overall
-safecount if `out' == 1 & previous_diabetes == 0
-local tot_events = `r(N)'
-post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
-
-* GP
-safecount if `out' == 1 & `out'_end_date == `out'_gp & previous_diabetes == 0
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("GP") (`events') (`percent') 
-
-* Hospital
-safecount if `out' == 1 & `out'_end_date == `out'_hospital & previous_diabetes == 0
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
-
-* ONS
-safecount if `out' == 1 & `out'_end_date == died_date_ons_date & previous_diabetes == 0
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
-
-
-}
-
-if "`out'" != "aki" & "`out'" != "t2dm" & "`out'" != "t1dm" {
-* Overall
-safecount if `out' == 1 
-local tot_events = `r(N)'
-post `outcomeDist' ("`out'") ("Overall") (`tot_events') (100)
-
-* GP
-safecount if `out' == 1 & `out'_end_date == `out'_gp
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("GP") (`events') (`percent') 
-
-* Hospital
-safecount if `out' == 1 & `out'_end_date == `out'_hospital
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("HOSP") (`events') (`percent') 
-
-* ONS
-safecount if `out' == 1 & `out'_end_date == died_date_ons_date
-local events = `r(N)' 
-local percent= `r(N)' /`tot_events' *100
-post `outcomeDist' ("`out'") ("ONS") (`events') (`percent') 
-}
 
 }
 
@@ -423,12 +340,12 @@ postclose `outcomeDist'
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 keep  patient_id hosp_expo_date previous_* agegroup ethnicity af aki_exclusion_flag /// 
  indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
- af *_end_date long_hosp_stay mi* heart_failure* aki* mi* t1dm* t2dm* age*
+ af *_end_date long_hosp_stay mi* heart_failure* aki* mi* t1dm* t2dm* age* died_date_ons_date
  }
 else { 
 keep patient_id previous_* agegroup ethnicity af aki_exclusion_flag /// 
  indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
- af *_end_date mi* heart_failure* aki* mi* t1dm* t2dm* age*
+ af *_end_date mi* heart_failure* aki* mi* t1dm* t2dm* age* died_date_ons_date
  
 }
 order patient_id indexdate
@@ -436,7 +353,3 @@ order patient_id indexdate
 save $outdir/cohort_rates_$group, replace 
 
 
-
-* Tidy outcome dist data 
-use $tabfigdir/outcome_distribution_$group.dta, replace
-export delimited using $tabfigdir/outcome_distribution_$group.csv, replace
