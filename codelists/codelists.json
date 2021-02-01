@@ -143,6 +143,12 @@
       "url": "https://codelists.opensafely.org/codelist/opensafely/insulin-medication/2020-04-26/",
       "downloaded_at": "2021-01-08 17:06:55.229454Z",
       "sha": "9d4c57c0b8738962da04b32ab43b7659cd64d774"
+    },
+    "opensafely-diabetic-ketoacidosis-secondary-care.csv": {
+      "id": "opensafely/diabetic-ketoacidosis-secondary-care/6e975569",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/diabetic-ketoacidosis-secondary-care/6e975569/",
+      "downloaded_at": "2021-02-01 11:25:25.938915Z",
+      "sha": "6176b35e183fe09e69c63d170b937445a143b0ee"
     }
   }
 }
