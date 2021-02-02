@@ -7,8 +7,8 @@ old_names = ["0 days", "30 days", "60 days", "90 days", "120 days"]
 new_names = ["0-29 days", "30-59 days", "60-89 days", "90-119 days", "120+ days"]
 groups = ["covid", "pneumonia"]
 titles = [
-    "a) Patients hospitalised with COVID-19",
-    "b) Patients hospitalised with pneumonia in 2019",
+    "a) Patients discharged after hospitalisation with COVID-19",
+    "b) Patients discharged after hospitalisation with pneumonia",
     "c) Patients positive for SARS-CoV-2, not hospitalised",
 ]
 
@@ -17,11 +17,6 @@ df = pd.DataFrame()
 for f in groups:
     df = df.append(pd.read_csv(f"released_output/rates_summary_{f}.csv"))
 df = df.replace(to_replace=dict(zip(old_names, new_names)))
-# suffix = df["outcome"].str.split("_", n=1, expand=True)[1]
-# print(suffix)
-# df["outcome_group"] = ""
-# df.loc[df["outcome"].str.contains("_cens_gp"), "outcome_group"] = "_cens_gp"
-# df.loc[df["outcome"].str.contains("_no_gp"), "outcome_group"] = "_no_gp"
 df = df.set_index(["group", "outcome", "time"])
 df = df.loc[df["variable"] == "Overall"]
 print(df)
@@ -32,7 +27,7 @@ def plot_rates(outcome_group, rows):
     for i, ax in enumerate(axes.flat):
         df_to_plot = df.loc[df.index.isin(rows, level=1)]
         df_to_plot = df_to_plot.loc[groups[i]]
-        df_to_plot = df_to_plot * 10
+        df_to_plot = df_to_plot * 100
         df_to_plot = df_to_plot.unstack(level=-1)
         errlo = df_to_plot["rate_ppm"] - df_to_plot["lc_ppm"]
         errhi = df_to_plot["uc_ppm"] - df_to_plot["rate_ppm"]
@@ -43,7 +38,7 @@ def plot_rates(outcome_group, rows):
         data = data[["Full period"] + new_names]
         data.plot(kind="bar", ax=ax, width=0.8, yerr=yerr, color=color_cycle)
         ax.set_title(titles[i], loc="left")
-        ax.legend(loc=2).set_title("Time since index date")
+        ax.legend(loc=2).set_title("Time since hospital discharge")
         ax.set_xticklabels(labels)
         ax.set_ylabel("Rate of each outcome (per 10,000 person months)")
         ax.grid(b=True, axis="y", color="#666666", linestyle="-", alpha=0.1)
