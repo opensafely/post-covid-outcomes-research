@@ -16,11 +16,26 @@ actions:
       highly_sensitive:
         cohort: output/input_covid_community.csv
 
+  generate_covid_general_population_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_general_population
+    outputs:
+      highly_sensitive:
+        cohort: output/input_general_population.csv
+
   generate_pneumonia_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_pneumonia
     outputs:
       highly_sensitive:
         cohort: output/input_pneumonia.csv
+
+  matching:
+    run: python:latest python analysis/match_running.py
+    needs: [generate_covid_cohort, generate_covid_general_population_cohort]
+    outputs:
+      moderately_sensitive: 
+        matching_report: output/matching_report_general_population.txt  
+      highly_sensitive: 
+        combined: output/matched_combined_general_population.csv
 
   covid_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
