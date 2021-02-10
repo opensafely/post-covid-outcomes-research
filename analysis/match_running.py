@@ -1,5 +1,5 @@
 import pandas as pd
-from match import match
+from osmatching import match
 
 
 gen_pop_df = pd.read_csv("output/input_general_population.csv")
