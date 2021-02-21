@@ -2,7 +2,7 @@
 
 This is the code and configuration for our paper, "Rates of serious clinical outcomes in survivors of hospitalisation with COVID-19: a descriptive cohort study within the OpenSAFELY platform".
 
-* The paper has been submitted to medRxiv, and will appear [here]() soon.
+* The paper has been submitted to medRxiv, and will appear [here](https://doi.org/10.1101/2021.01.22.21250304) soon.
 * Raw model outputs, including charts, crosstabs, etc, are in [released_output](./released_output/)
 * If you are interested in how we defined our variables, take a look at the study definitions in [analysis](./analysis/); this is written in `python`, but non-programmers should be able to understand what is going on there
 * If you are interested in how we defined our code lists, look in the [codelists folder](./codelists/).
