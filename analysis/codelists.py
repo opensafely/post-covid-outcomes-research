@@ -80,7 +80,7 @@ aki_codes = codelist(
 aki_gp = codelist_from_csv(
     "codelists/user-john-tazare-aki-gp.csv",
     system="ctv3",
-    column="CTV3ID",
+    column="code",
 )
 
 mi_codes = codelist_from_csv(
@@ -99,7 +99,7 @@ mi_codes_hospital = codelist_from_csv(
 heart_failure_codes = codelist_from_csv(
     "user-john-tazare-heart-failure-incident-only",
     system="ctv3",
-    column="CTV3ID",
+    column="code",
 )
 
 heart_failure_codes_hospital = codelist_from_csv(
