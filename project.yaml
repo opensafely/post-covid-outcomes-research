@@ -108,7 +108,7 @@ actions:
         log: output/append_cohorts.txt
       highly_sensitive: 
         dataset: output/combined_covid_pneumonia.dta
-        dataset: output/combined_covid_gen_population.dta
+        dataset2: output/combined_covid_gen_population.dta
 
   cox_models:
     run: stata-mp:latest analysis/302_cox_models.do
