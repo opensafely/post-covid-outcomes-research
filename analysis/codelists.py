@@ -78,7 +78,7 @@ aki_codes = codelist(
 )
 
 aki_gp = codelist_from_csv(
-    "codelists/john-tazare-aki-gp-33f820d7p.csv",
+    "codelists/john-tazare-aki-gp-55166af1.csv",
     system="ctv3",
     column="CTV3ID",
 )
