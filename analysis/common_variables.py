@@ -1,3 +1,4 @@
+
 from cohortextractor import filter_codes_by_category, patients, combine_codelists
 from codelists import *
 from datetime import datetime, timedelta
@@ -67,9 +68,7 @@ def generate_common_variables(index_date_variable):
                 return_expectations={"incidence": 0.05},
             ),
             recent_aki_hospital=patients.admitted_to_hospital(
-                with_these_diagnoses=filter_codes_by_category(
-                    aki_codes, include=["1"]
-                ),
+                with_these_diagnoses=aki_codes, 
                 between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
             ),
         ),
