@@ -20,20 +20,22 @@
 clear
 do `c(pwd)'/analysis/global.do
 
-use $outdir/combined_covid_pneumonia.dta, replace
-drop patient_id
-gen new_patient_id = _n
-
 cap log close
 log using $outdir/cox_models.txt, replace t
-global crude i.case
-global age_sex i.case i.male age1 age2 age3
 
 tempname measures
 	postfile `measures' ///
-		str20(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
-		ptime_pneumonia num_events_pneumonia rate_pneumonia hr lc uc ///
+		str20(comparator) str20(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
+		ptime_comparator num_events_comparator rate_comparator hr lc uc ///
 		using $tabfigdir/cox_model_summary, replace
+		
+foreach an in pneumonia gen_population {
+use $outdir/combined_covid_`an'.dta, replace
+drop patient_id
+gen new_patient_id = _n
+
+global crude i.case
+global age_sex i.case i.male age1 age2 age3
 
 foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
@@ -49,12 +51,6 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	local skip_3 = 0
 	
 	* Apply exclusion for AKI and diabetes outcomes 
-	if "`v'" == "aki" {	
-	drop if aki_exclusion_flag == 1
-	local skip_2 = 1 
-	local skip_3 = 1 
-	}
-	
 	if "`v'" == "t1dm" | "`v'" == "t2dm" {
 	drop if previous_diabetes == 1
 	local skip_2 = 1 
@@ -97,13 +93,13 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 			if `r(failures)' == 0 | `r(failures)' > 5 local events_covid `r(failures)'
 			
 			stptime if case == 0
-			local rate_pneum = `r(rate)'
-			local ptime_pneum = `r(ptime)'
-			local events_pneum .
-			if `r(failures)' == 0 | `r(failures)' > 5 local events_pneum `r(failures)'
+			local rate_comparator = `r(rate)'
+			local ptime_comparator = `r(ptime)'
+			local events_comparator .
+			if `r(failures)' == 0 | `r(failures)' > 5 local events_comparator `r(failures)'
 
-			post `measures'  ("`v'") ("`out'") ("`adjust'")  ///
-							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_pneum') (`events_pneum')  (`rate_pneum')  ///
+			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'")  ///
+							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_comparator') (`events_comparator')  (`rate_comparator')  ///
 							(`hr') (`lc') (`uc')
 			
 			}
@@ -114,6 +110,7 @@ restore
 }
 
 
+}
 postclose `measures'
 
 * Change postfiles to csv

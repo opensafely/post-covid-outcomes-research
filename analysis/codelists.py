@@ -77,6 +77,12 @@ aki_codes = codelist(
     ["N17", "N170", "N171", "N172", "N178", "N179"], system="icd10"
 )
 
+aki_gp = codelist_from_csv(
+    "codelists/john-tazare-aki-gp-33f820d7p.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
 mi_codes = codelist_from_csv(
     "codelists/opensafely-myocardial-infarction-2.csv",
     system="ctv3",
@@ -91,7 +97,7 @@ mi_codes_hospital = codelist_from_csv(
 )
 
 heart_failure_codes = codelist_from_csv(
-    "codelists/opensafely-heart-failure.csv",
+    "john-tazare-heart-failure-incident-only-22f78487",
     system="ctv3",
     column="CTV3ID",
 )

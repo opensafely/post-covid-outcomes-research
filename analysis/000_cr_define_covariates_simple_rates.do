@@ -20,7 +20,7 @@ clear
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-if "$group" == "covid" | "$group" == "covid_community"  { 
+if "$group" == "covid"  | "$group" == "covid_community" { 
 local start_date  td(01/02/2020)
 local last_year   td(01/02/2019)
 local four_years_ago td(01/02/2015)	 
@@ -36,7 +36,15 @@ local fifteen_months_ago td(01/09/2018)
 local end_date td(01/11/2019)
 }
 
+if "$group" == "matched_combined_general_population" {
+import delimited $outdir/$group.csv
+drop if case == 1 
+global group "gen_population"
+}
+else{
 import delimited $outdir/input_$group.csv
+}
+
 
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
@@ -78,6 +86,7 @@ foreach var of varlist date_icu_admission   ///
 					   stroke_ons			///
 					   pe_ons 				///
 					   dvt_ons		 		///
+					   aki_gp       ///
 					   aki_hospital ///
 					   aki_ons	///
 					   heart_failure_gp		///
@@ -264,7 +273,7 @@ if "$group" == "covid" | "$group" == "pneumonia"  {
 gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
 replace dialysis_flag = 0 if dialysis_flag ==.
 }
-if "$group" == "covid_community" {
+if "$group" == "gen_population" | "$group" == "covid_community"{
 gen dialysis_flag = 1 if dialysis_date < indexdate
 replace dialysis_flag = 0 if dialysis_flag ==.
 }
@@ -283,15 +292,10 @@ tempname outcomeDist
 	
 foreach out in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
-if "`out'" == "aki" {
-replace `out'_hospital = . if `out'_hospital > `end_date'
-gen min_end_date = min(`out'_hospital, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
-}
-else {
 replace `out'_hospital = . if `out'_hospital > `end_date'
 replace `out'_gp = . if `out'_gp > `end_date'
 gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
-}
+
 
 * 1) Define outcome using all data
 replace `out' = 0 if min_end_date > `end_date'
@@ -303,7 +307,7 @@ format %td `out'_end_date
 drop min_end_date	
 
 * 2) Define outcome using hospital data only
-if "`out'"!="aki"  & "`out'"!="t1dm" & "`out'"!="t2dm" {
+if  "`out'"!="t1dm" & "`out'"!="t2dm" {
 gen min_end_date = min(`out'_hospital, died_date_ons_date)
 replace `out'_no_gp= 0 if min_end_date > `end_date'
 gen 	`out'_no_gp_end_date = `end_date' // relevant end date
@@ -315,7 +319,7 @@ drop min_end_date
 }
 
 * 3) Define outcome avoiding GP 'outcomes' if patient has a recent history
-if "`out'"!="aki" & "`out'"!="t1dm" & "`out'"!="t2dm" {
+if "`out'"!="t1dm" & "`out'"!="t2dm" {
 gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) if recent_`out' == 0
 replace min_end_date = min(`out'_hospital, died_date_ons_date) if recent_`out' == 1
 replace `out'_cens_gp= 0 if min_end_date > `end_date'

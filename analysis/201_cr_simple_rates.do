@@ -43,12 +43,7 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	local skip_1 = 0
 	local skip_2 = 0
 	local skip_3 = 0
-	* Apply exclusion for AKI and diabetes outcomes 
-	if "`v'" == "aki" {	
-	drop if aki_exclusion_flag == 1
-	local skip_2 = 1 
-	local skip_3 = 1 
-	}
+	* Apply exclusion for diabetes outcomes 
 	if "`v'" == "t1dm" | "`v'" == "t2dm" {
 	drop if previous_diabetes == 1
 	local skip_2 = 1 

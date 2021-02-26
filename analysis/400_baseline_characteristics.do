@@ -51,7 +51,7 @@ end
 
 *******************************************************************************
 
-foreach v in covid covid_community pneumonia  {
+foreach v in covid covid_community pneumonia gen_population  {
 *Set up output file
 cap file close tablecontent
 file open tablecontent using $tabfigdir/an_descriptiveTable_`v'.txt, write text replace

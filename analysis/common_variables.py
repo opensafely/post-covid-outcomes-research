@@ -59,6 +59,20 @@ def generate_common_variables(index_date_variable):
                 between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
             ),
         ),
+        recent_aki=patients.satisfying(
+            "recent_aki_gp OR recent_aki_hospital",
+            recent_aki_gp=patients.with_these_clinical_events(
+                aki_gp,
+                between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
+                return_expectations={"incidence": 0.05},
+            ),
+            recent_aki_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=filter_codes_by_category(
+                    aki_codes, include=["1"]
+                ),
+                between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
+            ),
+        ),
         recent_heart_failure=patients.satisfying(
             "recent_heart_failure_gp OR recent_heart_failure_hospital",
             recent_heart_failure_gp=patients.with_these_clinical_events(
@@ -173,6 +187,13 @@ def generate_common_variables(index_date_variable):
         ),
         # stroke_date=patients.minimum_of("stroke_gp", "stroke_hospital", "stroke_ons"),
         # Acute kidney injury
+        aki_gp=patients.with_these_clinical_events(
+            aki_gp,
+            return_first_date_in_period=True,
+            date_format="YYYY-MM-DD",
+            on_or_after=f"{index_date_variable} + 1 days",
+            return_expectations={"date": {"earliest": "index_date"}},
+        ),
         aki_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
             with_these_diagnoses=aki_codes,
@@ -189,7 +210,11 @@ def generate_common_variables(index_date_variable):
             on_or_after=f"{index_date_variable} + 1 days",
             return_expectations={"date": {"earliest": "index_date"}},
         ),
-        aki=patients.satisfying("aki_hospital OR aki_ons"),
+        aki=patients.satisfying("aki_hospital OR aki_ons OR aki_gp"),
+        aki_no_gp=patients.satisfying("aki_hospital OR aki_ons"),
+        aki_cens_gp=patients.satisfying(
+            "(aki_gp AND NOT recent_aki) OR aki_hospital OR aki_ons"
+        ),
         # MI
         mi_gp=patients.with_these_clinical_events(
             mi_codes,
