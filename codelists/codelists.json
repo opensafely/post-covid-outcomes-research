@@ -149,6 +149,18 @@
       "url": "https://codelists.opensafely.org/codelist/opensafely/diabetic-ketoacidosis-secondary-care/6e975569/",
       "downloaded_at": "2021-02-01 11:25:25.938915Z",
       "sha": "6176b35e183fe09e69c63d170b937445a143b0ee"
+    },
+    "user-john-tazare-heart-failure-incident-only.csv": {
+      "id": "user/john-tazare/heart-failure-incident-only/22f78487",
+      "url": "https://codelists.opensafely.org/codelist/user/john-tazare/heart-failure-incident-only/22f78487/",
+      "downloaded_at": "2021-02-26 16:01:24.710399Z",
+      "sha": "df2e2e6a7741f2c970e78fa894647ef1a6dd17f9"
+    },
+    "user-john-tazare-aki-gp.csv": {
+      "id": "user/john-tazare/aki-gp/55166af1",
+      "url": "https://codelists.opensafely.org/codelist/user/john-tazare/aki-gp/55166af1/",
+      "downloaded_at": "2021-02-26 16:01:24.847084Z",
+      "sha": "40ab04bc6845b5263e9c5bf0b1a02805367ce7d2"
     }
   }
 }

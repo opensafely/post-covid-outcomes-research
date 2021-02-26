@@ -73,8 +73,12 @@ stroke_hospital = codelist_from_csv(
     "codelists/opensafely-stroke-secondary-care.csv", system="icd10", column="icd"
 )
 
-aki_codes = codelist(
-    ["N17", "N170", "N171", "N172", "N178", "N179"], system="icd10"
+aki_codes = codelist(["N17", "N170", "N171", "N172", "N178", "N179"], system="icd10")
+
+aki_gp = codelist_from_csv(
+    "codelists/user-john-tazare-aki-gp.csv",
+    system="ctv3",
+    column="code",
 )
 
 mi_codes = codelist_from_csv(
@@ -91,9 +95,9 @@ mi_codes_hospital = codelist_from_csv(
 )
 
 heart_failure_codes = codelist_from_csv(
-    "codelists/opensafely-heart-failure.csv",
+    "codelists/user-john-tazare-heart-failure-incident-only.csv",
     system="ctv3",
-    column="CTV3ID",
+    column="code",
 )
 
 heart_failure_codes_hospital = codelist_from_csv(

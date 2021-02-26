@@ -16,11 +16,26 @@ actions:
       highly_sensitive:
         cohort: output/input_covid_community.csv
 
+  generate_covid_general_population_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_general_population
+    outputs:
+      highly_sensitive:
+        cohort: output/input_general_population.csv
+
   generate_pneumonia_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_pneumonia
     outputs:
       highly_sensitive:
         cohort: output/input_pneumonia.csv
+
+  matching:
+    run: python:latest python analysis/match_running.py
+    needs: [generate_covid_cohort, generate_covid_general_population_cohort]
+    outputs:
+      moderately_sensitive: 
+        matching_report: output/matching_report_general_population.txt  
+      highly_sensitive: 
+        combined: output/matched_combined_general_population.csv
 
   covid_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid"
@@ -43,6 +58,13 @@ actions:
       highly_sensitive:
         analysis_dataset: output/cohort_rates_pneumonia.dta
 
+  gen_pop_rates_cohort:
+    run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "matched_combined_general_population"
+    needs: [matching]
+    outputs:
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_gen_population.dta
+
   covid_rates:
     run: stata-mp:latest analysis/201_cr_simple_rates.do "covid"
     needs: [covid_rates_cohort]
@@ -64,21 +86,29 @@ actions:
       moderately_sensitive:
         rates: output/tabfig/rates_summary_pneumonia.csv
 
+  gen_pop_rates:
+    run: stata-mp:latest analysis/201_cr_simple_rates.do "gen_population"
+    needs: [gen_pop_rates_cohort]
+    outputs:
+      moderately_sensitive:
+        rates: output/tabfig/rates_summary_gen_population.csv
+
   baseline_characteristics:
     run: stata-mp:latest analysis/400_baseline_characteristics.do
-    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort]
+    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort]
     outputs:
       moderately_sensitive:
         tables: output/tabfig/an_descriptiveTable_*.txt
 
   append_cohorts:
     run: stata-mp:latest analysis/300_cr_data_management_matching.do
-    needs: [covid_rates_cohort, pneumonia_rates_cohort]
+    needs: [covid_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort]
     outputs:
       moderately_sensitive:
         log: output/append_cohorts.txt
       highly_sensitive: 
         dataset: output/combined_covid_pneumonia.dta
+        dataset2: output/combined_covid_gen_population.dta
 
   cox_models:
     run: stata-mp:latest analysis/302_cox_models.do
