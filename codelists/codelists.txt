@@ -23,5 +23,5 @@ opensafely/type-1-diabetes-secondary-care/2020-09-27
 opensafely/antidiabetic-drugs/2020-07-16
 opensafely/insulin-medication/2020-04-26
 opensafely/diabetic-ketoacidosis-secondary-care/6e975569
-john-tazare/heart-failure-incident-only/22f78487
-john-tazare/aki-gp/55166af1
+user/john-tazare/heart-failure-incident-only/22f78487
+user/john-tazare/aki-gp/55166af1
