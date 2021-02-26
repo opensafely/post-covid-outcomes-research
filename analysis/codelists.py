@@ -78,7 +78,7 @@ aki_codes = codelist(
 )
 
 aki_gp = codelist_from_csv(
-    "codelists/john-tazare-aki-gp-55166af1.csv",
+    "codelists/user-john-tazare-aki-gp.csv",
     system="ctv3",
     column="CTV3ID",
 )
@@ -97,7 +97,7 @@ mi_codes_hospital = codelist_from_csv(
 )
 
 heart_failure_codes = codelist_from_csv(
-    "john-tazare-heart-failure-incident-only-22f78487",
+    "user-john-tazare-heart-failure-incident-only",
     system="ctv3",
     column="CTV3ID",
 )
