@@ -95,14 +95,14 @@ actions:
 
   baseline_characteristics:
     run: stata-mp:latest analysis/400_baseline_characteristics.do
-    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates]
+    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort]
     outputs:
       moderately_sensitive:
         tables: output/tabfig/an_descriptiveTable_*.txt
 
   append_cohorts:
     run: stata-mp:latest analysis/300_cr_data_management_matching.do
-    needs: [covid_rates_cohort, pneumonia_rates_cohort, gen_pop_rates]
+    needs: [covid_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort]
     outputs:
       moderately_sensitive:
         log: output/append_cohorts.txt
