@@ -1,0 +1,40 @@
+code,term
+J624.,Hepatorenal syndrome
+K034.,Renal cortical necrosis unspecified
+K04..,Acute renal failure
+K040.,Acute tubular necrosis
+K041.,Acute cortical necrosis
+K04y.,Other acute renal failure
+K04z.,Acute renal failure NOS
+L393.,Postpartum acute renal failure
+L3930,Post-delivery acute renal failure unspecified
+L3931,Post-delivery acute renal failure - delivered with p/n prob
+L3932,Post-delivery acute renal failure with postnatal problem
+L393z,Post-delivery acute renal failure NOS
+SP143,Hepatorenal syndrome as a complication of care
+X30Ip,Postoperative acute tubular necrosis
+X30Iq,Post-traumatic acute tubular necrosis
+X30Ir,Nephrotoxic acute renal failure
+X30Is,Acute drug-induced renal failure
+X30Ix,Pulmonary renal syndrome
+XM08q,Prerenal renal failure
+XM199,[EDTA]Cortical or tubular necrosis associated+renal failure
+Xa85t,Post-renal renal failure
+XaB3Y,Transient acute renal failure
+XaPwv,Acute renal failure due to urinary obstruction
+XaZ6J,Acute renal failure due to angio-conv-enzyme inhibitor
+XaZPp,Acute renal failure induced by aminoglycoside
+XaZPs,Acute renal failure induced by cisplatin
+XaZPt,Acute renal failure induced by cyclosporin A
+XaZPu,Acute renal failure induced by non-steroid anti-inflamm drug
+XaZSx,Acute renal failure due to non-traumatic rhabdomyolysis
+XaZUY,Acute renal failure induced by animal toxin
+XaZUZ,Acute renal failure induced by plant toxin
+XaZUa,Acute renal failure induced by heavy metal
+XaZYv,Acute renal failure induced by poison
+XaZZ0,Acute renal failure induced by radiographic contrast media
+XaZZ2,Acute renal failure induced by solvent
+XaZe5,Acute renal failure due to traumatic rhabdomyolysis
+Xaa8O,Acute kidney injury stage 1
+Xaa8P,Acute kidney injury stage 2
+Xaa8Q,Acute kidney injury stage 3
