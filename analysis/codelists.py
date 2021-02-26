@@ -97,7 +97,7 @@ mi_codes_hospital = codelist_from_csv(
 )
 
 heart_failure_codes = codelist_from_csv(
-    "user-john-tazare-heart-failure-incident-only",
+    "codelists/user-john-tazare-heart-failure-incident-only",
     system="ctv3",
     column="code",
 )
