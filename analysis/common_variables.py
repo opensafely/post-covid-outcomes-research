@@ -1,4 +1,3 @@
-
 from cohortextractor import filter_codes_by_category, patients, combine_codelists
 from codelists import *
 from datetime import datetime, timedelta
@@ -68,7 +67,7 @@ def generate_common_variables(index_date_variable):
                 return_expectations={"incidence": 0.05},
             ),
             recent_aki_hospital=patients.admitted_to_hospital(
-                with_these_diagnoses=aki_codes, 
+                with_these_diagnoses=aki_codes,
                 between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
             ),
         ),
@@ -87,7 +86,9 @@ def generate_common_variables(index_date_variable):
             ),
         ),
         previous_diabetes=patients.with_these_clinical_events(
-            combine_codelists(diabetes_t1_codes, diabetes_t2_codes, diabetes_unknown_codes),
+            combine_codelists(
+                diabetes_t1_codes, diabetes_t2_codes, diabetes_unknown_codes
+            ),
             on_or_before=f"{index_date_variable}",
             return_expectations={"incidence": 0.05},
         ),
@@ -224,7 +225,9 @@ def generate_common_variables(index_date_variable):
         ),
         mi_hospital=patients.admitted_to_hospital(
             returning="date_admitted",
-            with_these_diagnoses=filter_codes_by_category(mi_codes_hospital, include=["1"]),
+            with_these_diagnoses=filter_codes_by_category(
+                mi_codes_hospital, include=["1"]
+            ),
             on_or_after=f"{index_date_variable} + 1 days",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
@@ -337,12 +340,18 @@ def generate_common_variables(index_date_variable):
         ),
         oad_lastyear_meds=patients.with_these_medications(
             oad_med_codes,
-            between=[f"{index_date_variable} - 1 year", f"{index_date_variable} + 1 days"],
+            between=[
+                f"{index_date_variable} - 1 year",
+                f"{index_date_variable} + 1 days",
+            ],
             return_expectations={"incidence": 0.05},
         ),
         insulin_lastyear_meds=patients.with_these_medications(
             insulin_med_codes,
-            between=[f"{index_date_variable} - 1 year", f"{index_date_variable} + 1 days"],
+            between=[
+                f"{index_date_variable} - 1 year",
+                f"{index_date_variable} + 1 days",
+            ],
             return_expectations={"incidence": 0.05},
         ),
         type1_agg=patients.satisfying("t1dm_gp OR t1dm_hospital OR t1dm_ons"),
