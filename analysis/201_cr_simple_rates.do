@@ -50,6 +50,10 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 	local skip_3 = 1 
 	}	
 	
+	if "`v'" == "aki" {
+	drop if aki_exclusion_flag == 1
+	}
+	
 	if `i' == 1 {
 	local out  `v'
 	local end_date  `v'_end_date
