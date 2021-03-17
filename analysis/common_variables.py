@@ -6,8 +6,7 @@ from datetime import datetime, timedelta
 def generate_common_variables(index_date_variable):
     common_variables = dict(
         deregistered=patients.date_deregistered_from_all_supported_practices(
-            on_or_after="patient_index_date",
-            date_format="YYYY-MM-DD",
+            date_format="YYYY-MM-DD"
         ),
         # Outcomes
         # History of outcomes
