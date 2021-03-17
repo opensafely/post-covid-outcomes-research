@@ -77,7 +77,8 @@ gen long_hosp_stay = cond(length_of_stay >= `r(p50)' , 1, 0)
 *  Convert strings to dates  *
 ******************************
 * To be added: dates related to outcomes
-foreach var of varlist date_icu_admission   ///
+foreach var of varlist deregistered			///
+					   date_icu_admission   ///
 					   dvt_gp				///
 					   pe_gp				///
 					   dvt_hospital		 	///
@@ -294,7 +295,7 @@ foreach out in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
 replace `out'_hospital = . if `out'_hospital > `end_date'
 replace `out'_gp = . if `out'_gp > `end_date'
-gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) // `out'_ons already captured in the study definition binary outcome
+gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date, deregistered_date) // `out'_ons already captured in the study definition binary outcome
 
 
 * 1) Define outcome using all data
