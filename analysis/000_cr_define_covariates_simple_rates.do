@@ -290,7 +290,10 @@ replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
 tempname outcomeDist
 																	 
 	postfile `outcomeDist' str20(outcome) str12(type) numEvents percent using $tabfigdir/outcome_distribution_$group.dta, replace
-	
+
+* The default deregistration date is 9999-12-31, so:
+replace deregistered_date = . if deregistered_date > `end_date'
+
 foreach out in stroke dvt pe heart_failure mi aki t1dm t2dm {
 
 replace `out'_hospital = . if `out'_hospital > `end_date'
