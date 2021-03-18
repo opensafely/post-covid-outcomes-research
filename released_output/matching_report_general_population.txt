@@ -1,19 +1,19 @@
-Matching started at: 2021-03-16 12:51:15.653891
+Matching started at: 2021-03-17 15:38:22.470893
 
 CSV import:
-Completed 2021-03-16 12:54:43.296233
+Completed 2021-03-17 15:41:22.224810
 Cases    31716
 Matches  17135801
 
 Dropping cases from matches:
-Completed 2021-03-16 12:54:43.296676
+Completed 2021-03-17 15:41:22.225305
 Cases    31716
 Matches  17135801
 
-Completed pre-calculating indices at 2021-03-16 12:55:09.077734
+Completed pre-calculating indices at 2021-03-17 15:41:43.643592
 
 After matching:
-Completed 2021-03-16 18:22:29.995952
+Completed 2021-03-17 21:09:00.472551
 Cases    31716
 Matches  158571
 
