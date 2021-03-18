@@ -312,7 +312,7 @@ drop min_end_date
 
 * 2) Define outcome using hospital data only
 if  "`out'"!="t1dm" & "`out'"!="t2dm" {
-gen min_end_date = min(`out'_hospital, died_date_ons_date)
+gen min_end_date = min(`out'_hospital, died_date_ons_date, deregistered_date)
 replace `out'_no_gp= 0 if min_end_date > `end_date'
 gen 	`out'_no_gp_end_date = `end_date' // relevant end date
 replace `out'_no_gp_end_date = min_end_date if  min_end_date!=.	 // not missing
@@ -324,8 +324,8 @@ drop min_end_date
 
 * 3) Define outcome avoiding GP 'outcomes' if patient has a recent history
 if "`out'"!="t1dm" & "`out'"!="t2dm" {
-gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date) if recent_`out' == 0
-replace min_end_date = min(`out'_hospital, died_date_ons_date) if recent_`out' == 1
+gen min_end_date = min(`out'_hospital, `out'_gp, died_date_ons_date, deregistered_date) if recent_`out' == 0
+replace min_end_date = min(`out'_hospital, died_date_ons_date, deregistered_date) if recent_`out' == 1
 replace `out'_cens_gp= 0 if min_end_date > `end_date'
 gen 	`out'_cens_gp_end_date = `end_date' // relevant end date
 replace `out'_cens_gp_end_date = min_end_date if  min_end_date!=.	 // not missing
