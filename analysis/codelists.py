@@ -153,7 +153,7 @@ placeholder_codelist = codelist(["12345"], system="ctv3")
 # Neuro
 
 dementia_codes = codelist_from_csv(
-    "codelists/opensafely-dementia-complete-48c76cf8-definition.csv", system="ctv3", column="code"
+    "codelists/opensafely-dementia-complete.csv", system="ctv3", column="code"
 )
 
 
