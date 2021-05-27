@@ -105,8 +105,8 @@
     "opensafely-cardiovascular-secondary-care.csv": {
       "id": "opensafely/cardiovascular-secondary-care/20b63bd4",
       "url": "https://codelists.opensafely.org/codelist/opensafely/cardiovascular-secondary-care/20b63bd4/",
-      "downloaded_at": "2021-01-08 17:06:54.409271Z",
-      "sha": "2058b84c281a623ad71793e9b5058aea9079612f"
+      "downloaded_at": "2021-05-27 19:57:18.125746Z",
+      "sha": "7c956ed25484f8c03dae29823031c27f2802914a"
     },
     "opensafely-type-1-diabetes.csv": {
       "id": "opensafely/type-1-diabetes/2020-06-29",
@@ -129,8 +129,8 @@
     "opensafely-type-1-diabetes-secondary-care.csv": {
       "id": "opensafely/type-1-diabetes-secondary-care/2020-09-27",
       "url": "https://codelists.opensafely.org/codelist/opensafely/type-1-diabetes-secondary-care/2020-09-27/",
-      "downloaded_at": "2021-01-08 17:06:54.951637Z",
-      "sha": "ba80f00dceaeebc19bd4ef76cd0a4a7c3ab5e70c"
+      "downloaded_at": "2021-05-27 19:57:19.648254Z",
+      "sha": "e51303ce0e7eb6ac9e0d1763bd23e49b0f273429"
     },
     "opensafely-antidiabetic-drugs.csv": {
       "id": "opensafely/antidiabetic-drugs/2020-07-16",
