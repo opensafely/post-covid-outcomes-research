@@ -9,7 +9,7 @@ def generate_common_variables(index_date_variable):
             date_format="YYYY-MM-DD"
         ),
         # Outcomes
-        # History of outcomes
+        # Recent history of outcomes
         recent_dvt=patients.satisfying(
             "recent_dvt_gp OR recent_dvt_hospital",
             recent_dvt_gp=patients.with_these_clinical_events(
@@ -95,6 +95,86 @@ def generate_common_variables(index_date_variable):
             on_or_before=f"{index_date_variable}",
             return_expectations={"incidence": 0.05},
         ),
+        # History of outcomes
+        hist_dvt=patients.satisfying(
+            "hist_dvt_gp OR hist_dvt_hospital",
+            hist_dvt_gp=patients.with_these_clinical_events(
+                filter_codes_by_category(vte_codes_gp, include=["dvt"]),
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+            hist_dvt_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=filter_codes_by_category(
+                    vte_codes_hospital, include=["dvt"]
+                ),
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+        ),
+         hist_pe=patients.satisfying(
+            "hist_pe_gp OR hist_pe_hospital",
+           hist_pe_gp=patients.with_these_clinical_events(
+                filter_codes_by_category(vte_codes_gp, include=["pe"]),
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+            hist_pe_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=filter_codes_by_category(
+                    vte_codes_hospital, include=["pe"]
+                ),
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+        ),
+         hist_stroke=patients.satisfying(
+            "hist_stroke_gp OR hist_stroke_hospital",
+            hist_stroke_gp=patients.with_these_clinical_events(
+                stroke,
+                on_or_before=f"{index_date_variable} - 1 days",
+                return_expectations={"incidence": 0.05},
+            ),
+            hist_stroke_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=stroke_hospital,
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+        ),
+         hist_mi=patients.satisfying(
+            "hist_mi_gp OR hist_mi_hospital",
+            hist_mi_gp=patients.with_these_clinical_events(
+                mi_codes,
+                between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
+               on_or_before=f"{index_date_variable} - 1 days",
+            ),
+            hist_mi_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=filter_codes_by_category(
+                    mi_codes_hospital, include=["1"]
+                ),
+               on_or_before=f"{index_date_variable} - 1 days",
+            ),
+        ),
+         hist_aki=patients.satisfying(
+            "hist_aki_gp OR hist_aki_hospital",
+            hist_aki_gp=patients.with_these_clinical_events(
+                aki_gp,
+                on_or_before=f"{index_date_variable} - 1 days",
+                return_expectations={"incidence": 0.05},
+            ),
+            hist_aki_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=aki_codes,
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+        ),
+         hist_heart_failure=patients.satisfying(
+            "hist_heart_failure_gp OR hist_heart_failure_hospital",
+            hist_heart_failure_gp=patients.with_these_clinical_events(
+                heart_failure_codes,
+                on_or_before=f"{index_date_variable} - 1 days",
+                return_expectations={"incidence": 0.05},
+            ),
+            hist_heart_failure_hospital=patients.admitted_to_hospital(
+                with_these_diagnoses=filter_codes_by_category(
+                    heart_failure_codes_hospital, include=["1"]
+                ),
+                on_or_before=f"{index_date_variable} - 1 days",
+            ),
+        ),
+
         ## DVT
         dvt_gp=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["dvt"]),
@@ -522,5 +602,134 @@ def generate_common_variables(index_date_variable):
             return_first_date_in_period=True,
             include_month=True,
         ),
+
+        # respiratory
+    
+       chronic_respiratory_disease=patients.with_these_clinical_events(
+            chronic_respiratory_disease_codes,
+            on_or_before="index_date_variable - 1 day",
+            return_expectations={"incidence": 0.05},
+        ),
+    
+        asthma=patients.categorised_as(
+            {
+            "0": "DEFAULT",
+            "1": """
+            (
+              recent_asthma_code OR (
+                asthma_code_ever AND NOT
+                copd_code_ever
+              )
+            ) AND (
+              prednisolone_last_year = 0 OR 
+              prednisolone_last_year > 4
+            )
+            """,
+            "2": """
+            (
+              recent_asthma_code OR (
+                asthma_code_ever AND NOT
+                copd_code_ever
+              )
+            ) AND
+            prednisolone_last_year > 0 AND
+            prednisolone_last_year < 5
+            
+            """,
+            },
+        return_expectations={
+            "category": {"ratios": {"0": 0.8, "1": 0.1, "2": 0.1}},
+        },
+        recent_asthma_code=patients.with_these_clinical_events(
+            asthma_codes,
+            between=["index_date_variable - 3 years", "index_date_variable - 1 day"],
+        ),
+        asthma_code_ever=patients.with_these_clinical_events(asthma_codes),
+        copd_code_ever=patients.with_these_clinical_events(
+            chronic_respiratory_disease_codes
+        ),
+        prednisolone_last_year=patients.with_these_medications(
+            prednisolone_codes,
+            between=["index_date_variable - 1 years", "index_date_variable - 1 day"],
+            returning="number_of_matches_in_period",
+        ),
+    ),
+    
+    # cancer
+    
+
+    lung_cancer=patients.with_these_clinical_events(
+        lung_cancer_codes, return_first_date_in_period=True, include_month=True,
+    ),
+    haem_cancer=patients.with_these_clinical_events(
+        haem_cancer_codes, return_first_date_in_period=True, include_month=True,
+    ),
+    other_cancer=patients.with_these_clinical_events(
+        other_cancer_codes, return_first_date_in_period=True, include_month=True,
+    ),
+    
+    # immuno
+    
+    organ_transplant=patients.with_these_clinical_events(
+        organ_transplant_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    dysplenia=patients.with_these_clinical_events(
+        spleen_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    sickle_cell=patients.with_these_clinical_events(
+        sickle_cell_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    aplastic_anaemia=patients.with_these_clinical_events(
+        aplastic_codes, return_last_date_in_period=True, include_month=True,
+    ),
+    hiv=patients.with_these_clinical_events(
+        hiv_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    permanent_immunodeficiency=patients.with_these_clinical_events(
+        permanent_immune_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    temporary_immunodeficiency=patients.with_these_clinical_events(
+        temp_immune_codes, return_last_date_in_period=True, include_month=True,
+    ),
+    
+    ra_sle_psoriasis=patients.with_these_clinical_events(
+        ra_sle_psoriasis_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    
+    
+    # neuro
+    
+    other_neuro=patients.with_these_clinical_events(
+        other_neuro_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    dementia=patients.with_these_clinical_events(
+        dementia_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    
+    
+    # gastro
+    
+    chronic_liver_disease=patients.with_these_clinical_events(
+        chronic_liver_disease_codes,
+        on_or_before="index_date_variable - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+
     )
     return common_variables

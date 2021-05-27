@@ -43,6 +43,8 @@ actions:
     outputs:
       highly_sensitive:
         analysis_dataset: output/cohort_rates_covid.dta
+      moderately_sensitive:
+        out_dist: output/tabfig/outcomes_in_hosp_covid.csv
 
   covid_community_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid_community"
@@ -57,6 +59,8 @@ actions:
     outputs:
       highly_sensitive:
         analysis_dataset: output/cohort_rates_pneumonia.dta
+      moderately_sensitive:
+        out_dist: output/tabfig/outcomes_in_hosp_covid.csv
 
   gen_pop_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "matched_combined_general_population"

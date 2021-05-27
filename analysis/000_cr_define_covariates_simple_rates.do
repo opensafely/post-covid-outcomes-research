@@ -25,7 +25,7 @@ local start_date  td(01/02/2020)
 local last_year   td(01/02/2019)
 local four_years_ago td(01/02/2015)	 
 local fifteen_months_ago td(01/09/2019)
-local end_date td(01/11/2020)
+local end_date td(01/02/2021)
 
 }
 else {
@@ -33,7 +33,7 @@ local start_date  td(01/02/2019)
 local last_year   td(01/02/2018)	
 local four_years_ago td(01/02/2014)	 
 local fifteen_months_ago td(01/09/2018)
-local end_date td(01/11/2019)
+local end_date td(01/02/2020)
 }
 
 if "$group" == "matched_combined_general_population" {
@@ -131,6 +131,49 @@ drop if died_date_ons <= indexdate
 * Set these to missing
 replace died_date_ons_date = . if died_date_ons_date>`end_date'
 
+* Process variables with nearest month dates only						
+						
+foreach var of varlist 	bmi_date_measured 				///
+						creatinine_date					///
+						bp_sys_date_measured			///
+						hba1c_mmol_per_mol_date			///
+						hba1c_percentage_date			///
+						haem_cancer						///
+						lung_cancer						///
+						other_cancer					///
+						temporary_immunodeficiency		///
+						aplastic_anaemia				{
+						    confirm string variable `var'
+							replace `var' = `var' + "-15"
+							rename `var' `var'_dstr
+							replace `var'_dstr = " " if `var'_dstr == "-15"
+							gen `var'_date = date(`var'_dstr, "YMD") 
+							order `var'_date, after(`var'_dstr)
+							drop `var'_dstr
+							format `var'_date %td
+						}
+
+rename bmi_date_measured_date      	bmi_date_measured
+rename bp_sys_date_measured_date   	bp_sys_date
+rename creatinine_date_date 		creatinine_date
+rename hba1c_percentage_date_date  	hba1c_percentage_date
+rename hba1c_mmol_per_mol_date_date hba1c_mmol_per_mol_date
+
+
+*******************************
+*  Recode implausible values  *
+*******************************
+
+* BMI 
+
+* Only keep if within certain time period? using bmi_date_measured ?
+* NB: Some BMI dates in future or after cohort entry
+
+* Set implausible BMIs to missing:
+replace bmi = . if !inrange(bmi, 15, 50)
+
+
+
 **********************
 *  Recode variables  *
 **********************
@@ -144,6 +187,24 @@ drop sex
 label define sexLab 1 "male" 0 "female"
 label values male sexLab
 label var male "sex = 0 F, 1 M"
+
+/*  IMD  */
+* Group into 5 groups
+rename imd imd_o
+egen imd = cut(imd_o), group(5) icodes
+replace imd = imd + 1
+replace imd = . if imd_o==-1
+drop imd_o
+
+* Reverse the order (so high is more deprived)
+recode imd 5=1 4=2 3=3 2=4 1=5 .=.
+
+label define imd 1 "1 least deprived" 2 "2" 3 "3" 4 "4" 5 "5 most deprived" 
+label values imd imd 
+
+noi di "DROPPING IF NO IMD" 
+drop if imd>=.
+
 
 * Ethnicity (5 category)
 replace ethnicity = 6 if ethnicity==.
@@ -235,9 +296,134 @@ assert agegroup<.
 * Create restricted cubic splines fir age
 mkspline age = age, cubic nknots(4)
 
+/*  Body Mass Index  */
+
+* BMI (NB: watch for missingness)
+gen 	bmicat = .
+recode  bmicat . = 1 if bmi<18.5
+recode  bmicat . = 2 if bmi<25
+recode  bmicat . = 3 if bmi<30
+recode  bmicat . = 4 if bmi<35
+recode  bmicat . = 5 if bmi<40
+recode  bmicat . = 6 if bmi<.
+replace bmicat = . if bmi>=.
+
+label define bmicat 1 "Underweight (<18.5)" 	///
+					2 "Normal (18.5-24.9)"		///
+					3 "Overweight (25-29.9)"	///
+					4 "Obese I (30-34.9)"		///
+					5 "Obese II (35-39.9)"		///
+					6 "Obese III (40+)"			
+					
+label values bmicat bmicat
+
+
+* Create more granular categorisation
+recode bmicat 1/3 . = 1 4=2 5=3 6=4, gen(obese4cat)
+
+label define obese4cat 	1 "No record of obesity" 	///
+						2 "Obese I (30-34.9)"		///
+						3 "Obese II (35-39.9)"		///
+						4 "Obese III (40+)"		
+label values obese4cat obese4cat
+order obese4cat, after(bmicat)
+
+
+/*  Smoking  */
+
+
+* Create non-missing 3-category variable for current smoking
+recode smoke .=1, gen(smoke_nomiss)
+order smoke_nomiss, after(smoke)
+label values smoke_nomiss smoke
+
+/*  Blood pressure   */
+
+* Categorise
+gen     bpcat = 1 if bp_sys < 120 &  bp_dias < 80
+replace bpcat = 2 if inrange(bp_sys, 120, 130) & bp_dias<80
+replace bpcat = 3 if inrange(bp_sys, 130, 140) | inrange(bp_dias, 80, 90)
+replace bpcat = 4 if (bp_sys>=140 & bp_sys<.) | (bp_dias>=90 & bp_dias<.) 
+replace bpcat = . if bp_sys>=. | bp_dias>=. | bp_sys==0 | bp_dias==0
+
+label define bpcat 1 "Normal" 2 "Elevated" 3 "High, stage I"	///
+					4 "High, stage II" 
+label values bpcat bpcat
+
+recode bpcat .=1, gen(bpcat_nomiss)
+label values bpcat_nomiss bpcat
+
+* Create non-missing indicator of known high blood pressure
+gen bphigh = (bpcat==4)
+order bpcat bphigh, after(bp_sys_date)
+
+
+
 ***************************
 *  Grouped comorbidities  *
 ***************************
+
+
+/*  Spleen  */
+
+* Spleen problems (dysplenia/splenectomy/etc and sickle cell disease)   
+egen spleen = rowmax(dysplenia sickle_cell) 
+order spleen, after(sickle_cell)
+
+
+
+/*  Cancer  */
+
+label define cancer 1 "Never" 2 "Last year" 3 "2-5 years ago" 4 "5+ years"
+
+gen fiveybefore = indexdate-5*365.25
+gen oneybefore = indexdate-365.25
+
+* Haematological malignancies
+gen     cancer_haem_cat = 4 if inrange(haem_cancer_date, d(1/1/1900), fiveybefore)
+replace cancer_haem_cat = 3 if inrange(haem_cancer_date, fiveybefore, oneybefore)
+replace cancer_haem_cat = 2 if inrange(haem_cancer_date, oneybefore, indexdate)
+recode  cancer_haem_cat . = 1
+label values cancer_haem_cat cancer
+
+
+* All other cancers
+gen     cancer_exhaem_cat = 4 if inrange(lung_cancer_date,  d(1/1/1900), fiveybefore) | ///
+								 inrange(other_cancer_date, d(1/1/1900), fiveybefore) 
+replace cancer_exhaem_cat = 3 if inrange(lung_cancer_date,  fiveybefore, oneybefore) | ///
+								 inrange(other_cancer_date, fiveybefore, oneybefore) 
+replace cancer_exhaem_cat = 2 if inrange(lung_cancer_date,  oneybefore, indexdate) | ///
+								 inrange(other_cancer_date, oneybefore, indexdate)
+recode  cancer_exhaem_cat . = 1
+label values cancer_exhaem_cat cancer
+
+
+* Put variables together
+order cancer_exhaem_cat cancer_haem_cat, after(other_cancer_date)
+
+
+
+/*  Immunosuppression  */
+
+* Immunosuppressed:
+* HIV, permanent immunodeficiency ever, OR 
+* temporary immunodeficiency or aplastic anaemia last year
+gen temp1  = max(hiv, permanent_immunodeficiency)
+gen temp2  = inrange(temporary_immunodeficiency_date, oneybefore, indexdate)
+gen temp3  = inrange(aplastic_anaemia_date, oneybefore, indexdate)
+
+egen other_immunosuppression = rowmax(temp1 temp2 temp3)
+drop temp1 temp2 temp3
+order other_immunosuppression, after(temporary_immunodeficiency)
+
+
+
+
+/*  Hypertension  */
+
+gen htdiag_or_highbp = bphigh
+recode htdiag_or_highbp 0 = 1 if hypertension==1 
+
 
 ************
 *   eGFR   *
@@ -267,8 +453,6 @@ replace egfr=egfr*(0.993^age)
 replace egfr=egfr*1.018 if male==0
 label var egfr "egfr calculated using CKD-EPI formula with no eth"
 
-* Categorise into ckd stages
-
 * dialysis
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
@@ -288,9 +472,9 @@ replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
 
 * Post outcome distribution 
 tempname outcomeDist
-																	 
-	postfile `outcomeDist' str20(outcome) str12(type) numEvents percent using $tabfigdir/outcome_distribution_$group.dta, replace
-
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+	postfile `outcomeDist' str20(outcome) str5(pop) str5(numEvents) str5(numDeaths) str5(propEvents) str5(propDeaths) using $tabfigdir/outcomes_in_hosp_$group.dta, replace
+}
 * The default deregistration date is 9999-12-31, so:
 replace deregistered_date = . if deregistered_date > `end_date'
 
@@ -335,7 +519,26 @@ format %td `out'_cens_gp_end_date
 drop min_end_date	
 }
 
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+* In hospital descriptives
 
+* Cohort
+safecount 
+local pop = `r(N)'
+
+* Num events
+safecount if  (`out'_gp > hosp_expo_date  & `out'_gp <= indexdate) | (`out'_hospital > hosp_expo_date  & `out'_hospital <= indexdate) 
+local numEvents = `r(N)'
+local propEvents = round(100*`pop'/`numEvents', 0.1)
+
+safecount if  (died_date_ons > hosp_expo_date  & died_date_ons  <= indexdate) 
+local numDeaths = `r(N)'
+local propEvents = round(100*`pop'/`numDeaths', 0.1)
+
+post `outcomeDist' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
+
+
+}
 
 }
 
@@ -345,19 +548,10 @@ postclose `outcomeDist'
 										
 **** Tidy dataset
 
-if "$group" == "covid" | "$group" == "pneumonia"  { 
-keep  patient_id hosp_expo_date previous_* agegroup ethnicity af aki_exclusion_flag /// 
- indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
- af *_end_date long_hosp_stay mi* heart_failure* aki* mi* t1dm* t2dm* age* died_date_ons_date
- }
-else { 
-keep patient_id previous_* agegroup ethnicity af aki_exclusion_flag /// 
- indexdate male region_7 dvt* pe* stroke* anticoag_rx agegroup ///
- af *_end_date mi* heart_failure* aki* mi* t1dm* t2dm* age* died_date_ons_date
- 
-}
-order patient_id indexdate
 
 save $outdir/cohort_rates_$group, replace 
 
-
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+use $tabfigdir/outcomes_in_hosp_$group.dta, replace
+export delimited using $tabfigdir/outcomes_in_hosp_$group.csv, replace
+}

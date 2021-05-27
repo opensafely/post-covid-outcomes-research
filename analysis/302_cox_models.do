@@ -36,8 +36,16 @@ gen new_patient_id = _n
 
 global crude i.case
 global age_sex i.case i.male age1 age2 age3
+global full age1 age2 age3 male i.stp i.ethnicity i.imd i.obese4cat_withmiss /// 
+		i.smoke htdiag chronic_respiratory_disease i.asthmacat /// 
+		chronic_cardiac_disease i.diabcat i.cancer_exhaem_cat ///
+		i.cancer_haem_cat  ///
+		 dementia other_neuro organ_transplant spleen ra_sle_psoriasis ///
+		other_immunosuppression  previous_diabetes /// 
+		hist_dvt hist_pe hist_stroke hist_mi hist_aki hist_heart_failure
+	
 
-foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
+foreach v in stroke dvt pe heart_failure mi aki t2dm {
 
 	
 	noi di "Starting analysis for `v' Outcome ..." 
@@ -82,9 +90,23 @@ foreach v in stroke dvt pe heart_failure mi aki t1dm t2dm {
 		
 		stset `end_date' , id(new_patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
-		foreach adjust in crude age_sex {
+		foreach adjust in crude age_sex full {
+		    
+			if "`adjust'" == "full" & "`v'" == "t2dm" {
+			* remove diabetes
+			global full age1 age2 age3 male i.stp i.ethnicity i.imd i.obese4cat_withmiss /// 
+		i.smoke htdiag chronic_respiratory_disease i.asthmacat /// 
+		chronic_cardiac_disease i.diabcat i.cancer_exhaem_cat ///
+		i.cancer_haem_cat  ///
+		 dementia other_neuro organ_transplant spleen ra_sle_psoriasis ///
+		other_immunosuppression /// 
+		hist_dvt hist_pe hist_stroke hist_mi hist_aki hist_heart_failure
+			}
+			
+			
 			stcox $`adjust', vce(robust)
-
+			
+			
 			matrix b = r(table)
 			local hr= b[1,2]
 			local lc = b[5,2] 

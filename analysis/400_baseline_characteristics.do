@@ -74,30 +74,26 @@ file write tablecontent _n
 tabulatevariable, variable(ethnicity) start(1) end(7) 
 file write tablecontent _n 
 
-/*tabulatevariable, variable(obese4cat) start(1) end(4) 
+tabulatevariable, variable(obese4cat) start(1) end(4) 
 file write tablecontent _n 
 
 tabulatevariable, variable(smoke_nomiss) start(1) end(3) 
 file write tablecontent _n 
 
-tabulatevariable, variable(ethnicity) start(1) end(5) missing 
-file write tablecontent _n 
-
 tabulatevariable, variable(imd) start(1) end(5) 
 file write tablecontent _n _n
 
-*tabulatevariable, variable(bpcat) start(1) end(4) missing 
 tabulatevariable, variable(htdiag_or_highbp) start(1) end(1) 			
 
 **COMORBIDITIES
 *RESPIRATORY
 tabulatevariable, variable(chronic_respiratory_disease) start(1) end(1) 
 *ASTHMA
-tabulatevariable, variable(asthmacat) start(2) end(3)  /*no ocs, then with ocs*/
+tabulatevariable, variable(asthmacat) start(0) end(2)  /*no ocs, then with ocs*/
 *CARDIAC
 tabulatevariable, variable(chronic_cardiac_disease) start(1) end(1) 
 *DIABETES
-tabulatevariable, variable(diabcat) start(2) end(4)  /*controlled, then uncontrolled, then missing a1c*/
+tabulatevariable, variable(previous_diabetes) start(1) end(1) 
 file write tablecontent _n
 *CANCER EX HAEM
 tabulatevariable, variable(cancer_exhaem_cat) start(2) end(4)  /*<1, 1-4.9, 5+ years ago*/
@@ -105,24 +101,27 @@ file write tablecontent _n
 *CANCER HAEM
 tabulatevariable, variable(cancer_haem_cat) start(2) end(4)  /*<1, 1-4.9, 5+ years ago*/
 file write tablecontent _n
-*REDUCED KIDNEY FUNCTION
-tabulatevariable, variable(reduced_kidney_function_cat2) start(2) end(5) 
-/*DIALYSIS
-tabulatevariable, variable(dialysis) start(1) end(1) */
+
 *LIVER
 tabulatevariable, variable(chronic_liver_disease) start(1) end(1) 
 *DEMENTIA
-tabulatevariable, variable(stroke_dementia) start(1) end(1) 
+tabulatevariable, variable(dementia) start(1) end(1) 
 *OTHER NEURO
 tabulatevariable, variable(other_neuro) start(1) end(1) 
-*ORGAN TRANSPLANT
-tabulatevariable, variable(organ_transplant) start(1) end(1) 
 *SPLEEN
 tabulatevariable, variable(spleen) start(1) end(1) 
 *RA_SLE_PSORIASIS
 tabulatevariable, variable(ra_sle_psoriasis) start(1) end(1) 
 *OTHER IMMUNOSUPPRESSION
 tabulatevariable, variable(other_immunosuppression) start(1) end(1) 
+
+**History
+tabulatevariable, variable(hist_dvt) start(1) end(1) 
+tabulatevariable, variable(hist_stroke) start(1) end(1) 
+tabulatevariable, variable(hist_pe) start(1) end(1) 
+tabulatevariable, variable(hist_mi) start(1) end(1) 
+tabulatevariable, variable(hist_aki) start(1) end(1) 
+tabulatevariable, variable(hist_heart_failure) start(1) end(1) 
 
 cou
 local denom = r(N)
