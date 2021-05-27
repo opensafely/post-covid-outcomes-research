@@ -138,7 +138,6 @@ def generate_common_variables(index_date_variable):
             "hist_mi_gp OR hist_mi_hospital",
             hist_mi_gp=patients.with_these_clinical_events(
                 mi_codes,
-                between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
                on_or_before=f"{index_date_variable} - 1 days",
             ),
             hist_mi_hospital=patients.admitted_to_hospital(
