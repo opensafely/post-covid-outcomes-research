@@ -120,20 +120,20 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'==1)
 		
-foreach adjust in crude age_sex full {
+		foreach adjust in crude age_sex full {
 		    
 			if "`adjust'" == "full" & "`v'" == "t2dm" {
 			* remove diabetes
-global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_withmiss /// 
-	i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
- i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_function_cat2  ///
-	i.chronic_liver_disease i.stroke i.dementia i.other_neuro i.organ_transplant i.spleen ///
-	i.ra_sle_psoriasis i.other_immunosuppression i.hist_dvt i.hist_pe i.hist_stroke i.hist_mi i.hist_aki i.hist_heart_failure	
-			}
+		global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_withmiss /// 
+					i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
+					i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_function_cat2  ///
+					i.chronic_liver_disease i.stroke i.dementia i.other_neuro i.organ_transplant i.spleen ///
+					i.ra_sle_psoriasis i.other_immunosuppression i.hist_dvt i.hist_pe i.hist_stroke i.hist_mi i.hist_aki i.hist_heart_failure	
+		}
 			
 			
-			stcrreg $`adjust', compete(`out'==2)  vce(robust)
-			
+		stcrreg $`adjust', compete(`out'==2)  vce(robust)
+		
 			
 			matrix b = r(table)
 			local hr= b[1,1]
@@ -143,10 +143,9 @@ global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_wi
 
 			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'") (`hr') (`lc') (`uc')	
 			
-			}
 		}
-	
-	if `i' == 3 {
+		
+		if `i' == 3 {
 	
 		* Adjusted cuminc 
 		stcompet cuminc = ci, by(case) compet1(2)
@@ -192,12 +191,8 @@ global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_wi
 			
 		graph export "$tabfigdir/cumInc_`out'.svg", as(svg) replace
 		
-	
-
-
+		}	
 	}
-		
-		
 restore			
 }
 	
