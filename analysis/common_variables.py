@@ -503,6 +503,42 @@ def generate_common_variables(index_date_variable):
                 "incidence": 1,
             },
         ),
+        bmi=patients.most_recent_bmi(
+            on_or_before=f"{index_date_variable} - 1 day",
+            minimum_age_at_measurement=16,
+            include_measurement_date=True,
+            include_month=True,
+            return_expectations={
+            "incidence": 0.98,
+            "float": {"distribution": "normal", "mean": 35, "stddev": 10},
+        },
+        ),
+        smoking_status=patients.categorised_as(
+         {
+            "S": "most_recent_smoking_code = 'S'",
+            "E": """
+                 most_recent_smoking_code = 'E' OR (
+                   most_recent_smoking_code = 'N' AND ever_smoked
+                 )
+            """,
+            "N": "most_recent_smoking_code = 'N' AND NOT ever_smoked",
+            "M": "DEFAULT",
+         },
+         return_expectations={
+             "category": {"ratios": {"S": 0.6, "E": 0.1, "N": 0.2, "M": 0.1}}
+         },
+         most_recent_smoking_code=patients.with_these_clinical_events(
+             clear_smoking_codes,
+             find_last_match_in_period=True,
+             on_or_before=f"{index_date_variable} - 1 day",
+             returning="category",
+         ),
+         ever_smoked=patients.with_these_clinical_events(
+             filter_codes_by_category(clear_smoking_codes, include=["S", "E"]),
+             on_or_before=f"{index_date_variable} - 1 day",
+         ),
+     ),
+    
         stp=patients.registered_practice_as_of(
             "index_date",
             returning="stp_code",
@@ -566,6 +602,43 @@ def generate_common_variables(index_date_variable):
                 },
             },
         ),
+
+            # diabetes
+    
+    diabetes=patients.with_these_clinical_events(
+        diabetes_codes,
+        on_or_before=f"{index_date_variable} - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
+    
+    hba1c_percentage=patients.with_these_clinical_events(
+        hba1c_old_codes,
+        find_last_match_in_period=True,
+        between=[f"{index_date_variable}  - 2 years", f"{index_date_variable}  - 1 day"],
+        returning="numeric_value",
+        include_date_of_match=True,
+        include_month=True,
+        return_expectations={
+            "float": {"distribution": "normal", "mean": 5, "stddev": 2},
+            "incidence": 0.98,
+        },
+    ),
+    
+    hba1c_mmol_per_mol=patients.with_these_clinical_events(
+        hba1c_new_codes,
+        find_last_match_in_period=True,
+        between=[f"{index_date_variable}  - 2 years", f"{index_date_variable} - 1 day"],
+        returning="numeric_value",
+        include_date_of_match=True,
+        include_month=True,
+        return_expectations={
+            "float": {"distribution": "normal", "mean": 40.0, "stddev": 20},
+            "incidence": 0.98,
+        },
+    ),
+    
+    
+
         af=patients.with_these_clinical_events(
             af_codes,
             on_or_before=f"{index_date_variable}",
@@ -594,6 +667,30 @@ def generate_common_variables(index_date_variable):
                 "incidence": 0.95,
             },
         ),
+    bp_sys=patients.mean_recorded_value(
+        systolic_blood_pressure_codes,
+        on_most_recent_day_of_measurement=True,
+        on_or_before=f"{index_date_variable}- 1 day",
+        include_measurement_date=True,
+        include_month=True,
+        return_expectations={
+            "float": {"distribution": "normal", "mean": 80, "stddev": 10},
+            "date": {"latest": "2020-02-29"},
+            "incidence": 0.95,
+        },
+    ),
+    
+    bp_dias=patients.mean_recorded_value(
+        diastolic_blood_pressure_codes,
+        on_most_recent_day_of_measurement=True,
+        on_or_before=f"{index_date_variable} - 1 day",
+        return_expectations={
+            "float": {"distribution": "normal", "mean": 120, "stddev": 10},
+            "date": {"latest": "2020-02-29"},
+            "incidence": 0.95,
+        },
+    ),
+    
         dialysis=patients.with_these_clinical_events(
             dialysis_codes,
             on_or_before=f"{index_date_variable}",

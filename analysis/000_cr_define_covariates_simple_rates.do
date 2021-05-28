@@ -160,6 +160,7 @@ rename hba1c_percentage_date_date  	hba1c_percentage_date
 rename hba1c_mmol_per_mol_date_date hba1c_mmol_per_mol_date
 
 
+
 *******************************
 *  Recode implausible values  *
 *******************************
@@ -465,6 +466,95 @@ replace dialysis_flag = 0 if dialysis_flag ==.
 
 gen aki_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
 replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
+
+
+* Categorise into ckd stages
+egen egfr_cat = cut(egfr), at(0, 15, 30, 45, 60, 5000)
+recode egfr_cat 0=5 15=4 30=3 45=2 60=0, generate(ckd)
+* 0 = "No CKD" 	2 "stage 3a" 3 "stage 3b" 4 "stage 4" 5 "stage 5"
+label define ckd 0 "No CKD" 1 "CKD"
+label values ckd ckd
+label var ckd "CKD stage calc without eth"
+
+* Convert into CKD group
+*recode ckd 2/5=1, gen(chronic_kidney_disease)
+*replace chronic_kidney_disease = 0 if creatinine==. 
+
+recode ckd 0=1 2/3=2 4/5=3, gen(reduced_kidney_function_cat)
+replace reduced_kidney_function_cat = 1 if creatinine==. 
+label define reduced_kidney_function_catlab ///
+	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4/5 egfr<30"
+label values reduced_kidney_function_cat reduced_kidney_function_catlab 
+
+*More detailed version incorporating stage 5 or dialysis as a separate category	
+recode ckd 0=1 2/3=2 4=3 5=4, gen(reduced_kidney_function_cat2)
+replace reduced_kidney_function_cat2 = 1 if creatinine==. 
+replace reduced_kidney_function_cat2 = 4 if dialysis==1 
+
+label define reduced_kidney_function_cat2lab ///
+	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4 egfr 15-<30" 4 "Stage 5 egfr <15 or dialysis"
+label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab 
+ 
+	
+************
+*   Hba1c  *
+************
+	
+
+/*  Diabetes severity  */
+
+* Set zero or negative to missing
+replace hba1c_percentage   = . if hba1c_percentage<=0
+replace hba1c_mmol_per_mol = . if hba1c_mmol_per_mol<=0
+
+
+local fifteenmbefore = `studystart'-15*(365.25/12)
+
+* Only consider measurements in last 15 months
+replace hba1c_percentage   = . if hba1c_percentage_date   < `fifteenmbefore'
+replace hba1c_mmol_per_mol = . if hba1c_mmol_per_mol_date < `fifteenmbefore'
+
+
+
+/* Express  HbA1c as percentage  */ 
+
+* Express all values as perecentage 
+noi summ hba1c_percentage hba1c_mmol_per_mol 
+gen 	hba1c_pct = hba1c_percentage 
+replace hba1c_pct = (hba1c_mmol_per_mol/10.929)+2.15 if hba1c_mmol_per_mol<. 
+
+* Valid % range between 0-20  
+replace hba1c_pct = . if !inrange(hba1c_pct, 0, 20) 
+replace hba1c_pct = round(hba1c_pct, 0.1)
+
+
+/* Categorise hba1c and diabetes  */
+
+* Group hba1c
+gen 	hba1ccat = 0 if hba1c_pct <  6.5
+replace hba1ccat = 1 if hba1c_pct >= 6.5  & hba1c_pct < 7.5
+replace hba1ccat = 2 if hba1c_pct >= 7.5  & hba1c_pct < 8
+replace hba1ccat = 3 if hba1c_pct >= 8    & hba1c_pct < 9
+replace hba1ccat = 4 if hba1c_pct >= 9    & hba1c_pct !=.
+label define hba1ccat 0 "<6.5%" 1">=6.5-7.4" 2">=7.5-7.9" 3">=8-8.9" 4">=9"
+label values hba1ccat hba1ccat
+tab hba1ccat
+
+* Create diabetes, split by control/not
+gen     diabcat = 1 if diabetes==0
+replace diabcat = 2 if diabetes==1 & inlist(hba1ccat, 0, 1)
+replace diabcat = 3 if diabetes==1 & inlist(hba1ccat, 2, 3, 4)
+replace diabcat = 4 if diabetes==1 & !inlist(hba1ccat, 0, 1, 2, 3, 4)
+
+label define diabcat 	1 "No diabetes" 			///
+						2 "Controlled diabetes"		///
+						3 "Uncontrolled diabetes" 	///
+						4 "Diabetes, no hba1c measure"
+label values diabcat diabcat
+
+* Delete unneeded variables
+drop hba1c_percentage* hba1c_mmol_per_mol* bmi_date_measured creatinine_date bp_sys_date *cancer_date aplastic_anaemia_date temporary_immunodeficiency_date SCr_adj min max egfr egfr_cat ckd hba1c_pct hba1ccat asthma diabetes ethnicity_16_date reduced_kidney_function_cat bphigh dysplenia sickle_cell permanent_immunodeficiency hiv creatinine************
+
 
 **************
 *  Outcomes  *

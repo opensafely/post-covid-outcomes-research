@@ -27,6 +27,11 @@ doac_codes = codelist_from_csv(
     column="id",
 )
 
+diabetes_codes = codelist_from_csv(
+    "codelists/opensafely-diabetes.csv", system="ctv3", column="CTV3ID"
+)
+
+
 diabetes_t1_codes = codelist_from_csv(
     "codelists/opensafely-type-1-diabetes.csv", system="ctv3", column="CTV3ID"
 )
