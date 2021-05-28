@@ -173,16 +173,16 @@ foreach adjust in crude age_sex full {
 		replace cumInc0 = 0 in `obsSet1'
 		replace cumInc1 = 0 in `obsSet1'
 		replace _t = 0 in   `obsSet1'
-		replace cum0 = `cmax0'   in `obsSet2'
+		replace cumInc0 = `cmax0'   in `obsSet2'
 		replace  _t = `tmax0'    in `obsSet2'
-		replace cum1 = `cmax1'   in `obsSet3'
+		replace cumInc1 = `cmax1'   in `obsSet3'
 		replace  _t = `tmax1'    in `obsSet3'
 
 
 		* Plot cumulative incidence functions for exp groups (accounting for death as a competing risk)
 		#delimit ;
-		twoway 	(line cum0 _t, sort c(J)) 
-				(line cum1 _t, sort c(J)) ,
+		twoway 	(line cumInc0 _t, sort c(J)) 
+				(line cumInc1 _t, sort c(J)) ,
 		
 			ylabel(,angle(horizontal))
 			plotregion(color(white))
