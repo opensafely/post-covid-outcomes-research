@@ -123,3 +123,11 @@ actions:
         dataset: output/tabfig/cox_model_summary.csv
 
 
+  fine_gray:
+    run: stata-mp:latest analysis/302_competing_events.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/competing_eventss.txt
+        dataset: output/tabfig/fine_gray_summary.csv
+        figs: output/tabfig/cumInc_*.png

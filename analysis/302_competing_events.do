@@ -25,9 +25,8 @@ log using $outdir/competing_events.txt, replace t
 
 tempname measures
 	postfile `measures' ///
-		str20(comparator) str20(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
-		ptime_comparator num_events_comparator rate_comparator hr lc uc ///
-		using $tabfigdir/fine_grey_summary, replace
+		str20(comparator) str20(outcome) str25(analysis) str10(adjustment) hr lc uc ///
+		using $tabfigdir/fine_gray_summary, replace
 		
 		
 		
@@ -49,8 +48,32 @@ global full i.case i.male age1 age2 age3 i.stp i.ethnicity i.imd i.obese4cat ///
 
 foreach v in stroke dvt pe heart_failure mi aki t2dm {
 
+	if "`v'" == "stroke" {
+	local lab = "Stroke"
+	}
+	if "`v'" == "dvt" {
+	local lab = "DVT"
+	}
+	if "`v'" == "pe" {
+	local lab = "PE"
+	}
+	if "`v'" == "heart_failure" {
+	local lab = "Heart Failure"
+	}
+	if "`v'" == "mi" {
+	local lab = "MI"
+	}
+	if "`v'" == "aki" {
+	local lab = "AKI"
+	}
+	if "`v'" == "t2dm" {
+	local lab = "T2DM"
+	}
+	
+
 	
 	noi di "Starting analysis for `v' Outcome ..." 
+
 	
 	forvalues i = 1/3 {
 	
@@ -90,9 +113,14 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		noi di "$group: stset in `a'" 
 		
-		stset `end_date' , id(new_patient_id) failure(`out') enter(indexdate)  origin(indexdate)
+		* Set up variables
+	    gen act_end_date = `end_date' - 1
+		replace `out' = 2 if (died_date_ons_date == act_end_date) & ///
+							 (died_date_ons_date != `out'_ons)
 		
-		foreach adjust in crude age_sex full {
+		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'==1)
+		
+foreach adjust in crude age_sex full {
 		    
 			if "`adjust'" == "full" & "`v'" == "t2dm" {
 			* remove diabetes
@@ -104,32 +132,74 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 			}
 			
 			
-			stcox $`adjust', vce(robust)
+			stcrreg $`adjust', compete(failtype==2)  vce(robust)
 			
 			
 			matrix b = r(table)
-			local hr= b[1,2]
-			local lc = b[5,2] 
-			local uc = b[6,2]
+			local hr= b[1,1]
+			local lc = b[5,1] 
+			local uc = b[6,1]
 
-			stptime if case == 1
-			local rate_covid = `r(rate)'
-			local ptime_covid = `r(ptime)'
-			local events_covid .
-			if `r(failures)' == 0 | `r(failures)' > 5 local events_covid `r(failures)'
-			
-			stptime if case == 0
-			local rate_comparator = `r(rate)'
-			local ptime_comparator = `r(ptime)'
-			local events_comparator .
-			if `r(failures)' == 0 | `r(failures)' > 5 local events_comparator `r(failures)'
 
 			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'")  ///
-							(`ptime_covid') (`events_covid') (`rate_covid') (`ptime_comparator') (`events_comparator')  (`rate_comparator')  ///
-							(`hr') (`lc') (`uc')
+			
+							(`hr') (`lc') (`uc')	
 			
 			}
 		}
+	
+	if `i' == 3 {
+	
+		* Adjusted cuminc 
+		stcompet cuminc = ci, by(case) compet1(2)
+		gen cumInc = cuminc if `out'==1 // cumaltive inc of outcome accounting death as competing risk
+		separate cumInc, by(case) veryshortlabel
+		drop cuminc
+		
+		* max for time & cumulatives
+		forvalues i = 0/1{
+			sum `end_date' if case ==`i', meanonly
+			local tmax`i' = r(max)
+			sum cumInc`i', meanonly
+			local cmax`i' = r(max)
+		}
+
+		* add extra points for plot 
+		qui safecount 
+		local obsSet1 = `r(N)' + 1
+		local obsSet2 = `r(N)' + 2
+		local obsSet3 = `r(N)' + 3
+		set obs `obsSet3'
+		replace cumInc0 = 0 in `obsSet1'
+		replace cumInc1 = 0 in `obsSet1'
+		replace _t = 0 in   `obsSet1'
+		replace cum0 = `cmax0'   in `obsSet2'
+		replace  _t = `tmax0'    in `obsSet2'
+		replace cum1 = `cmax1'   in `obsSet3'
+		replace  _t = `tmax1'    in `obsSet3'
+
+
+		* Plot cumulative incidence functions for exp groups (accounting for death as a competing risk)
+		#delimit ;
+		twoway 	(line cum0 _t, sort c(J)) 
+				(line cum1 _t, sort c(J)) ,
+		
+			ylabel(,angle(horizontal))
+			plotregion(color(white))
+			graphregion(color(white))
+			ytitle("Cumulative Incidence")  
+			xtitle("Time (Days)") 
+		 ;
+		#delimit cr	
+			
+		graph export "$tabfigdir/cumInc_`out'.png", width(2000)
+		
+	
+
+
+	}
+		
+		
 restore			
 }
 	
@@ -140,9 +210,9 @@ restore
 postclose `measures'
 
 * Change postfiles to csv
-use $tabfigdir/cox_model_summary, replace
+use $tabfigdir/fine_gray_summary, replace
 
-export delimited using $tabfigdir/cox_model_summary.csv, replace
+export delimited using $tabfigdir/fine_gray_summary.csv, replace
 
 log close
 
@@ -150,37 +220,8 @@ log close
 
 
 
+	
 
 
 
 
-
-
-webuse hypoxia, clear
-stset dftime, failure(failtype==1)
-stcompet cuminc = ci, by(disrec) compet1(2)
-
-gen cum = cuminc if failtype==1
-separate cum, by(disrec) veryshortlabel
-
-// Get maxima for time & cumulatives
-forvalues i = 0/1{
- sum dftime if disrec ==`i', meanonly
- local tmax`i' = r(max)
- sum cum`i', meanonly
- local cmax`i' = r(max)
-}
-/* Add 3 fake data points */
-set obs 112  // current is 109
-replace cum0 = 0 in 110
-replace cum1 = 0 in 110
-replace _t = 0 in   110
-replace cum0 = `cmax0'   in 111
-replace  _t = `tmax0'    in 111
-replace cum1 = `cmax1'   in 112
-replace  _t = `tmax1'    in 112
-
-
-twoway ///
-(line cum0 _t, sort c(J)) ///
-(line cum1 _t, sort c(J)) 
