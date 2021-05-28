@@ -345,6 +345,16 @@ recode smoke .=1, gen(smoke_nomiss)
 order smoke_nomiss, after(smoke)
 label values smoke_nomiss smoke
 
+* Asthma  (coded: 0 No, 1 Yes no OCS, 2 Yes with OCS)
+rename asthma asthmacat
+recode asthmacat 0=1 1=2 2=3 .=1
+label define asthmacat 1 "No" 2 "Yes, no OCS" 3 "Yes with OCS"
+label values asthmacat asthmacat
+
+gen asthma = (asthmacat==2|asthmacat==3)
+
+
+
 /*  Blood pressure   */
 
 * Categorise

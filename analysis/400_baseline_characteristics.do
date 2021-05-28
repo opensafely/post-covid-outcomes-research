@@ -86,6 +86,8 @@ file write tablecontent _n _n
 tabulatevariable, variable(htdiag_or_highbp) start(1) end(1) 			
 
 **COMORBIDITIES
+*HYPERTENSION
+tabulatevariable, variable(hypertension) start(1) end(1) 		
 *RESPIRATORY
 tabulatevariable, variable(chronic_respiratory_disease) start(1) end(1) 
 *ASTHMA
@@ -93,7 +95,7 @@ tabulatevariable, variable(asthmacat) start(0) end(2)  /*no ocs, then with ocs*/
 *CARDIAC
 tabulatevariable, variable(chronic_cardiac_disease) start(1) end(1) 
 *DIABETES
-tabulatevariable, variable(previous_diabetes) start(1) end(1) 
+tabulatevariable, variable(diabcat) start(2) end(4)  /*controlled, then uncontrolled, then missing a1c*/
 file write tablecontent _n
 *CANCER EX HAEM
 tabulatevariable, variable(cancer_exhaem_cat) start(2) end(4)  /*<1, 1-4.9, 5+ years ago*/
@@ -101,36 +103,53 @@ file write tablecontent _n
 *CANCER HAEM
 tabulatevariable, variable(cancer_haem_cat) start(2) end(4)  /*<1, 1-4.9, 5+ years ago*/
 file write tablecontent _n
-
+*REDUCED KIDNEY FUNCTION
+tabulatevariable, variable(reduced_kidney_function_cat2) start(2) end(4) 
+file write tablecontent _n
 *LIVER
 tabulatevariable, variable(chronic_liver_disease) start(1) end(1) 
+file write tablecontent _n
 *DEMENTIA
 tabulatevariable, variable(dementia) start(1) end(1) 
+file write tablecontent _n
 *OTHER NEURO
 tabulatevariable, variable(other_neuro) start(1) end(1) 
+file write tablecontent _n
 *SPLEEN
 tabulatevariable, variable(spleen) start(1) end(1) 
+file write tablecontent _n
 *RA_SLE_PSORIASIS
 tabulatevariable, variable(ra_sle_psoriasis) start(1) end(1) 
+file write tablecontent _n
 *OTHER IMMUNOSUPPRESSION
 tabulatevariable, variable(other_immunosuppression) start(1) end(1) 
+file write tablecontent _n
 
 **History
 tabulatevariable, variable(hist_dvt) start(1) end(1) 
+file write tablecontent _n
 tabulatevariable, variable(hist_stroke) start(1) end(1) 
+file write tablecontent _n
 tabulatevariable, variable(hist_pe) start(1) end(1) 
+file write tablecontent _n
 tabulatevariable, variable(hist_mi) start(1) end(1) 
+file write tablecontent _n
 tabulatevariable, variable(hist_aki) start(1) end(1) 
+file write tablecontent _n
 tabulatevariable, variable(hist_heart_failure) start(1) end(1) 
+file write tablecontent _n
+tabulatevariable, variable(previous_diabetes) start(1) end(1)
 
-cou
-local denom = r(N)
-cou if obese==1
-local bmimissing=r(N)
-cou if smoke==.
-local smokmissing=r(N)
-file write tablecontent _n ("*missing BMI included in 'not obese' (n = ") (`bmimissing') (" (") %3.1f (100*`bmimissing'/`denom') ("%); missing smoking included in 'never smoker' (n = ") (`smokmissing') (" (") %3.1f (100*`smokmissing'/`denom') ("%))") 
-*/
+
+cou if bmicat==. & exposed==0
+file write tablecontent _n _n ("*missing BMI included in 'not obese' (unexposed group: ") (r(N)) 
+cou if bmicat==. & exposed==1
+file write tablecontent (", exposed group: ") (r(N)) (";") 
+cou if bmicat==. & exposed==0
+file write tablecontent ("missing smoking included in 'never smoker' (unexposed group: ") (r(N)) 
+cou if bmicat==. & exposed==1
+file write tablecontent (", exposed group: ") (r(N)) (")")
+
 
 file close tablecontent
 }
