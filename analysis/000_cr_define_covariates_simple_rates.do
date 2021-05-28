@@ -280,6 +280,7 @@ drop region_string
 **************************
 *  Categorise variables  *
 **************************
+encode stp, gen(stp2)
 
 * Create categorised age
 recode 	age 			min/49.9999=1 	///
