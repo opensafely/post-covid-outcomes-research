@@ -132,7 +132,7 @@ foreach adjust in crude age_sex full {
 			}
 			
 			
-			stcrreg $`adjust', compete(failtype==2)  vce(robust)
+			stcrreg $`adjust', compete(`out'==2)  vce(robust)
 			
 			
 			matrix b = r(table)
