@@ -104,6 +104,8 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 			
 			stcox $`adjust', vce(robust)
 			
+			estat phtest, detail
+			
 			
 			matrix b = r(table)
 			local hr= b[1,2]
