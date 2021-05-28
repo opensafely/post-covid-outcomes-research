@@ -605,7 +605,7 @@ def generate_common_variables(index_date_variable):
     
        chronic_respiratory_disease=patients.with_these_clinical_events(
             chronic_respiratory_disease_codes,
-            on_or_before="index_date_variable - 1 day",
+            on_or_before=f"{index_date_variable} - 1 day",
             return_expectations={"incidence": 0.05},
         ),
     
@@ -640,7 +640,7 @@ def generate_common_variables(index_date_variable):
         },
         recent_asthma_code=patients.with_these_clinical_events(
             asthma_codes,
-            between=["index_date_variable - 3 years", "index_date_variable - 1 day"],
+            between=[f"{index_date_variable} - 3 years", f"{index_date_variable} - 1 days"],
         ),
         asthma_code_ever=patients.with_these_clinical_events(asthma_codes),
         copd_code_ever=patients.with_these_clinical_events(
@@ -648,7 +648,7 @@ def generate_common_variables(index_date_variable):
         ),
         prednisolone_last_year=patients.with_these_medications(
             prednisolone_codes,
-            between=["index_date_variable - 1 years", "index_date_variable - 1 day"],
+            between=[f"{index_date_variable} - 1 years", f"{index_date_variable} - 1 days"],
             returning="number_of_matches_in_period",
         ),
     ),
@@ -670,17 +670,17 @@ def generate_common_variables(index_date_variable):
     
     organ_transplant=patients.with_these_clinical_events(
         organ_transplant_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     dysplenia=patients.with_these_clinical_events(
         spleen_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     sickle_cell=patients.with_these_clinical_events(
         sickle_cell_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     aplastic_anaemia=patients.with_these_clinical_events(
@@ -688,12 +688,12 @@ def generate_common_variables(index_date_variable):
     ),
     hiv=patients.with_these_clinical_events(
         hiv_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     permanent_immunodeficiency=patients.with_these_clinical_events(
         permanent_immune_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     temporary_immunodeficiency=patients.with_these_clinical_events(
@@ -702,7 +702,7 @@ def generate_common_variables(index_date_variable):
     
     ra_sle_psoriasis=patients.with_these_clinical_events(
         ra_sle_psoriasis_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     
@@ -711,12 +711,12 @@ def generate_common_variables(index_date_variable):
     
     other_neuro=patients.with_these_clinical_events(
         other_neuro_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     dementia=patients.with_these_clinical_events(
         dementia_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     
@@ -725,7 +725,7 @@ def generate_common_variables(index_date_variable):
     
     chronic_liver_disease=patients.with_these_clinical_events(
         chronic_liver_disease_codes,
-        on_or_before="index_date_variable - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
 
