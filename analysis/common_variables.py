@@ -670,7 +670,7 @@ def generate_common_variables(index_date_variable):
 
     hypertension=patients.with_these_clinical_events(
         hypertension_codes,
-        on_or_before=f"{patient_index_date} - 1 day",
+        on_or_before=f"{index_date_variable} - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     bp_sys=patients.mean_recorded_value(
