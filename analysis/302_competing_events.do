@@ -192,7 +192,7 @@ foreach adjust in crude age_sex full {
 		 ;
 		#delimit cr	
 			
-		graph export "$tabfigdir/cumInc_`out'.png", width(2000)
+		graph export "$tabfigdir/cumInc_`out'.svg", as(svg) replace
 		
 	
 
