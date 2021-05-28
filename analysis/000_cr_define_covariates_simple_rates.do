@@ -583,7 +583,7 @@ drop hba1c_percentage* hba1c_mmol_per_mol* bmi_date_measured creatinine_date bp_
 * Post outcome distribution 
 tempname outcomeDist
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-	postfile `outcomeDist' str20(outcome) str5(pop) str5(numEvents) str5(numDeaths) str5(propEvents) str5(propDeaths) using $tabfigdir/outcomes_in_hosp_$group.dta, replace
+	postfile `outcomeDist' str20(outcome) str7(pop) str7(numEvents) str7(numDeaths) str7(propEvents) str7(propDeaths) using $tabfigdir/outcomes_in_hosp_$group.dta, replace
 }
 * The default deregistration date is 9999-12-31, so:
 replace deregistered_date = . if deregistered_date > `end_date'
