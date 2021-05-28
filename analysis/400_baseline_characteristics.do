@@ -142,7 +142,7 @@ tabulatevariable, variable(previous_diabetes) start(1) end(1)
 
 
 cou if bmicat==.
-file write tablecontent _n _n ("*missing BMI included in 'not obese' ") (r(N)) 
+file write tablecontent _n _n ("*missing due to bmi  ") (r(N)) 
 cou if smoke==. 
 file write tablecontent ("missing smoking in never: ") (r(N)) 
 
