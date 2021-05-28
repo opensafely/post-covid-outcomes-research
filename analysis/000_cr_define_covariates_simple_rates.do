@@ -461,19 +461,6 @@ replace egfr=egfr*(0.993^age)
 replace egfr=egfr*1.018 if male==0
 label var egfr "egfr calculated using CKD-EPI formula with no eth"
 
-* dialysis
-if "$group" == "covid" | "$group" == "pneumonia"  { 
-gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
-replace dialysis_flag = 0 if dialysis_flag ==.
-}
-if "$group" == "gen_population" | "$group" == "covid_community"{
-gen dialysis_flag = 1 if dialysis_date < indexdate
-replace dialysis_flag = 0 if dialysis_flag ==.
-}
-
-gen aki_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
-replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
-
 
 * Categorise into ckd stages
 egen egfr_cat = cut(egfr), at(0, 15, 30, 45, 60, 5000)
@@ -501,6 +488,21 @@ replace reduced_kidney_function_cat2 = 4 if dialysis==1
 label define reduced_kidney_function_cat2lab ///
 	1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4 egfr 15-<30" 4 "Stage 5 egfr <15 or dialysis"
 label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab 
+
+
+* dialysis
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
+replace dialysis_flag = 0 if dialysis_flag ==.
+}
+if "$group" == "gen_population" | "$group" == "covid_community"{
+gen dialysis_flag = 1 if dialysis_date < indexdate
+replace dialysis_flag = 0 if dialysis_flag ==.
+}
+
+gen aki_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
+replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
+
  
 	
 ************
