@@ -116,7 +116,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		* Set up variables
 	    gen act_end_date = `end_date' - 1
 		replace `out' = 2 if (died_date_ons_date == act_end_date) & ///
-							 (died_date_ons_date != `out'_ons)
+							 (died_date_ons_date != `v'_ons)
 		
 		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'==1)
 		
