@@ -38,7 +38,7 @@ gen new_patient_id = _n
 global crude i.case
 global age_sex i.case i.male age1 age2 age3
 
-global full i.case i.male age1 age2 age3 i.stp i.ethnicity i.imd i.obese4cat /// 
+global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat /// 
 	i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
 	i.diabcat i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_function_cat2  ///
 	chronic_liver_disease stroke dementia other_neuro organ_transplant spleen ///
@@ -124,7 +124,7 @@ foreach adjust in crude age_sex full {
 		    
 			if "`adjust'" == "full" & "`v'" == "t2dm" {
 			* remove diabetes
-		global full i.case i.male age1 age2 age3 i.stp i.ethnicity i.imd i.obese4cat /// 
+		global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat /// 
 			i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
 			i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_function_cat2  ///
 			chronic_liver_disease stroke dementia other_neuro organ_transplant spleen ///
