@@ -27,7 +27,9 @@ tempname measures
 	postfile `measures' ///
 		str20(comparator) str20(outcome) str25(analysis) str10(adjustment) ptime_covid num_events_covid rate_covid /// 
 		ptime_comparator num_events_comparator rate_comparator hr lc uc ///
-		using $tabfigdir/cox_model_summary, replace
+		using $tabfigdir/fine_grey_summary, replace
+		
+		
 		
 foreach an in pneumonia gen_population {
 use $outdir/combined_covid_`an'.dta, replace

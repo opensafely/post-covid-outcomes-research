@@ -639,7 +639,7 @@ def generate_common_variables(index_date_variable):
     
         chronic_cardiac_disease=patients.with_these_clinical_events(
         chronic_cardiac_disease_codes,
-        on_or_before="patient_index_date - 1 day",
+        on_or_before=f"{index_date_variable}  - 1 day",
         return_expectations={"incidence": 0.05},
     ),
     
