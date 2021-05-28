@@ -141,14 +141,10 @@ file write tablecontent _n
 tabulatevariable, variable(previous_diabetes) start(1) end(1)
 
 
-cou if bmicat==. & exposed==0
-file write tablecontent _n _n ("*missing BMI included in 'not obese' (unexposed group: ") (r(N)) 
-cou if bmicat==. & exposed==1
-file write tablecontent (", exposed group: ") (r(N)) (";") 
-cou if bmicat==. & exposed==0
-file write tablecontent ("missing smoking included in 'never smoker' (unexposed group: ") (r(N)) 
-cou if bmicat==. & exposed==1
-file write tablecontent (", exposed group: ") (r(N)) (")")
+cou if bmicat==.
+file write tablecontent _n _n ("*missing BMI included in 'not obese' ") (r(N)) 
+cou if smoke==. 
+file write tablecontent ("missing smoking in never: ") (r(N)) 
 
 
 file close tablecontent
