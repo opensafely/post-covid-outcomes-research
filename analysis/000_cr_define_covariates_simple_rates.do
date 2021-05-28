@@ -562,7 +562,7 @@ label define diabcat 	1 "No diabetes" 			///
 label values diabcat diabcat
 
 * Delete unneeded variables
-drop hba1c_percentage* hba1c_mmol_per_mol* bmi_date_measured creatinine_date bp_sys_date *cancer_date aplastic_anaemia_date temporary_immunodeficiency_date SCr_adj min max egfr egfr_cat ckd hba1c_pct hba1ccat asthma diabetes ethnicity_16_date reduced_kidney_function_cat bphigh dysplenia sickle_cell permanent_immunodeficiency hiv creatinine************
+drop hba1c_percentage* hba1c_mmol_per_mol* bmi_date_measured creatinine_date bp_sys_date *cancer_date aplastic_anaemia_date temporary_immunodeficiency_date SCr_adj min max egfr egfr_cat ckd hba1c_pct hba1ccat asthma diabetes reduced_kidney_function_cat bphigh dysplenia sickle_cell permanent_immunodeficiency hiv creatinine************
 
 
 **************
