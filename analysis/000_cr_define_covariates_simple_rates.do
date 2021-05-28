@@ -641,16 +641,16 @@ post `outcomeDist' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEv
 
 }
 
-postclose `outcomeDist'
 
 
-										
 **** Tidy dataset
 
 
 save $outdir/cohort_rates_$group, replace 
 
+
 if "$group" == "covid" | "$group" == "pneumonia"  { 
+postclose `outcomeDist'
 use $tabfigdir/outcomes_in_hosp_$group.dta, replace
 export delimited using $tabfigdir/outcomes_in_hosp_$group.csv, replace
 }
