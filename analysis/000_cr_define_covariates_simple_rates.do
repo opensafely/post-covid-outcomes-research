@@ -203,6 +203,16 @@ label values imd imd
 noi di "DROPPING IF NO IMD" 
 drop if imd>=.
 
+* Smoking
+label define smoke 1 "Never" 2 "Former" 3 "Current" 
+
+gen     smoke = 1  if smoking_status=="N"
+replace smoke = 2  if smoking_status=="E"
+replace smoke = 3  if smoking_status=="S"
+replace smoke = . if smoking_status=="M"
+label values smoke smoke
+drop smoking_status
+
 
 * Ethnicity (5 category)
 replace ethnicity = 6 if ethnicity==.
