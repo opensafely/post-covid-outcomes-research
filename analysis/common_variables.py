@@ -667,6 +667,12 @@ def generate_common_variables(index_date_variable):
                 "incidence": 0.95,
             },
         ),
+
+    hypertension=patients.with_these_clinical_events(
+        hypertension_codes,
+        on_or_before=f"{patient_index_date} - 1 day",
+        return_expectations={"incidence": 0.05},
+    ),
     bp_sys=patients.mean_recorded_value(
         systolic_blood_pressure_codes,
         on_most_recent_day_of_measurement=True,
