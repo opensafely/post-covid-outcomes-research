@@ -173,8 +173,6 @@ def generate_common_variables(index_date_variable):
                 on_or_before=f"{index_date_variable} - 1 days",
             ),
         ),
-
-
         ## DVT
         dvt_gp=patients.with_these_clinical_events(
             filter_codes_by_category(vte_codes_gp, include=["dvt"]),
