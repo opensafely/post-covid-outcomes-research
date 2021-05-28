@@ -141,9 +141,7 @@ global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_wi
 			local uc = b[6,1]
 
 
-			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'")  ///
-			
-							(`hr') (`lc') (`uc')	
+			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'") (`hr') (`lc') (`uc')	
 			
 			}
 		}
