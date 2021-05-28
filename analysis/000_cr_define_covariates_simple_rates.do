@@ -98,7 +98,6 @@ foreach var of varlist deregistered			///
 					   mi_ons				///
 					   stroke_hospital  	///
 					   died_date_ons 		///
-					   creatinine_date  	///
 					   dialysis 			///
 					   t1dm_gp				///
 					   t1dm_hospital  		///
@@ -134,7 +133,6 @@ replace died_date_ons_date = . if died_date_ons_date>`end_date'
 * Process variables with nearest month dates only						
 						
 foreach var of varlist 	bmi_date_measured 				///
-						creatinine_date					///
 						bp_sys_date_measured			///
 						hba1c_mmol_per_mol_date			///
 						hba1c_percentage_date			///
@@ -155,7 +153,6 @@ foreach var of varlist 	bmi_date_measured 				///
 
 rename bmi_date_measured_date      	bmi_date_measured
 rename bp_sys_date_measured_date   	bp_sys_date
-rename creatinine_date_date 		creatinine_date
 rename hba1c_percentage_date_date  	hba1c_percentage_date
 rename hba1c_mmol_per_mol_date_date hba1c_mmol_per_mol_date
 

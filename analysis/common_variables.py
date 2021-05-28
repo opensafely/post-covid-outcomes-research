@@ -657,7 +657,7 @@ def generate_common_variables(index_date_variable):
         creatinine=patients.with_these_clinical_events(
             creatinine_codes,
             find_last_match_in_period=True,
-            on_or_before=f"{index_date_variable}",
+            on_or_before=f"{index_date_variable} - 1 day",
             returning="numeric_value",
             include_date_of_match=True,
             include_month=True,
