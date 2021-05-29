@@ -128,6 +128,6 @@ actions:
     needs: [append_cohorts]
     outputs:
       moderately_sensitive:
-        log: output/competing_eventss.txt
+        log: output/competing_events.txt
         dataset: output/tabfig/fine_gray_summary.csv
         figs: output/tabfig/cumInc_*.svg
