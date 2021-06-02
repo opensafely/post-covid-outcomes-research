@@ -45,6 +45,7 @@ actions:
         analysis_dataset: output/cohort_rates_covid.dta
       moderately_sensitive:
         out_dist: output/tabfig/outcomes_in_hosp_covid.csv
+        figs: output/tabfig/length_of_stay_covid.svg
 
   covid_community_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid_community"
@@ -61,6 +62,7 @@ actions:
         analysis_dataset: output/cohort_rates_pneumonia.dta
       moderately_sensitive:
         out_dist: output/tabfig/outcomes_in_hosp_pneumonia.csv
+        figs: output/tabfig/length_of_stay_pneumonia.svg
 
   gen_pop_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "matched_combined_general_population"

@@ -30,7 +30,7 @@ tempname measures
 		
 		
 		
-foreach an in pneumonia gen_population {
+foreach an in pneumonia  {
 use $outdir/combined_covid_`an'.dta, replace
 drop patient_id
 gen new_patient_id = _n
@@ -46,7 +46,8 @@ global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_wi
 	
 
 
-foreach v in stroke dvt pe heart_failure mi aki t2dm {
+*foreach v in stroke dvt pe heart_failure mi aki t2dm {
+foreach v in stroke  {
 
 	if "`v'" == "stroke" {
 	local lab = "Stroke"
@@ -71,7 +72,6 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 	}
 	
 
-	
 	noi di "Starting analysis for `v' Outcome ..." 
 
 	
@@ -113,16 +113,29 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		noi di "$group: stset in `a'" 
 		
-		* Set up variables
-	    gen act_end_date = `end_date' - 1
-		replace `out' = 2 if (died_date_ons_date == act_end_date) & ///
-							 (died_date_ons_date != `v'_ons)
+		/* Replace outcome = 2 if censoring is non-outcome death
+		gen act_end_date = `end_date' - 1 
 		
-		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'==1)
+		replace `out' = 2 if (`out' == 0) & (died_date_ons_date == act_end_date)
+		
+		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'==1) */
+		
+		
+		gen act_end_date = `end_date' - 1 
+		
+		gen `end_date'2= `end_date'
+		replace `end_date'2 = td(01/02/2021) if case == 1 & act_end_date == died_date_ons_date & died_date_ons_date!= `v'_ons
+		replace `end_date'2 = td(01/02/2020) if case == 0 & act_end_date == died_date_ons_date & died_date_ons_date!= `v'_ons
+		
+		gen `out'2 = `out'
+		replace `out'2 = 2 if (`out' == 0) & (died_date_ons_date == act_end_date)
+		
+		stset `end_date'2, id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out') 
 		
 		foreach adjust in crude age_sex full {
+
 		    
-			if "`adjust'" == "full" & "`v'" == "t2dm" {
+		if "`adjust'" == "full" & "`v'" == "t2dm" {
 			* remove diabetes
 		global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_withmiss /// 
 					i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
@@ -132,8 +145,10 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		}
 			
 			
-		stcrreg $`adjust', compete(`out'==2)  vce(robust)
+		*stcrreg $`adjust', compete(`out'==2)  vce(robust)
+		stcox $`adjust', vce(robust)
 		
+		estat phtest, detail
 			
 			matrix b = r(table)
 			local hr= b[1,1]
@@ -146,7 +161,8 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		}
 		
 		if `i' == 3 {
-	
+		
+		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'2==1) 
 		* Adjusted cuminc 
 		stcompet cuminc = ci, by(case) compet1(2)
 		gen cumInc = cuminc if `out'==1 // cumaltive inc of outcome accounting death as competing risk
