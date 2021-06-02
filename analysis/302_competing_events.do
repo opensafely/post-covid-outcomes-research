@@ -29,9 +29,22 @@ tempname measures
 		using $tabfigdir/fine_gray_summary, replace
 		
 		
-		
+*foreach an in pneumonia gen_population {		
 foreach an in pneumonia  {
 use $outdir/combined_covid_`an'.dta, replace
+
+
+if "`an'" == "pneumonia" {
+label define caseLab 1 "COVID-19" 0 "Pnuemonia"
+label values case caseLab 
+}
+
+if "`an'" == "gen_population" {
+label define caseLab 1 "COVID-19" 0 "General Population"
+label values case caseLab 
+}
+
+if 
 drop patient_id
 gen new_patient_id = _n
 
