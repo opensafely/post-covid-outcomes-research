@@ -44,7 +44,7 @@ label define caseLab 1 "COVID-19" 0 "General Population"
 label values case caseLab 
 }
 
-if 
+
 drop patient_id
 gen new_patient_id = _n
 
