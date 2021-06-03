@@ -1,0 +1,1412 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /workspace/output/competing_events.txt
+  log type:  text
+ opened on:   2 Jun 2021, 15:42:08
+
+. 
+. tempname measures
+
+.         postfile `measures' ///
+>                 str20(comparator) str20(outcome) str25(analysis) str10(adjust
+> ment) hr lc uc ///
+>                 using $tabfigdir/fine_gray_summary, replace
+(note: file /workspace/output/tabfig/fine_gray_summary.dta not found)
+
+.                 
+.                 
+.                 
+. foreach an in pneumonia  {
+  2. use $outdir/combined_covid_`an'.dta, replace
+  3. drop patient_id
+  4. gen new_patient_id = _n
+  5. 
+. global crude i.case
+  6. global age_sex i.case i.male age1 age2 age3
+  7. 
+. global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat
+> _withmiss /// 
+>         i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardia
+> c_disease ///
+>         i.diabcat i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_func
+> tion_cat2  ///
+>         i.chronic_liver_disease i.stroke i.dementia i.other_neuro i.organ_tra
+> nsplant i.spleen ///
+>         i.ra_sle_psoriasis i.other_immunosuppression i.hist_dvt i.hist_pe i.h
+> ist_stroke i.hist_mi i.hist_aki i.hist_heart_failure       
+  8.         
+. 
+. 
+. *foreach v in stroke dvt pe heart_failure mi aki t2dm {
+. foreach v in stroke  {
+  9. 
+.         if "`v'" == "stroke" {
+ 10.         local lab = "Stroke"
+ 11.         }
+ 12.         if "`v'" == "dvt" {
+ 13.         local lab = "DVT"
+ 14.         }
+ 15.         if "`v'" == "pe" {
+ 16.         local lab = "PE"
+ 17.         }
+ 18.         if "`v'" == "heart_failure" {
+ 19.         local lab = "Heart Failure"
+ 20.         }
+ 21.         if "`v'" == "mi" {
+ 22.         local lab = "MI"
+ 23.         }
+ 24.         if "`v'" == "aki" {
+ 25.         local lab = "AKI"
+ 26.         }
+ 27.         if "`v'" == "t2dm" {
+ 28.         local lab = "T2DM"
+ 29.         }
+ 30.         
+. 
+.         noi di "Starting analysis for `v' Outcome ..." 
+ 31. 
+.         
+.         forvalues i = 1/3 {
+ 32.         
+.         preserve
+ 33.         
+.         local skip_1 = 0
+ 34.         local skip_2 = 0
+ 35.         local skip_3 = 0
+ 36.         
+.         * Apply exclusion for AKI and diabetes outcomes 
+.         if "`v'" == "t1dm" | "`v'" == "t2dm" {
+ 37.         drop if previous_diabetes == 1
+ 38.         local skip_2 = 1 
+ 39.         local skip_3 = 1 
+ 40.         }       
+ 41.         
+.         if "`v'" == "aki" {
+ 42.         drop if aki_exclusion_flag == 1
+ 43.         }
+ 44.         
+.         if `i' == 1 {
+ 45.         local out `v'
+ 46.         local end_date `v'_end_date
+ 47.         }
+ 48.         
+.         if `i' == 2 {
+ 49.         local out `v'_no_gp
+ 50.         local end_date `v'_no_gp_end_date
+ 51.         }
+ 52.         
+.         if `i' == 3 {
+ 53.         local out `v'_cens_gp
+ 54.         local end_date `v'_cens_gp_end_date
+ 55.         }
+ 56.         
+.                 if `skip_`i'' == 0 {
+ 57.                 
+.                 noi di "$group: stset in `a'" 
+ 58.                 
+.                 /* Replace outcome = 2 if censoring is non-outcome death
+>                 gen act_end_date = `end_date' - 1 
+>                 
+>                 replace `out' = 2 if (`out' == 0) & (died_date_ons_date == ac
+> t_end_date)
+>                 
+>                 stset `end_date', id(new_patient_id) enter(indexdate)  origin
+> (indexdate) failure(`out'==1) */
+.                 
+.                 
+.                 gen act_end_date = `end_date' - 1 
+ 59.                 
+.                 gen `end_date'2= `end_date'
+ 60.                 replace `end_date'2 = td(01/02/2021) if case == 1 & act_en
+> d_date == died_date_ons_date & died_date_ons_date!= `v'_ons
+ 61.                 replace `end_date'2 = td(01/02/2020) if case == 0 & act_en
+> d_date == died_date_ons_date & died_date_ons_date!= `v'_ons
+ 62.                 
+.                 gen `out'2 = `out'
+ 63.                 replace `out'2 = 2 if (`out' == 0) & (died_date_ons_date =
+> = act_end_date)
+ 64.                 
+.                 stset `end_date'2, id(new_patient_id) enter(indexdate)  origi
+> n(indexdate) failure(`out') 
+ 65.                 
+.                 foreach adjust in crude age_sex full {
+ 66. 
+.                     
+.                 if "`adjust'" == "full" & "`v'" == "t2dm" {
+ 67.                         * remove diabetes
+.                 global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i
+> .imd i.obese4cat_withmiss /// 
+>                                         i.smoke htdiag chronic_respiratory_di
+> sease i.asthmacat chronic_cardiac_disease ///
+>                                         i.cancer_exhaem_cat i.cancer_haem_cat
+>  i.reduced_kidney_function_cat2  ///
+>                                         i.chronic_liver_disease i.stroke i.de
+> mentia i.other_neuro i.organ_transplant i.spleen ///
+>                                         i.ra_sle_psoriasis i.other_immunosupp
+> ression i.hist_dvt i.hist_pe i.hist_stroke i.hist_mi i.hist_aki i.hist_heart_
+> failure       
+ 68.                 }
+ 69.                         
+.                         
+.                 *stcrreg $`adjust', compete(`out'==2)  vce(robust)
+.                 stcox $`adjust', vce(robust)
+ 70.                 
+.                 estat phtest, detail
+ 71.                         
+.                         matrix b = r(table)
+ 72.                         local hr= b[1,1]
+ 73.                         local lc = b[5,1] 
+ 74.                         local uc = b[6,1]
+ 75. 
+. 
+.                         post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust
+> '") (`hr') (`lc') (`uc')   
+ 76.                         
+.                 }
+ 77.                 
+.                 if `i' == 3 {
+ 78.                 
+.                 stset `end_date', id(new_patient_id) enter(indexdate)  origin
+> (indexdate) failure(`out'2==1) 
+ 79.                 * Adjusted cuminc 
+.                 stcompet cuminc = ci, by(case) compet1(2)
+ 80.                 gen cumInc = cuminc if `out'==1 // cumaltive inc of outcom
+> e accounting death as competing risk
+ 81.                 separate cumInc, by(case) veryshortlabel
+ 82.                 drop cuminc
+ 83.                 
+.                 * max for time & cumulatives
+.                 forvalues i = 0/1{
+ 84.                         sum `end_date' if case ==`i', meanonly
+ 85.                         local tmax`i' = r(max)
+ 86.                         sum cumInc`i', meanonly
+ 87.                         local cmax`i' = r(max)
+ 88.                 }
+ 89. 
+.                 * add extra points for plot 
+.                 qui safecount 
+ 90.                 local obsSet1 = `r(N)' + 1
+ 91.                 local obsSet2 = `r(N)' + 2
+ 92.                 local obsSet3 = `r(N)' + 3
+ 93.                 set obs `obsSet3'
+ 94.                 replace cumInc0 = 0 in `obsSet1'
+ 95.                 replace cumInc1 = 0 in `obsSet1'
+ 96.                 replace _t = 0 in   `obsSet1'
+ 97.                 replace cumInc0 = `cmax0'   in `obsSet2'
+ 98.                 replace  _t = `tmax0'    in `obsSet2'
+ 99.                 replace cumInc1 = `cmax1'   in `obsSet3'
+100.                 replace  _t = `tmax1'    in `obsSet3'
+101. 
+. 
+.                 * Plot cumulative incidence functions for exp groups (account
+> ing for death as a competing risk)
+.                 #delimit ;
+delimiter now ;
+.                 twoway  (line cumInc0 _t, sort c(J)) 
+>                                 (line cumInc1 _t, sort c(J)) ,
+>                 
+>                         ylabel(,angle(horizontal))
+>                         plotregion(color(white))
+>                         graphregion(color(white))
+>                         ytitle("Cumulative Incidence")  
+>                         xtitle("Time (Days)") 
+>                  ;
+102.                 #delimit cr     
+delimiter now cr
+.                         
+.                 graph export "$tabfigdir/cumInc_`out'.svg", as(svg) replace
+103.                 
+.                 }       
+104.         }
+105. restore                 
+106. }
+107.         
+. }
+108. 
+. 
+. }
+Starting analysis for stroke Outcome ...
+: stset in 
+(7,791 real changes made)
+(20,626 real changes made)
+(28,587 real changes made)
+
+                id:  new_patient_id
+     failure event:  stroke != 0 & stroke < .
+obs. time interval:  (stroke_end_date2[_n-1], stroke_end_date2]
+ enter on or after:  time indexdate
+ exit on or before:  failure
+    t for analysis:  (time-origin)
+            origin:  time indexdate
+
+------------------------------------------------------------------------------
+    204,856  total observations
+          0  exclusions
+------------------------------------------------------------------------------
+    204,856  observations remaining, representing
+    204,856  subjects
+      4,518  failures in single-failure-per-subject data
+   31059021  total analysis time at risk and under observation
+                                                at risk from t =         0
+                                     earliest observed entry t =         0
+                                          last observed exit t =       366
+
+         failure _d:  stroke
+   analysis time _t:  (stroke_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -53526.747
+Iteration 1:   log pseudolikelihood =  -53517.43
+Iteration 2:   log pseudolikelihood = -53517.424
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -53517.424
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      204,856             Number of obs    =     204,856
+No. of failures      =        4,518
+Time at risk         =     31059021
+                                                Wald chi2(1)     =       18.59
+Log pseudolikelihood =   -53517.424             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 204,856 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |    .868511   .0283973    -4.31   0.000     .8145991    .9259909
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.04722         9.76        1         0.0018
+      ------------+---------------------------------------------------
+      global test |                      9.76        1         0.0018
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+         failure _d:  stroke
+   analysis time _t:  (stroke_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -53526.747
+Iteration 1:   log pseudolikelihood = -52958.219
+Iteration 2:   log pseudolikelihood = -52901.283
+Iteration 3:   log pseudolikelihood = -52898.487
+Iteration 4:   log pseudolikelihood = -52898.473
+Iteration 5:   log pseudolikelihood = -52898.473
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -52898.473
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      204,856             Number of obs    =     204,856
+No. of failures      =        4,518
+Time at risk         =     31059021
+                                                Wald chi2(5)     =      973.90
+Log pseudolikelihood =   -52898.473             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 204,856 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   1.085602   .0493244     1.81   0.071     .9931071    1.186711
+             |
+        male |
+       male  |   1.218236   .0366931     6.55   0.000       1.1484    1.292318
+        age1 |   1.050806   .0039714    13.11   0.000      1.04305    1.058618
+        age2 |   .9867811   .0037869    -3.47   0.001     .9793867    .9942314
+        age3 |   1.034164   .0207762     1.67   0.094     .9942347    1.075697
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.01082         0.57        1         0.4495
+      0b.male     |            .            .        1             .
+      1.male      |     -0.00587         0.16        1         0.6923
+      age1        |      0.02089         1.99        1         0.1588
+      age2        |      0.00281         0.03        1         0.8589
+      age3        |     -0.02074         1.75        1         0.1856
+      ------------+---------------------------------------------------
+      global test |                     20.95        5         0.0008
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+         failure _d:  stroke
+   analysis time _t:  (stroke_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -50673.944
+Iteration 1:   log pseudolikelihood = -31671.591
+Iteration 2:   log pseudolikelihood = -31560.566
+Iteration 3:   log pseudolikelihood = -31559.821
+Iteration 4:   log pseudolikelihood = -31559.819
+Iteration 5:   log pseudolikelihood = -31559.819
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -31559.819
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      192,107             Number of obs    =     192,107
+No. of failures      =        4,300
+Time at risk         =     29153108
+                                                Wald chi2(79)    =      342.64
+Log pseudolikelihood =   -31559.819             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 192,107 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   1.333505   .0661765     5.80   0.000     1.209909    1.469726
+             |
+        male |
+       male  |   .9803742   .0319396    -0.61   0.543     .9197305    1.045016
+        age1 |   .9916217   .0040899    -2.04   0.041     .9836379    .9996703
+        age2 |   1.003246   .0043835     0.74   0.458     .9946911    1.011874
+        age3 |   .9945113   .0235222    -0.23   0.816     .9494609    1.041699
+             |
+        stp2 |
+  E54000006  |   .9404753   .0774073    -0.75   0.456     .8003646    1.105114
+  E54000007  |   1.161362   .1745828     1.00   0.320     .8649881    1.559284
+  E54000008  |   1.027514   .1896119     0.15   0.883     .7156677    1.475244
+  E54000009  |   1.069927    .096653     0.75   0.454     .8963139    1.277169
+  E54000010  |   .6612636   .1380901    -1.98   0.048     .4391575    .9957011
+  E54000012  |   .9676563   .0824745    -0.39   0.700     .8187895    1.143589
+  E54000013  |   1.000889   .1063027     0.01   0.993     .8127957    1.232511
+  E54000014  |   .8548059   .0786681    -1.70   0.088     .7137253    1.023774
+  E54000015  |   .9486525   .0827221    -0.60   0.546     .7996184    1.125464
+  E54000016  |   .8966388   .1277843    -0.77   0.444     .6781233    1.185568
+  E54000017  |   .8306927   .0879053    -1.75   0.080      .675095    1.022153
+  E54000020  |    .925317   .0995667    -0.72   0.471     .7493744    1.142568
+  E54000021  |   .9820999   .0934391    -0.19   0.849     .8150242    1.183425
+  E54000022  |   1.068755   .0998284     0.71   0.477     .8899605     1.28347
+  E54000023  |   1.059344   .1033748     0.59   0.555     .8749303    1.282627
+  E54000024  |   .9755022   .0828027    -0.29   0.770     .8259931    1.152073
+  E54000025  |   1.087452   .1193319     0.76   0.445     .8770077    1.348395
+  E54000026  |   1.022935   .0867294     0.27   0.789      .866321    1.207861
+  E54000027  |   1.037768   .0873748     0.44   0.660     .8798999    1.223959
+  E54000029  |   1.014489   .2708169     0.05   0.957     .6012013    1.711886
+  E54000033  |   1.007223   .0885711     0.08   0.935     .8477629    1.196677
+  E54000035  |   .9201789   .7670769    -0.10   0.921     .1795958     4.71464
+  E54000036  |   1.123338   .1451633     0.90   0.368     .8719947    1.447128
+  E54000037  |   1.211968   .1359935     1.71   0.087     .9726997    1.510092
+  E54000040  |   .9818829   .1069571    -0.17   0.867      .793118    1.215575
+  E54000041  |   1.039365   .1136835     0.35   0.724     .8388141    1.287866
+  E54000042  |    1.24003   .1674738     1.59   0.111     .9516388    1.615818
+  E54000043  |   .9359678   .1178366    -0.53   0.599     .7313011    1.197914
+  E54000044  |   .6090976   .1387236    -2.18   0.029     .3897835      .95181
+  E54000049  |    .882352   .0717168    -1.54   0.124     .7524141    1.034729
+             |
+   ethnicity |
+      Mixed  |   1.006454   .2071472     0.03   0.975     .6723582    1.506563
+Asian or ..  |   .9729898   .0844099    -0.32   0.752     .8208502    1.153327
+      Black  |    .811011   .0966968    -1.76   0.079     .6420044    1.024508
+      Other  |   .7823855   .1755049    -1.09   0.274     .5040562    1.214402
+    Unknown  |   .9496835   .0343567    -1.43   0.154     .8846775    1.019466
+             |
+         imd |
+          2  |    .943305   .0439213    -1.25   0.210      .861032    1.033439
+          3  |   .9205754   .0449985    -1.69   0.090     .8364729    1.013134
+          4  |   .9487669   .0471102    -1.06   0.290     .8607834    1.045743
+5 most de..  |   .9365001   .0497335    -1.24   0.217     .8439257    1.039229
+             |
+obese4cat_~s |
+          2  |   1.004746   .0442681     0.11   0.914     .9216227    1.095366
+          3  |   .9395134    .060587    -0.97   0.333     .8279632    1.066093
+          4  |   .9150969   .0878141    -0.92   0.355     .7582012    1.104459
+             |
+       smoke |
+     Former  |   .9669125   .0349583    -0.93   0.352     .9007667    1.037916
+    Current  |   1.021421   .0563155     0.38   0.701      .916799    1.137981
+             |
+htdiag_or_~p |   .9677143   .0391266    -0.81   0.417     .8939873    1.047521
+chronic_re~e |   .9050311   .0349626    -2.58   0.010     .8390355    .9762176
+             |
+   asthmacat |
+Yes, no OCS  |   1.050455   .0504942     1.02   0.306     .9560074    1.154234
+Yes with ..  |   .9853857   .0803592    -0.18   0.857     .8398272    1.156172
+             |
+chronic_ca~e |   .9416539   .0358881    -1.58   0.115     .8738773    1.014687
+             |
+     diabcat |
+Controlle..  |   .9938533   .0392627    -0.16   0.876     .9198035    1.073864
+Uncontrol..  |   .8418646   .0443314    -3.27   0.001       .75931    .9333948
+Diabetes,..  |    .887919    .091625    -1.15   0.249     .7253326     1.08695
+             |
+cancer_exh~t |
+  Last year  |   1.046837   .0757031     0.63   0.527     .9084976    1.206243
+2-5 years..  |   1.168017   .0756199     2.40   0.016     1.028822    1.326043
+   5+ years  |   1.021603   .0492929     0.44   0.658     .9294187    1.122932
+             |
+cancer_hae~t |
+  Last year  |   .9505043   .1606321    -0.30   0.764     .6825018    1.323745
+2-5 years..  |   .9001867   .1535328    -0.62   0.538     .6443985    1.257508
+   5+ years  |   .9837438   .1271301    -0.13   0.899     .7636257    1.267312
+             |
+reduced_ki~2 |
+Stage 3a/..  |   .9608266   .0349121    -1.10   0.271     .8947799    1.031748
+Stage 4 e..  |   1.034192   .0712208     0.49   0.625     .9036121    1.183641
+Stage 5 e..  |   .7754882   .0681867    -2.89   0.004     .6527265    .9213384
+             |
+1.c~liver_~e |   .9922906   .0953094    -0.08   0.936     .8220175    1.197834
+    1.stroke |   3.09e+31          .        .       .            .           .
+  1.dementia |   1.020948   .0444821     0.48   0.634     .9373838    1.111962
+1.other_ne~o |   .8638398   .0568651    -2.22   0.026     .7592767    .9828027
+1.organ_tr~t |   .7623828   .1284125    -1.61   0.107     .5480249    1.060586
+    1.spleen |   1.158971   .1815563     0.94   0.346     .8525688    1.575491
+1.ra_sle_p~s |   .9782633   .0505856    -0.42   0.671      .883976    1.082608
+1.other_im~n |   .6393124   .1369796    -2.09   0.037     .4200819     .972954
+  1.hist_dvt |   .8678073    .055264    -2.23   0.026     .7659789    .9831728
+   1.hist_pe |   1.097224   .0582668     1.75   0.081     .9887656     1.21758
+1.hist_str~e |   1.442992   .0451048    11.73   0.000     1.357241     1.53416
+   1.hist_mi |   1.043335   .0502266     0.88   0.378     .9493939    1.146571
+  1.hist_aki |   .9621611    .032084    -1.16   0.247     .9012885    1.027145
+1.hist_hea~e |   1.031188   .0374742     0.85   0.398     .9602948    1.107315
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.03996         8.19        1         0.0042
+      0b.male     |            .            .        1             .
+      1.male      |      0.00745         0.25        1         0.6137
+      age1        |     -0.01447         0.91        1         0.3406
+      age2        |      0.02609         3.06        1         0.0802
+      age3        |     -0.02285         2.70        1         0.1004
+      1b.stp2     |            .            .        1             .
+      2.stp2      |      0.01402         0.84        1         0.3605
+      3.stp2      |     -0.01526         1.28        1         0.2588
+      4.stp2      |      0.00123         0.01        1         0.9319
+      5.stp2      |     -0.02223         2.53        1         0.1115
+      6.stp2      |      0.01206         0.55        1         0.4579
+      7.stp2      |     -0.00485         0.11        1         0.7401
+      8.stp2      |      0.00017         0.00        1         0.9906
+      9.stp2      |     -0.01230         0.74        1         0.3901
+      10.stp2     |      0.01471         0.91        1         0.3414
+      11.stp2     |      0.00046         0.00        1         0.9743
+      12.stp2     |      0.01285         0.70        1         0.4012
+      13.stp2     |      0.00140         0.01        1         0.9281
+      14.stp2     |      0.00983         0.37        1         0.5427
+      15.stp2     |      0.00988         0.41        1         0.5200
+      16.stp2     |      0.00402         0.06        1         0.7992
+      17.stp2     |      0.00289         0.04        1         0.8502
+      18.stp2     |     -0.02802         4.38        1         0.0364
+      19.stp2     |      0.01028         0.43        1         0.5114
+      20.stp2     |      0.00471         0.10        1         0.7493
+      21.stp2     |     -0.00335         0.05        1         0.8195
+      22.stp2     |      0.00085         0.00        1         0.9579
+      23.stp2     |     -0.05179        47.53        1         0.0000
+      24.stp2     |      0.00953         0.31        1         0.5752
+      25.stp2     |     -0.00319         0.05        1         0.8289
+      26.stp2     |     -0.02485         3.52        1         0.0605
+      27.stp2     |     -0.02228         2.57        1         0.1091
+      28.stp2     |     -0.01532         1.25        1         0.2631
+      29.stp2     |     -0.00651         0.21        1         0.6463
+      30.stp2     |      0.02531         1.12        1         0.2899
+      31.stp2     |      0.01286         0.78        1         0.3766
+      1b.ethnicity|            .            .        1             .
+      2.ethnicity |     -0.00166         0.01        1         0.9168
+      3.ethnicity |     -0.02822         4.36        1         0.0368
+      4.ethnicity |      0.01492         0.80        1         0.3724
+      5.ethnicity |     -0.02056         2.23        1         0.1358
+      6.ethnicity |     -0.00468         0.10        1         0.7517
+      1b.imd      |            .            .        1             .
+      2.imd       |     -0.00814         0.29        1         0.5917
+      3.imd       |     -0.01303         0.76        1         0.3825
+      4.imd       |     -0.02546         2.93        1         0.0867
+      5.imd       |     -0.02800         3.64        1         0.0564
+      1b.obese4c~s|            .            .        1             .
+      2.obese4ca~s|     -0.01855         1.70        1         0.1917
+      3.obese4ca~s|      0.00067         0.00        1         0.9641
+      4.obese4ca~s|     -0.00406         0.08        1         0.7783
+      1b.smoke    |            .            .        1             .
+      2.smoke     |      0.00776         0.27        1         0.6045
+      3.smoke     |      0.01120         0.57        1         0.4520
+      htdiag_or_~p|     -0.00371         0.07        1         0.7974
+      chronic_re~e|      0.00254         0.03        1         0.8615
+      1b.asthmacat|            .            .        1             .
+      2.asthmacat |      0.00524         0.13        1         0.7217
+      3.asthmacat |      0.00829         0.31        1         0.5786
+      chronic_ca~e|      0.01248         0.65        1         0.4193
+      1b.diabcat  |            .            .        1             .
+      2.diabcat   |     -0.00192         0.02        1         0.8960
+      3.diabcat   |      0.01382         0.88        1         0.3475
+      4.diabcat   |      0.00271         0.03        1         0.8523
+      1b.c~exhae~t|            .            .        1             .
+      2.cancer_e~t|      0.01917         1.34        1         0.2465
+      3.cancer_e~t|      0.02838         2.83        1         0.0925
+      4.cancer_e~t|      0.00581         0.15        1         0.7020
+      1b.cancer_h~|            .            .        1             .
+      2.cancer_h~t|      0.00168         0.01        1         0.9180
+      3.cancer_h~t|      0.00923         0.28        1         0.5972
+      4.cancer_h~t|      0.00643         0.15        1         0.6964
+      1b.reduced~2|            .            .        1             .
+      2.reduced_~2|      0.01228         0.65        1         0.4202
+      3.reduced_~2|      0.00896         0.32        1         0.5687
+      4.reduced_~2|      0.03928         5.32        1         0.0211
+      0b.c~liver~e|            .            .        1             .
+      1.c~liver_~e|      0.01135         0.47        1         0.4937
+      0b.stroke   |            .            .        1             .
+      1.stroke    |            .            .        1             .
+      0b.dementia |            .            .        1             .
+      1.dementia  |     -0.00633         0.18        1         0.6699
+      0b.other_n~o|            .            .        1             .
+      1.other_ne~o|      0.01660         1.35        1         0.2446
+      0b.organ_t~t|            .            .        1             .
+      1.organ_tr~t|     -0.00177         0.01        1         0.9111
+      0b.spleen   |            .            .        1             .
+      1.spleen    |      0.01278         0.38        1         0.5381
+      0b.ra_sle_~s|            .            .        1             .
+      1.ra_sle_p~s|      0.03018         3.60        1         0.0579
+      0b.other_i~n|            .            .        1             .
+      1.other_im~n|      0.01083         0.44        1         0.5092
+      0b.hist_dvt |            .            .        1             .
+      1.hist_dvt  |     -0.00158         0.01        1         0.9097
+      0b.hist_pe  |            .            .        1             .
+      1.hist_pe   |      0.03172         3.58        1         0.0585
+      0b.hist_st~e|            .            .        1             .
+      1.hist_str~e|     -0.09252        37.35        1         0.0000
+      0b.hist_mi  |            .            .        1             .
+      1.hist_mi   |     -0.00611         0.17        1         0.6758
+      0b.hist_aki |            .            .        1             .
+      1.hist_aki  |      0.03182         4.39        1         0.0362
+      0b.hist_he~e|            .            .        1             .
+      1.hist_hea~e|      0.00864         0.31        1         0.5798
+      ------------+---------------------------------------------------
+      global test |                    184.24       79         0.0000
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+: stset in 
+(7,811 real changes made)
+(20,683 real changes made)
+(28,667 real changes made)
+
+                id:  new_patient_id
+     failure event:  stroke_no_gp != 0 & stroke_no_gp < .
+obs. time interval:  (stroke_no_gp_end_date2[_n-1], stroke_no_gp_end_date2]
+ enter on or after:  time indexdate
+ exit on or before:  failure
+    t for analysis:  (time-origin)
+            origin:  time indexdate
+
+------------------------------------------------------------------------------
+    204,856  total observations
+          0  exclusions
+------------------------------------------------------------------------------
+    204,856  observations remaining, representing
+    204,856  subjects
+      3,669  failures in single-failure-per-subject data
+   31178508  total analysis time at risk and under observation
+                                                at risk from t =         0
+                                     earliest observed entry t =         0
+                                          last observed exit t =       366
+
+         failure _d:  stroke_no_gp
+   analysis time _t:  (stroke_no_gp_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -43398.696
+Iteration 1:   log pseudolikelihood = -43387.422
+Iteration 2:   log pseudolikelihood = -43387.411
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -43387.411
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      204,856             Number of obs    =     204,856
+No. of failures      =        3,669
+Time at risk         =     31178508
+                                                Wald chi2(1)     =       22.40
+Log pseudolikelihood =   -43387.411             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 204,856 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   .8408848   .0307927    -4.73   0.000     .7826471     .903456
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.04504         7.20        1         0.0073
+      ------------+---------------------------------------------------
+      global test |                      7.20        1         0.0073
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+         failure _d:  stroke_no_gp
+   analysis time _t:  (stroke_no_gp_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -43398.696
+Iteration 1:   log pseudolikelihood = -42823.042
+Iteration 2:   log pseudolikelihood = -42757.748
+Iteration 3:   log pseudolikelihood = -42753.662
+Iteration 4:   log pseudolikelihood = -42753.623
+Iteration 5:   log pseudolikelihood = -42753.623
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -42753.623
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      204,856             Number of obs    =     204,856
+No. of failures      =        3,669
+Time at risk         =     31178508
+                                                Wald chi2(5)     =      970.53
+Log pseudolikelihood =   -42753.623             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 204,856 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   1.057884   .0553721     1.08   0.282     .9547375    1.172173
+             |
+        male |
+       male  |    1.22281   .0408876     6.02   0.000     1.145241    1.305633
+        age1 |   1.057443   .0049005    12.05   0.000     1.047882    1.067092
+        age2 |   .9861254    .004376    -3.15   0.002     .9775857    .9947397
+        age3 |   1.042505   .0232364     1.87   0.062     .9979428    1.089057
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.00461         0.09        1         0.7705
+      0b.male     |            .            .        1             .
+      1.male      |     -0.00745         0.21        1         0.6506
+      age1        |      0.01785         1.27        1         0.2602
+      age2        |      0.00418         0.06        1         0.8092
+      age3        |     -0.02743         2.48        1         0.1155
+      ------------+---------------------------------------------------
+      global test |                     15.42        5         0.0087
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+         failure _d:  stroke_no_gp
+   analysis time _t:  (stroke_no_gp_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -40955.391
+Iteration 1:   log pseudolikelihood = -26442.171
+Iteration 2:   log pseudolikelihood = -26423.848
+Iteration 3:   log pseudolikelihood = -26423.108
+Iteration 4:   log pseudolikelihood = -26423.076
+Iteration 5:   log pseudolikelihood = -26423.076
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -26423.076
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      192,107             Number of obs    =     192,107
+No. of failures      =        3,481
+Time at risk         =     29268717
+                                                Wald chi2(79)    =      177.12
+Log pseudolikelihood =   -26423.076             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 192,107 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   1.157938   .0675263     2.51   0.012     1.032873    1.298148
+             |
+        male |
+       male  |   1.011664      .0369     0.32   0.751     .9418656    1.086634
+        age1 |   1.006349   .0050465     1.26   0.207     .9965067    1.016289
+        age2 |   1.002318   .0050577     0.46   0.646     .9924537     1.01228
+        age3 |   1.015019   .0265375     0.57   0.569     .9643166    1.068387
+             |
+        stp2 |
+  E54000006  |   1.082305   .0991957     0.86   0.388     .9043472    1.295282
+  E54000007  |   .9681567   .1559841    -0.20   0.841     .7060002    1.327659
+  E54000008  |   .8857198     .17735    -0.61   0.544     .5982159    1.311398
+  E54000009  |    1.05678   .1043742     0.56   0.576     .8707925    1.282492
+  E54000010  |    .885047   .2110969    -0.51   0.609     .5545518    1.412507
+  E54000012  |    1.06824   .0944474     0.75   0.455     .8982782    1.270361
+  E54000013  |    1.04482   .1259129     0.36   0.716     .8250152    1.323187
+  E54000014  |   .9039248   .0865543    -1.05   0.291     .7492494    1.090531
+  E54000015  |   1.037944    .102353     0.38   0.706     .8555311     1.25925
+  E54000016  |   1.002132   .1446756     0.01   0.988     .7551601    1.329876
+  E54000017  |    .988806   .1031049    -0.11   0.914     .8060362    1.213019
+  E54000020  |   1.297571   .1335187     2.53   0.011      1.06058    1.587519
+  E54000021  |   1.088564   .1160566     0.80   0.426     .8832909    1.341542
+  E54000022  |   1.155049    .119893     1.39   0.165     .9424239    1.415645
+  E54000023  |   1.114886   .1230292     0.99   0.324     .8980469    1.384081
+  E54000024  |   1.024572   .1004125     0.25   0.804     .8455148    1.241549
+  E54000025  |   1.235135    .134181     1.94   0.052     .9982573    1.528221
+  E54000026  |   1.180644   .1149477     1.71   0.088     .9755415    1.428868
+  E54000027  |   .9570396   .0891353    -0.47   0.637     .7973555    1.148703
+  E54000029  |   1.497921    .323765     1.87   0.062     .9806362    2.288074
+  E54000033  |   .8480907   .0941925    -1.48   0.138     .6821883    1.054339
+  E54000035  |    .606779   .3642519    -0.83   0.405     .1870901    1.967933
+  E54000036  |   1.111153   .1782201     0.66   0.511     .8114241    1.521598
+  E54000037  |   1.018721   .1396997     0.14   0.892      .778624    1.332854
+  E54000040  |    1.02568   .1148048     0.23   0.821     .8236386    1.277284
+  E54000041  |    .967751    .106897    -0.30   0.767     .7793645    1.201674
+  E54000042  |   1.070447   .1689646     0.43   0.666     .7856102    1.458555
+  E54000043  |   1.046503   .1290156     0.37   0.712     .8218683    1.332536
+  E54000044  |   .4649039   .1885175    -1.89   0.059      .209992    1.029256
+  E54000049  |   .9715638   .0848793    -0.33   0.741     .8186671    1.153016
+             |
+   ethnicity |
+      Mixed  |   1.097081   .2953826     0.34   0.731     .6472287    1.859601
+Asian or ..  |   1.077652    .089604     0.90   0.368     .9155953    1.268393
+      Black  |    .840244   .1295227    -1.13   0.259     .6211459    1.136625
+      Other  |   .6164586   .1611915    -1.85   0.064     .3692597    1.029143
+    Unknown  |   .8915915   .0356611    -2.87   0.004     .8243664    .9642986
+             |
+         imd |
+          2  |   1.001156   .0528554     0.02   0.983     .9027405      1.1103
+          3  |   1.005121   .0559281     0.09   0.927       .90127    1.120939
+          4  |   1.012838   .0563266     0.23   0.819     .9082441    1.129478
+5 most de..  |   1.080755   .0626945     1.34   0.181     .9646043    1.210892
+             |
+obese4cat_~s |
+          2  |   .9504935   .0456001    -1.06   0.290     .8651923    1.044205
+          3  |   .9201102   .0678692    -1.13   0.259     .7962574    1.063227
+          4  |   .7653995   .0851364    -2.40   0.016     .6154715    .9518497
+             |
+       smoke |
+     Former  |   .9920908    .040408    -0.19   0.845     .9159713    1.074536
+    Current  |   1.071894   .0668447     1.11   0.266     .9485708     1.21125
+             |
+htdiag_or_~p |   .8986181    .039829    -2.41   0.016     .8238493    .9801725
+chronic_re~e |   .9726197   .0400454    -0.67   0.500     .8972156    1.054361
+             |
+   asthmacat |
+Yes, no OCS  |   1.042016   .0580847     0.74   0.460     .9341702    1.162311
+Yes with ..  |   .8920878   .0844712    -1.21   0.228     .7409824    1.074008
+             |
+chronic_ca~e |   .9570646   .0410781    -1.02   0.307     .8798465     1.04106
+             |
+     diabcat |
+Controlle..  |   1.026919   .0441545     0.62   0.537      .943924    1.117212
+Uncontrol..  |   .9243794   .0516579    -1.41   0.159     .8284797     1.03138
+Diabetes,..  |   1.187707   .1163154     1.76   0.079     .9802772     1.43903
+             |
+cancer_exh~t |
+  Last year  |   1.179295   .1015936     1.91   0.056     .9960778    1.396212
+2-5 years..  |   1.129754   .0899778     1.53   0.126     .9664759    1.320616
+   5+ years  |   1.058471   .0577062     1.04   0.297     .9512017    1.177837
+             |
+cancer_hae~t |
+  Last year  |   .8891502   .1824793    -0.57   0.567     .5946809    1.329432
+2-5 years..  |   .9330111   .1779478    -0.36   0.716     .6420104    1.355912
+   5+ years  |   .8752518   .1401252    -0.83   0.405      .639526    1.197865
+             |
+reduced_ki~2 |
+Stage 3a/..  |   .9486812   .0384804    -1.30   0.194     .8761811     1.02718
+Stage 4 e..  |   1.119109   .0807852     1.56   0.119     .9714637    1.289193
+Stage 5 e..  |   1.043959   .0930587     0.48   0.629     .8766114    1.243253
+             |
+1.c~liver_~e |   1.109923   .1261172     0.92   0.359     .8883282    1.386795
+    1.stroke |   4.08e+26          .        .       .            .           .
+  1.dementia |   1.084012   .0511668     1.71   0.087     .9882261    1.189083
+1.other_ne~o |   .9991316    .069322    -0.01   0.990     .8720962    1.144672
+1.organ_tr~t |   1.045362   .1756717     0.26   0.792     .7520096    1.453148
+    1.spleen |   .8932075   .2555981    -0.39   0.693     .5097704    1.565057
+1.ra_sle_p~s |   .9321778   .0553173    -1.18   0.237     .8298253    1.047155
+1.other_im~n |   1.046582   .1944865     0.25   0.806     .7271001    1.506441
+  1.hist_dvt |   1.002263   .0641457     0.04   0.972     .8841052    1.136212
+   1.hist_pe |   1.121437   .0718863     1.79   0.074     .9890336    1.271565
+1.hist_str~e |    1.03456   .0354562     0.99   0.322     .9673498     1.10644
+   1.hist_mi |     1.0522   .0545019     0.98   0.326     .9506221    1.164633
+  1.hist_aki |   1.073227   .0395678     1.92   0.055      .998411    1.153649
+1.hist_hea~e |   1.060028    .043661     1.42   0.157      .977817    1.149151
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.04401         8.22        1         0.0041
+      0b.male     |            .            .        1             .
+      1.male      |      0.00590         0.13        1         0.7222
+      age1        |      0.02015         1.45        1         0.2289
+      age2        |      0.01779         1.14        1         0.2861
+      age3        |     -0.01849         1.40        1         0.2367
+      1b.stp2     |            .            .        1             .
+      2.stp2      |     -0.00051         0.00        1         0.9765
+      3.stp2      |     -0.01316         0.66        1         0.4172
+      4.stp2      |      0.01580         0.89        1         0.3444
+      5.stp2      |     -0.04450         7.80        1         0.0052
+      6.stp2      |      0.00489         0.09        1         0.7700
+      7.stp2      |      0.00744         0.18        1         0.6702
+      8.stp2      |     -0.02527         2.47        1         0.1164
+      9.stp2      |      0.00587         0.12        1         0.7325
+      10.stp2     |      0.00867         0.25        1         0.6164
+      11.stp2     |      0.01203         0.46        1         0.4975
+      12.stp2     |      0.02785         2.23        1         0.1350
+      13.stp2     |      0.01849         0.93        1         0.3343
+      14.stp2     |      0.00846         0.23        1         0.6332
+      15.stp2     |      0.00051         0.00        1         0.9762
+      16.stp2     |     -0.01384         0.64        1         0.4222
+      17.stp2     |     -0.01301         0.63        1         0.4284
+      18.stp2     |     -0.01105         0.42        1         0.5175
+      19.stp2     |      0.00102         0.00        1         0.9518
+      20.stp2     |     -0.00638         0.14        1         0.7045
+      21.stp2     |      0.01095         0.28        1         0.5947
+      22.stp2     |     -0.01452         0.76        1         0.3832
+      23.stp2     |     -0.01326         0.90        1         0.3441
+      24.stp2     |     -0.01720         1.03        1         0.3110
+      25.stp2     |     -0.03447         5.06        1         0.0245
+      26.stp2     |     -0.01427         0.76        1         0.3832
+      27.stp2     |     -0.00274         0.02        1         0.8760
+      28.stp2     |     -0.04215         8.04        1         0.0046
+      29.stp2     |      0.00624         0.12        1         0.7268
+      30.stp2     |      0.02857         1.85        1         0.1740
+      31.stp2     |      0.00552         0.11        1         0.7454
+      1b.ethnicity|            .            .        1             .
+      2.ethnicity |     -0.00541         0.13        1         0.7171
+      3.ethnicity |      0.00382         0.05        1         0.8273
+      4.ethnicity |     -0.00967         0.36        1         0.5493
+      5.ethnicity |     -0.00775         0.23        1         0.6321
+      6.ethnicity |      0.00625         0.14        1         0.7106
+      1b.imd      |            .            .        1             .
+      2.imd       |      0.03521         4.42        1         0.0355
+      3.imd       |      0.00794         0.23        1         0.6284
+      4.imd       |      0.01485         0.80        1         0.3722
+      5.imd       |      0.03462         4.31        1         0.0378
+      1b.obese4c~s|            .            .        1             .
+      2.obese4ca~s|      0.00358         0.05        1         0.8256
+      3.obese4ca~s|      0.00630         0.14        1         0.7039
+      4.obese4ca~s|      0.00817         0.24        1         0.6223
+      1b.smoke    |            .            .        1             .
+      2.smoke     |      0.02139         1.68        1         0.1953
+      3.smoke     |      0.03337         4.01        1         0.0452
+      htdiag_or_~p|     -0.01979         1.41        1         0.2352
+      chronic_re~e|      0.00560         0.11        1         0.7401
+      1b.asthmacat|            .            .        1             .
+      2.asthmacat |     -0.02926         3.35        1         0.0671
+      3.asthmacat |     -0.00454         0.07        1         0.7850
+      chronic_ca~e|      0.02163         1.63        1         0.2022
+      1b.diabcat  |            .            .        1             .
+      2.diabcat   |     -0.00234         0.02        1         0.8885
+      3.diabcat   |      0.04225         6.01        1         0.0142
+      4.diabcat   |      0.03509         3.80        1         0.0511
+      1b.c~exhae~t|            .            .        1             .
+      2.cancer_e~t|      0.00536         0.10        1         0.7498
+      3.cancer_e~t|     -0.00896         0.28        1         0.5965
+      4.cancer_e~t|     -0.01044         0.39        1         0.5308
+      1b.cancer_h~|            .            .        1             .
+      2.cancer_h~t|     -0.00198         0.01        1         0.9066
+      3.cancer_h~t|      0.01298         0.47        1         0.4936
+      4.cancer_h~t|     -0.00706         0.18        1         0.6686
+      1b.reduced~2|            .            .        1             .
+      2.reduced_~2|      0.00047         0.00        1         0.9776
+      3.reduced_~2|      0.01163         0.44        1         0.5094
+      4.reduced_~2|      0.06691        11.53        1         0.0007
+      0b.c~liver~e|            .            .        1             .
+      1.c~liver_~e|      0.01757         1.03        1         0.3112
+      0b.stroke   |            .            .        1             .
+      1.stroke    |            .            .        1             .
+      0b.dementia |            .            .        1             .
+      1.dementia  |     -0.02403         2.09        1         0.1480
+      0b.other_n~o|            .            .        1             .
+      1.other_ne~o|      0.03680         4.74        1         0.0295
+      0b.organ_t~t|            .            .        1             .
+      1.organ_tr~t|      0.02062         1.26        1         0.2620
+      0b.spleen   |            .            .        1             .
+      1.spleen    |     -0.00769         0.25        1         0.6158
+      0b.ra_sle_~s|            .            .        1             .
+      1.ra_sle_p~s|      0.02135         1.53        1         0.2161
+      0b.other_i~n|            .            .        1             .
+      1.other_im~n|      0.03203         2.18        1         0.1400
+      0b.hist_dvt |            .            .        1             .
+      1.hist_dvt  |      0.03050         3.10        1         0.0784
+      0b.hist_pe  |            .            .        1             .
+      1.hist_pe   |      0.01091         0.41        1         0.5208
+      0b.hist_st~e|            .            .        1             .
+      1.hist_str~e|     -0.10781        40.65        1         0.0000
+      0b.hist_mi  |            .            .        1             .
+      1.hist_mi   |     -0.02190         1.73        1         0.1890
+      0b.hist_aki |            .            .        1             .
+      1.hist_aki  |      0.03111         3.40        1         0.0653
+      0b.hist_he~e|            .            .        1             .
+      1.hist_hea~e|     -0.01472         0.75        1         0.3855
+      ------------+---------------------------------------------------
+      global test |                    200.52       79         0.0000
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+: stset in 
+(7,798 real changes made)
+(20,649 real changes made)
+(28,618 real changes made)
+
+                id:  new_patient_id
+     failure event:  stroke_cens_gp != 0 & stroke_cens_gp < .
+obs. time interval:  (stroke_cens_gp_end_date2[_n-1], stroke_cens_gp_end_date2]
+ enter on or after:  time indexdate
+ exit on or before:  failure
+    t for analysis:  (time-origin)
+            origin:  time indexdate
+
+------------------------------------------------------------------------------
+    204,856  total observations
+          0  exclusions
+------------------------------------------------------------------------------
+    204,856  observations remaining, representing
+    204,856  subjects
+      4,065  failures in single-failure-per-subject data
+   31124912  total analysis time at risk and under observation
+                                                at risk from t =         0
+                                     earliest observed entry t =         0
+                                          last observed exit t =       366
+
+         failure _d:  stroke_cens_gp
+   analysis time _t:  (stroke_cens_gp_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -48046.583
+Iteration 1:   log pseudolikelihood = -48034.398
+Iteration 2:   log pseudolikelihood = -48034.386
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -48034.386
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      204,856             Number of obs    =     204,856
+No. of failures      =        4,065
+Time at risk         =     31124912
+                                                Wald chi2(1)     =       24.18
+Log pseudolikelihood =   -48034.386             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 204,856 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   .8425553    .029355    -4.92   0.000      .786941    .9020998
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.04170         6.86        1         0.0088
+      ------------+---------------------------------------------------
+      global test |                      6.86        1         0.0088
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+         failure _d:  stroke_cens_gp
+   analysis time _t:  (stroke_cens_gp_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -48046.583
+Iteration 1:   log pseudolikelihood = -47463.304
+Iteration 2:   log pseudolikelihood = -47400.644
+Iteration 3:   log pseudolikelihood = -47397.058
+Iteration 4:   log pseudolikelihood = -47397.032
+Iteration 5:   log pseudolikelihood = -47397.032
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -47397.032
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      204,856             Number of obs    =     204,856
+No. of failures      =        4,065
+Time at risk         =     31124912
+                                                Wald chi2(5)     =      992.06
+Log pseudolikelihood =   -47397.032             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 204,856 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   1.050368   .0516389     1.00   0.318      .953881    1.156615
+             |
+        male |
+       male  |   1.226476    .038972     6.42   0.000     1.152422    1.305289
+        age1 |   1.054677   .0044606    12.59   0.000      1.04597    1.063456
+        age2 |   .9859658   .0040882    -3.41   0.001     .9779856    .9940111
+        age3 |   1.043342   .0221439     2.00   0.046     1.000831    1.087659
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.00172         0.01        1         0.9087
+      0b.male     |            .            .        1             .
+      1.male      |     -0.00713         0.21        1         0.6478
+      age1        |      0.02113         1.93        1         0.1652
+      age2        |      0.00050         0.00        1         0.9760
+      age3        |     -0.02623         2.52        1         0.1124
+      ------------+---------------------------------------------------
+      global test |                     15.71        5         0.0077
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+         failure _d:  stroke_cens_gp
+   analysis time _t:  (stroke_cens_gp_end_date2-origin)
+             origin:  time indexdate
+  enter on or after:  time indexdate
+                 id:  new_patient_id
+
+Iteration 0:   log pseudolikelihood = -45378.288
+Iteration 1:   log pseudolikelihood = -28875.321
+Iteration 2:   log pseudolikelihood =  -28837.29
+Iteration 3:   log pseudolikelihood = -28837.221
+Iteration 4:   log pseudolikelihood = -28837.221
+Refining estimates:
+Iteration 0:   log pseudolikelihood = -28837.221
+Iteration 1:   log pseudolikelihood = -28837.221
+Iteration 2:   log pseudolikelihood = -28837.221
+Iteration 3:   log pseudolikelihood = -28837.221
+Iteration 4:   log pseudolikelihood = -28837.221
+
+Cox regression -- Breslow method for ties
+
+No. of subjects      =      192,107             Number of obs    =     192,107
+No. of failures      =        3,860
+Time at risk         =     29217663
+                                                Wald chi2(79)    =      180.42
+Log pseudolikelihood =   -28837.221             Prob > chi2      =      0.0000
+
+                   (Std. Err. adjusted for 192,107 clusters in new_patient_id)
+------------------------------------------------------------------------------
+             |               Robust
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      1.case |   1.170495   .0638388     2.89   0.004     1.051829    1.302549
+             |
+        male |
+       male  |   1.024474   .0348497     0.71   0.477     .9583971    1.095107
+        age1 |   1.004013    .004587     0.88   0.381     .9950632    1.013044
+        age2 |    .999366   .0046898    -0.14   0.893     .9902163      1.0086
+        age3 |   1.028787   .0256752     1.14   0.255     .9796751     1.08036
+             |
+        stp2 |
+  E54000006  |   1.120462   .0975381     1.31   0.191     .9447099     1.32891
+  E54000007  |   .9400479   .1453154    -0.40   0.689     .6943343    1.272715
+  E54000008  |     .88132   .1623026    -0.69   0.493     .6142959    1.264415
+  E54000009  |   1.113316   .1017685     1.17   0.240     .9307004    1.331763
+  E54000010  |   .8410069   .1625748    -0.90   0.370     .5757765    1.228415
+  E54000012  |   1.032546   .0869237     0.38   0.704     .8754916    1.217775
+  E54000013  |   1.011869   .1209776     0.10   0.921     .8004896    1.279065
+  E54000014  |   .9238128   .0833777    -0.88   0.380     .7740335    1.102575
+  E54000015  |   1.068161    .096263     0.73   0.464     .8952122    1.274521
+  E54000016  |   .9186875   .1300405    -0.60   0.549     .6961133    1.212427
+  E54000017  |   .8974057   .0975161    -1.00   0.319     .7252595    1.110412
+  E54000020  |   1.133466   .1190569     1.19   0.233     .9225716     1.39257
+  E54000021  |   1.041435   .1024613     0.41   0.680     .8587898    1.262925
+  E54000022  |   1.092444   .1090562     0.89   0.376     .8983088    1.328534
+  E54000023  |   1.122479   .1209239     1.07   0.283     .9088225    1.386365
+  E54000024  |   1.061477   .0967212     0.65   0.513     .8878702    1.269029
+  E54000025  |   1.175757   .1248159     1.53   0.127     .9548954    1.447703
+  E54000026  |   1.146321   .1008247     1.55   0.121      .964803    1.361989
+  E54000027  |   .9899173   .0885579    -0.11   0.910      .830712    1.179634
+  E54000029  |   1.284534   .3018471     1.07   0.287     .8104481    2.035943
+  E54000033  |   .9526256    .095525    -0.48   0.628       .78265    1.159516
+  E54000035  |   .8325918   .5257746    -0.29   0.772     .2414936    2.870507
+  E54000036  |   1.049494   .1625767     0.31   0.755     .7746766    1.421802
+  E54000037  |   1.111666   .1378822     0.85   0.393     .8717625     1.41759
+  E54000040  |    1.07411   .1115546     0.69   0.491     .8762841    1.316596
+  E54000041  |   .9953602   .1051326    -0.04   0.965      .809234    1.224296
+  E54000042  |   1.137466    .167961     0.87   0.383     .8516237    1.519249
+  E54000043  |   .9331091   .1179104    -0.55   0.584     .7284036    1.195344
+  E54000044  |   .8173698   .1715438    -0.96   0.337     .5417195    1.233283
+  E54000049  |   .9679849   .0798846    -0.39   0.693     .8234207     1.13793
+             |
+   ethnicity |
+      Mixed  |    1.42733    .314904     1.61   0.107     .9262508    2.199482
+Asian or ..  |   .9742828   .0821027    -0.31   0.757     .8259511    1.149253
+      Black  |   .8904073   .1216813    -0.85   0.396     .6811851    1.163891
+      Other  |   .5641129   .1314566    -2.46   0.014     .3572798    .8906839
+    Unknown  |   .9330931   .0347323    -1.86   0.063     .8674428    1.003712
+             |
+         imd |
+          2  |   .9366689   .0464425    -1.32   0.187     .8499264    1.032264
+          3  |   .9738646   .0499892    -0.52   0.606      .880655     1.07694
+          4  |   .9862191   .0507296    -0.27   0.787     .8916388    1.090832
+5 most de..  |   1.026496   .0558432     0.48   0.631     .9226782    1.141995
+             |
+obese4cat_~s |
+          2  |   .9491237   .0431883    -1.15   0.251     .8681411     1.03766
+          3  |   .9184401    .062072    -1.26   0.208     .8044945    1.048524
+          4  |   .8679755   .0824826    -1.49   0.136     .7204748    1.045673
+             |
+       smoke |
+     Former  |   .9925769   .0374359    -0.20   0.843     .9218502     1.06873
+    Current  |   1.050003   .0626886     0.82   0.414     .9340516    1.180348
+             |
+htdiag_or_~p |   .8563895   .0345421    -3.84   0.000     .7912951    .9268388
+chronic_re~e |   .9799053   .0374085    -0.53   0.595     .9092617    1.056037
+             |
+   asthmacat |
+Yes, no OCS  |   1.068243   .0537391     1.31   0.189     .9679421    1.178937
+Yes with ..  |   .9682328   .0799214    -0.39   0.696     .8236043    1.138259
+             |
+chronic_ca~e |     1.0187   .0409484     0.46   0.645     .9415228    1.102204
+             |
+     diabcat |
+Controlle..  |   1.011173   .0406618     0.28   0.782     .9345373    1.094094
+Uncontrol..  |   .8707615   .0455493    -2.65   0.008     .7859106    .9647734
+Diabetes,..  |   1.105451   .0977369     1.13   0.257      .929569    1.314611
+             |
+cancer_exh~t |
+  Last year  |   1.086647   .0889701     1.01   0.310     .9255409    1.275796
+2-5 years..  |   1.137521   .0848513     1.73   0.084     .9828013    1.316599
+   5+ years  |   1.019664   .0516285     0.38   0.701     .9233326    1.126045
+             |
+cancer_hae~t |
+  Last year  |   .8849778    .165981    -0.65   0.515     .6127541     1.27814
+2-5 years..  |    .900299   .1550738    -0.61   0.542     .6423473    1.261838
+   5+ years  |   .8918108   .1346027    -0.76   0.448     .6634363    1.198799
+             |
+reduced_ki~2 |
+Stage 3a/..  |   .9501886      .0359    -1.35   0.176     .8823679    1.023222
+Stage 4 e..  |   1.022096    .075149     0.30   0.766      .884927    1.180526
+Stage 5 e..  |   .9668697   .0800666    -0.41   0.684     .8220152     1.13725
+             |
+1.c~liver_~e |   .9382643   .1027052    -0.58   0.560     .7570945    1.162787
+    1.stroke |   9.37e+30          .        .       .            .           .
+  1.dementia |   1.104848   .0477591     2.31   0.021     1.015098    1.202534
+1.other_ne~o |     1.0311   .0675476     0.47   0.640     .9068561    1.172366
+1.organ_tr~t |   .9584458   .1566584    -0.26   0.795      .695726    1.320374
+    1.spleen |   1.216613   .2268658     1.05   0.293     .8441626    1.753391
+1.ra_sle_p~s |   .9262751   .0503183    -1.41   0.159     .8327218    1.030339
+1.other_im~n |   .9366294   .1618878    -0.38   0.705     .6674909    1.314287
+  1.hist_dvt |   .9574249   .0585744    -0.71   0.477      .849237    1.079395
+   1.hist_pe |   1.170098   .0672617     2.73   0.006     1.045423    1.309642
+1.hist_str~e |   .8526103   .0269346    -5.05   0.000     .8014207    .9070697
+   1.hist_mi |   1.033596   .0502963     0.68   0.497     .9395718    1.137029
+  1.hist_aki |   1.082531    .037059     2.32   0.021      1.01228    1.157657
+1.hist_hea~e |   1.081156   .0411202     2.05   0.040     1.003493     1.16483
+------------------------------------------------------------------------------
+
+      Test of proportional-hazards assumption
+
+      Time:  Time
+      ----------------------------------------------------------------
+                  |       rho            chi2       df       Prob>chi2
+      ------------+---------------------------------------------------
+      0b.case     |            .            .        1             .
+      1.case      |     -0.04446         9.26        1         0.0023
+      0b.male     |            .            .        1             .
+      1.male      |      0.01706         1.14        1         0.2860
+      age1        |      0.01228         0.56        1         0.4538
+      age2        |      0.01747         1.18        1         0.2764
+      age3        |     -0.01064         0.52        1         0.4721
+      1b.stp2     |            .            .        1             .
+      2.stp2      |      0.01187         0.54        1         0.4632
+      3.stp2      |     -0.01411         0.87        1         0.3521
+      4.stp2      |      0.01264         0.58        1         0.4461
+      5.stp2      |     -0.02324         2.25        1         0.1337
+      6.stp2      |      0.01618         0.77        1         0.3802
+      7.stp2      |      0.01020         0.38        1         0.5390
+      8.stp2      |     -0.03677         6.35        1         0.0117
+      9.stp2      |      0.00401         0.06        1         0.8052
+      10.stp2     |      0.02059         1.51        1         0.2195
+      11.stp2     |      0.00351         0.05        1         0.8310
+      12.stp2     |      0.01152         0.49        1         0.4860
+      13.stp2     |      0.02269         1.72        1         0.1892
+      14.stp2     |      0.00816         0.22        1         0.6385
+      15.stp2     |      0.00518         0.10        1         0.7496
+      16.stp2     |     -0.01588         1.00        1         0.3173
+      17.stp2     |     -0.01064         0.44        1         0.5050
+      18.stp2     |     -0.01569         0.98        1         0.3233
+      19.stp2     |      0.01864         1.23        1         0.2674
+      20.stp2     |     -0.00213         0.02        1         0.8926
+      21.stp2     |      0.00724         0.16        1         0.6885
+      22.stp2     |     -0.00366         0.05        1         0.8210
+      23.stp2     |     -0.02423         4.50        1         0.0339
+      24.stp2     |     -0.01192         0.54        1         0.4628
+      25.stp2     |     -0.02191         2.12        1         0.1453
+      26.stp2     |     -0.00690         0.19        1         0.6619
+      27.stp2     |     -0.01189         0.52        1         0.4714
+      28.stp2     |     -0.03694         6.90        1         0.0086
+      29.stp2     |     -0.00699         0.19        1         0.6631
+      30.stp2     |      0.02233         0.73        1         0.3932
+      31.stp2     |      0.01712         1.12        1         0.2891
+      1b.ethnicity|            .            .        1             .
+      2.ethnicity |      0.00703         0.19        1         0.6590
+      3.ethnicity |     -0.01641         1.09        1         0.2976
+      4.ethnicity |      0.01534         0.92        1         0.3372
+      5.ethnicity |     -0.00979         0.38        1         0.5374
+      6.ethnicity |      0.00108         0.00        1         0.9470
+      1b.imd      |            .            .        1             .
+      2.imd       |      0.00906         0.32        1         0.5734
+      3.imd       |      0.00202         0.02        1         0.8995
+      4.imd       |      0.00678         0.18        1         0.6742
+      5.imd       |      0.01416         0.78        1         0.3764
+      1b.obese4c~s|            .            .        1             .
+      2.obese4ca~s|     -0.00459         0.09        1         0.7673
+      3.obese4ca~s|      0.01278         0.63        1         0.4274
+      4.obese4ca~s|      0.01309         0.62        1         0.4304
+      1b.smoke    |            .            .        1             .
+      2.smoke     |      0.01228         0.59        1         0.4439
+      3.smoke     |      0.01883         1.45        1         0.2289
+      htdiag_or_~p|     -0.04458         7.43        1         0.0064
+      chronic_re~e|      0.01459         0.80        1         0.3705
+      1b.asthmacat|            .            .        1             .
+      2.asthmacat |     -0.01246         0.61        1         0.4332
+      3.asthmacat |      0.00846         0.25        1         0.6145
+      chronic_ca~e|      0.03459         4.49        1         0.0341
+      1b.diabcat  |            .            .        1             .
+      2.diabcat   |      0.01084         0.45        1         0.5014
+      3.diabcat   |      0.04237         6.54        1         0.0105
+      4.diabcat   |      0.04373         5.73        1         0.0167
+      1b.c~exhae~t|            .            .        1             .
+      2.cancer_e~t|      0.00123         0.01        1         0.9389
+      3.cancer_e~t|     -0.00216         0.02        1         0.8937
+      4.cancer_e~t|      0.00009         0.00        1         0.9957
+      1b.cancer_h~|            .            .        1             .
+      2.cancer_h~t|     -0.00408         0.06        1         0.8025
+      3.cancer_h~t|      0.00737         0.15        1         0.6993
+      4.cancer_h~t|     -0.00701         0.20        1         0.6544
+      1b.reduced~2|            .            .        1             .
+      2.reduced_~2|     -0.01062         0.43        1         0.5130
+      3.reduced_~2|     -0.00753         0.22        1         0.6369
+      4.reduced_~2|      0.05063         6.74        1         0.0094
+      0b.c~liver~e|            .            .        1             .
+      1.c~liver_~e|     -0.00557         0.12        1         0.7327
+      0b.stroke   |            .            .        1             .
+      1.stroke    |            .            .        1             .
+      0b.dementia |            .            .        1             .
+      1.dementia  |     -0.00447         0.07        1         0.7856
+      0b.other_n~o|            .            .        1             .
+      1.other_ne~o|      0.03180         3.96        1         0.0465
+      0b.organ_t~t|            .            .        1             .
+      1.organ_tr~t|      0.00593         0.12        1         0.7315
+      0b.spleen   |            .            .        1             .
+      1.spleen    |      0.01018         0.27        1         0.6028
+      0b.ra_sle_~s|            .            .        1             .
+      1.ra_sle_p~s|      0.01604         0.91        1         0.3397
+      0b.other_i~n|            .            .        1             .
+      1.other_im~n|      0.03817         3.36        1         0.0666
+      0b.hist_dvt |            .            .        1             .
+      1.hist_dvt  |      0.01877         1.30        1         0.2535
+      0b.hist_pe  |            .            .        1             .
+      1.hist_pe   |      0.02059         1.46        1         0.2273
+      0b.hist_st~e|            .            .        1             .
+      1.hist_str~e|     -0.17462       115.24        1         0.0000
+      0b.hist_mi  |            .            .        1             .
+      1.hist_mi   |     -0.02011         1.57        1         0.2096
+      0b.hist_aki |            .            .        1             .
+      1.hist_aki  |      0.05169         9.89        1         0.0017
+      0b.hist_he~e|            .            .        1             .
+      1.hist_hea~e|      0.01186         0.51        1         0.4745
+      ------------+---------------------------------------------------
+      global test |                    258.00       79         0.0000
+      ----------------------------------------------------------------
+
+note: robust variance-covariance matrix used.
+
+                id:  new_patient_id
+     failure event:  stroke_cens_gp2 == 1
+obs. time interval:  (stroke_cens_gp_end_date[_n-1], stroke_cens_gp_end_date]
+ enter on or after:  time indexdate
+ exit on or before:  failure
+    t for analysis:  (time-origin)
+            origin:  time indexdate
+
+------------------------------------------------------------------------------
+    204,856  total observations
+          0  exclusions
+------------------------------------------------------------------------------
+    204,856  observations remaining, representing
+    204,856  subjects
+      4,065  failures in single-failure-per-subject data
+   27300798  total analysis time at risk and under observation
+                                                at risk from t =         0
+                                     earliest observed entry t =         0
+                                          last observed exit t =       366
+(200,791 missing values generated)
+
+              storage   display    value
+variable name   type    format     label      variable label
+-------------------------------------------------------------------------------
+cumInc0         float   %9.0g                 0
+cumInc1         float   %9.0g                 1
+number of observations (_N) was 204,856, now 204,859
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(note: file /workspace/output/tabfig/cumInc_stroke_cens_gp.svg not found)
+(file /workspace/output/tabfig/cumInc_stroke_cens_gp.svg written in SVG format)
+
+. postclose `measures'
+
+. 
+. * Change postfiles to csv
+. use $tabfigdir/fine_gray_summary, replace
+
+. 
+. export delimited using $tabfigdir/fine_gray_summary.csv, replace
+(note: file /workspace/output/tabfig/fine_gray_summary.csv not found)
+file /workspace/output/tabfig/fine_gray_summary.csv saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /workspace/output/competing_events.txt
+  log type:  text
+ closed on:   2 Jun 2021, 16:28:46
+-------------------------------------------------------------------------------
