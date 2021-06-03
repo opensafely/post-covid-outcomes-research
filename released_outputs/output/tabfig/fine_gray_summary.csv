@@ -1,0 +1,10 @@
+comparator,outcome,analysis,adjustment,hr,lc,uc
+pneumonia,stroke,stroke,crude,,,
+pneumonia,stroke,stroke,age_sex,,,
+pneumonia,stroke,stroke,full,,,
+pneumonia,stroke,stroke_no_gp,crude,,,
+pneumonia,stroke,stroke_no_gp,age_sex,,,
+pneumonia,stroke,stroke_no_gp,full,,,
+pneumonia,stroke,stroke_cens_gp,crude,,,
+pneumonia,stroke,stroke_cens_gp,age_sex,,,
+pneumonia,stroke,stroke_cens_gp,full,,,

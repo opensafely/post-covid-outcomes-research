@@ -1,0 +1,111 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /workspace/output/append_cohorts.txt
+  log type:  text
+ opened on:  29 May 2021, 18:19:25
+
+. 
+. * Gen flag for covid patients  (case = 1)
+. use $outdir/cohort_rates_covid, replace
+
+. gen case = 1 
+
+. append using $outdir/cohort_rates_pneumonia, force
+(label diabcat already defined)
+(label reduced_kidney_function_cat2lab already defined)
+(label cancer already defined)
+(label bpcat already defined)
+(label asthmacat already defined)
+(label obese4cat already defined)
+(label bmicat already defined)
+(label agegroup already defined)
+(label stp2 already defined)
+(label region_7 already defined)
+(label region_9 already defined)
+(label ethnicity_lab already defined)
+(label smoke already defined)
+(label imd already defined)
+(label sexLab already defined)
+
+. replace case = 0 if case ==.
+(127,408 real changes made)
+
+. 
+. * count patients from pneumonia group who are among Covid group
+. bysort patient_id: gen flag = _n
+
+. safecount if flag == 2
+  3,549
+
+. 
+. noi di "number of patients in both cohorts is `r(N)'"
+number of patients in both cohorts is 3549
+
+. 
+. drop flag 
+
+. save $outdir/combined_covid_pneumonia.dta, replace
+(note: file /workspace/output/combined_covid_pneumonia.dta not found)
+file /workspace/output/combined_covid_pneumonia.dta saved
+
+. 
+. 
+. 
+. *****************************************************************************
+> ***
+. * Append covid/gen pop. cohorts 
+. 
+. * Gen flag for covid patients  (case = 1)
+. use $outdir/cohort_rates_covid, replace
+
+. gen case = 1 
+
+. append using $outdir/cohort_rates_gen_population, force
+(label diabcat already defined)
+(label reduced_kidney_function_cat2lab already defined)
+(label cancer already defined)
+(label bpcat already defined)
+(label asthmacat already defined)
+(label obese4cat already defined)
+(label bmicat already defined)
+(label agegroup already defined)
+(label stp2 already defined)
+(label region_7 already defined)
+(label region_9 already defined)
+(label ethnicity_lab already defined)
+(label smoke already defined)
+(label imd already defined)
+(label sexLab already defined)
+
+. replace case = 0 if case ==.
+(0 real changes made)
+
+. 
+. 
+. * count patients from pneumonia group who are among Covid group
+. bysort patient_id: gen flag = _n
+
+. safecount if flag == 2
+  1,458
+
+. 
+. noi di "number of patients in both cohorts is `r(N)'"
+number of patients in both cohorts is 1458
+
+. 
+. drop flag 
+
+. save $outdir/combined_covid_gen_population.dta, replace
+(note: file /workspace/output/combined_covid_gen_population.dta not found)
+file /workspace/output/combined_covid_gen_population.dta saved
+
+. 
+. 
+. 
+. 
+. log close
+      name:  <unnamed>
+       log:  /workspace/output/append_cohorts.txt
+  log type:  text
+ closed on:  29 May 2021, 18:19:28
+-------------------------------------------------------------------------------
