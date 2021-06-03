@@ -161,14 +161,13 @@ foreach v in stroke  {
 		*stcrreg $`adjust', compete(`out'==2)  vce(robust)
 		stcox $`adjust', vce(robust)
 		
-		estat phtest, detail
-			
 			matrix b = r(table)
 			local hr= b[1,1]
 			local lc = b[5,1] 
 			local uc = b[6,1]
-
-
+			
+		estat phtest, detail
+			
 			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'") (`hr') (`lc') (`uc')	
 			
 		}

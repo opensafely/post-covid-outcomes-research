@@ -103,14 +103,13 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 			
 			
 			stcox $`adjust', vce(robust)
-			
-			estat phtest, detail
-			
-			
 			matrix b = r(table)
 			local hr= b[1,2]
 			local lc = b[5,2] 
 			local uc = b[6,2]
+			
+			estat phtest, detail
+		
 
 			stptime if case == 1
 			local rate_covid = `r(rate)'
