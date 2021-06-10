@@ -65,8 +65,8 @@ format hosp_expo_date %td
 * Length of stay
 gen length_of_stay = indexdate - hosp_expo_date + 1
 label var length_of_stay "Length of stay in hospital (days)"
-hist length , name(length_of_stay_$group, replace) graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
-graph export $tabfigdir/length_of_stay_$group.svg , as(svg) replace
+hist length , graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
+graph export "$tabfigdir/length_of_stay_$group.svg" , as(svg) replace
 
 * Create flag for patients staying in hospital longer than the median length
 summ length, detail
