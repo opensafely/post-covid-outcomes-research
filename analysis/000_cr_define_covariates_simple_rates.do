@@ -132,13 +132,13 @@ local pop = `r(N)'
 
 foreach out in stroke dvt pe heart_failure mi aki t2dm {
 * Num events
-safecount `out'_in_hospital==1
+safecount if `out'_in_hospital==1
 local numEvents = `r(N)'
 local propEvents = round(100*`numEvents'/`pop', 0.1)
 
 safecount if  (died_date_ons >= hosp_expo_date  & died_date_ons  <= indexdate) 
 local numDeaths = `r(N)'
-local propEvents = round(100*`numDeaths'/`pop', 0.1)
+local propDeath = round(100*`numDeaths'/`pop', 0.1)
 
 post `inHospOutcomes' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
 
