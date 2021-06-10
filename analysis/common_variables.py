@@ -3,7 +3,7 @@ from codelists import *
 from datetime import datetime, timedelta
 
 
-def generate_common_variables(index_date_variable):
+def generate_common_variables(index_date_variable, admission_variable):
     common_variables = dict(
         deregistered=patients.date_deregistered_from_all_supported_practices(
             date_format="YYYY-MM-DD"
@@ -191,6 +191,13 @@ def generate_common_variables(index_date_variable):
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
         ),
+        dvt_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["dvt"]
+            ),
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
+        ),
         dvt_ons=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["dvt"]),
             returning="date_of_death",
@@ -223,6 +230,13 @@ def generate_common_variables(index_date_variable):
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
         ),
+        pe_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                vte_codes_hospital, include=["pe"]
+            ),
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
+        ),
         pe_ons=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(vte_codes_hospital, include=["pe"]),
             returning="date_of_death",
@@ -253,6 +267,11 @@ def generate_common_variables(index_date_variable):
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
         ),
+        stroke_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=stroke_hospital,
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
+        ),
         stroke_ons=patients.with_these_codes_on_death_certificate(
             stroke_hospital,
             returning="date_of_death",
@@ -282,6 +301,11 @@ def generate_common_variables(index_date_variable):
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
+        ),
+        aki_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=aki_codes,
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
         ),
         aki_ons=patients.with_these_codes_on_death_certificate(
             aki_codes,
@@ -314,6 +338,13 @@ def generate_common_variables(index_date_variable):
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
         ),
+        mi_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                mi_codes_hospital, include=["1"]
+            ),
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
+        ),
         mi_ons=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(mi_codes_hospital, include=["1"]),
             returning="date_of_death",
@@ -344,6 +375,13 @@ def generate_common_variables(index_date_variable):
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
+        ),
+        heart_failure_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=filter_codes_by_category(
+                heart_failure_codes_hospital, include=["1"]
+            ),
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
         ),
         heart_failure_ons=patients.with_these_codes_on_death_certificate(
             filter_codes_by_category(heart_failure_codes_hospital, include=["1"]),
@@ -402,6 +440,11 @@ def generate_common_variables(index_date_variable):
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={"date": {"earliest": "index_date"}},
+        ),
+        t2dm_in_hospital=patients.admitted_to_hospital(
+            with_these_diagnoses=diabetes_t2_codes_hospital,
+            between=[f"{admission_variable}", f"{index_date_variable}"],
+            return_expectations={"incidence": 0.1},
         ),
         t1dm_ons=patients.with_these_codes_on_death_certificate(
             diabetes_t1_codes_hospital,

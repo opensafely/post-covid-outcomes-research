@@ -9,7 +9,7 @@ from common_variables import generate_common_variables
 from codelists import *
 
 
-common_variables = generate_common_variables(index_date_variable="index_date")
+common_variables = generate_common_variables(index_date_variable="index_date", admission_variable= "index_date")
 
 study = StudyDefinition(
     default_expectations={

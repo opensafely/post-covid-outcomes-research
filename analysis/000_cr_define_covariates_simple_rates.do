@@ -120,6 +120,33 @@ capture confirm string variable `var'
 	format `var'_date %td
 }
 
+
+**** In hospital counts
+if "$group" == "covid" | "$group" == "pneumonia"  { 
+tempname inHospOutcomes
+* In hospital descriptives
+postfile `inHospOutcomes' str20(outcome) str7(pop) str7(numEvents) str7(numDeaths) str7(propEvents) str7(propDeaths) using $tabfigdir/outcomes_in_hosp_$group.dta, replace
+* Cohort
+safecount 
+local pop = `r(N)'
+
+foreach out in stroke dvt pe heart_failure mi aki t2dm {
+* Num events
+safecount `out'_in_hospital==1
+local numEvents = `r(N)'
+local propEvents = round(100*`numEvents'/`pop', 0.1)
+
+safecount if  (died_date_ons >= hosp_expo_date  & died_date_ons  <= indexdate) 
+local numDeaths = `r(N)'
+local propEvents = round(100*`numDeaths'/`pop', 0.1)
+
+post `inHospOutcomes' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
+
+}
+
+
+
+
 * Clean 
 rename date_icu_admission_date icu_admission_date
 
@@ -583,11 +610,6 @@ drop hba1c_percentage* hba1c_mmol_per_mol* bmi_date_measured creatinine_date bp_
 *  Outcomes  *
 **************	
 
-* Post outcome distribution 
-tempname outcomeDist
-if "$group" == "covid" | "$group" == "pneumonia"  { 
-	postfile `outcomeDist' str20(outcome) str7(pop) str7(numEvents) str7(numDeaths) str7(propEvents) str7(propDeaths) using $tabfigdir/outcomes_in_hosp_$group.dta, replace
-}
 * The default deregistration date is 9999-12-31, so:
 replace deregistered_date = . if deregistered_date > `end_date'
 
@@ -632,27 +654,6 @@ format %td `out'_cens_gp_end_date
 drop min_end_date	
 }
 
-if "$group" == "covid" | "$group" == "pneumonia"  { 
-* In hospital descriptives
-
-* Cohort
-safecount 
-local pop = `r(N)'
-
-* Num events
-safecount if  (`out'_gp > hosp_expo_date  & `out'_gp <= indexdate) | (`out'_hospital > hosp_expo_date  & `out'_hospital <= indexdate) 
-local numEvents = `r(N)'
-local propEvents = round(100*`pop'/`numEvents', 0.1)
-
-safecount if  (died_date_ons > hosp_expo_date  & died_date_ons  <= indexdate) 
-local numDeaths = `r(N)'
-local propEvents = round(100*`pop'/`numDeaths', 0.1)
-
-post `outcomeDist' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
-
-
-}
-
 }
 
 
@@ -664,7 +665,7 @@ save $outdir/cohort_rates_$group, replace
 
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-postclose `outcomeDist'
+postclose `inHospOutcomes'
 use $tabfigdir/outcomes_in_hosp_$group.dta, replace
 export delimited using $tabfigdir/outcomes_in_hosp_$group.csv, replace
 }
