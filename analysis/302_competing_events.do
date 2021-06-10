@@ -141,7 +141,7 @@ foreach v in stroke  {
 		replace `end_date'2 = td(01/02/2020) if case == 0 & act_end_date == died_date_ons_date & died_date_ons_date!= `v'_ons
 		
 		gen `out'2 = `out'
-		replace `out'2 = 2 if (`out' == 0) & (died_date_ons_date == act_end_date)
+		replace `out'2 = 2 if (`out' == 0) & (died_date_ons_date == act_end_date) & (died_date_ons_date!= `v'_ons)
 		
 		stset `end_date'2, id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out') 
 		
@@ -161,10 +161,18 @@ foreach v in stroke  {
 		*stcrreg $`adjust', compete(`out'==2)  vce(robust)
 		stcox $`adjust', vce(robust)
 		
+		/* Matrix for stcrreg...
 			matrix b = r(table)
 			local hr= b[1,1]
 			local lc = b[5,1] 
 			local uc = b[6,1]
+		*/
+		* Matrix for stcox
+			matrix b = r(table)
+			local hr= b[1,2]
+			local lc = b[5,2] 
+			local uc = b[6,2]
+			
 			
 		estat phtest, detail
 			
@@ -177,7 +185,7 @@ foreach v in stroke  {
 		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'2==1) 
 		* Adjusted cuminc 
 		stcompet cuminc = ci, by(case) compet1(2)
-		gen cumInc = cuminc if `out'==1 // cumaltive inc of outcome accounting death as competing risk
+		gen cumInc = cuminc if `out'2==1 // cumaltive inc of outcome accounting death as competing risk
 		separate cumInc, by(case) veryshortlabel
 		drop cuminc
 		
