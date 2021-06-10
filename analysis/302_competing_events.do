@@ -139,7 +139,7 @@ foreach v in stroke  {
 		gen `end_date'2= `end_date'
 		replace `end_date'2 = td(01/02/2021) if case == 1 & act_end_date == died_date_ons_date & died_date_ons_date!= `v'_ons
 		replace `end_date'2 = td(01/02/2020) if case == 0 & act_end_date == died_date_ons_date & died_date_ons_date!= `v'_ons
-		
+		format %td `end_date'2
 		gen `out'2 = `out'
 		replace `out'2 = 2 if (`out' == 0) & (died_date_ons_date == act_end_date) & (died_date_ons_date!= `v'_ons)
 		
@@ -189,29 +189,6 @@ foreach v in stroke  {
 		separate cumInc, by(case) veryshortlabel
 		drop cuminc
 		
-		* max for time & cumulatives
-		forvalues i = 0/1{
-			sum `end_date' if case ==`i', meanonly
-			local tmax`i' = r(max)
-			sum cumInc`i', meanonly
-			local cmax`i' = r(max)
-		}
-
-		* add extra points for plot 
-		qui safecount 
-		local obsSet1 = `r(N)' + 1
-		local obsSet2 = `r(N)' + 2
-		local obsSet3 = `r(N)' + 3
-		set obs `obsSet3'
-		replace cumInc0 = 0 in `obsSet1'
-		replace cumInc1 = 0 in `obsSet1'
-		replace _t = 0 in   `obsSet1'
-		replace cumInc0 = `cmax0'   in `obsSet2'
-		replace  _t = `tmax0'    in `obsSet2'
-		replace cumInc1 = `cmax1'   in `obsSet3'
-		replace  _t = `tmax1'    in `obsSet3'
-
-
 		* Plot cumulative incidence functions for exp groups (accounting for death as a competing risk)
 		#delimit ;
 		twoway 	(line cumInc0 _t, sort c(J)) 
