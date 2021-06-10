@@ -29,8 +29,8 @@ tempname measures
 		using $tabfigdir/fine_gray_summary, replace
 		
 		
-*foreach an in pneumonia gen_population {		
-foreach an in pneumonia  {
+foreach an in pneumonia gen_population {		
+*foreach an in pneumonia  {
 use $outdir/combined_covid_`an'.dta, replace
 
 
@@ -59,8 +59,8 @@ global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_wi
 	
 
 
-*foreach v in stroke dvt pe heart_failure mi aki t2dm {
-foreach v in stroke  {
+foreach v in stroke dvt pe heart_failure mi aki t2dm {
+*foreach v in stroke  {
 
 	if "`v'" == "stroke" {
 	local lab = "Stroke"
