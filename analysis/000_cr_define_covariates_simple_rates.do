@@ -143,6 +143,7 @@ local propEvents = round(100*`numDeaths'/`pop', 0.1)
 post `inHospOutcomes' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
 
 }
+}
 
 
 
