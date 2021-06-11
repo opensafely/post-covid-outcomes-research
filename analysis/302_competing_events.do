@@ -51,16 +51,15 @@ gen new_patient_id = _n
 global crude i.case
 global age_sex i.case i.male age1 age2 age3
 
-global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_withmiss /// 
+global full i.case i.male age1 age2 age3 i.stp i.ethnicity i.imd i.obese4cat_withmiss /// 
 	i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
 	i.diabcat i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_function_cat2  ///
-	i.chronic_liver_disease i.stroke i.dementia i.other_neuro i.organ_transplant i.spleen ///
+	i.chronic_liver_disease  i.dementia i.other_neuro i.organ_transplant i.spleen ///
 	i.ra_sle_psoriasis i.other_immunosuppression i.hist_dvt i.hist_pe i.hist_stroke i.hist_mi i.hist_aki i.hist_heart_failure	
 	
 
 
 foreach v in stroke dvt pe heart_failure mi aki t2dm {
-*foreach v in stroke  {
 
 	if "`v'" == "stroke" {
 	local lab = "Stroke"
@@ -133,7 +132,6 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'==1) */
 		
-		
 		gen act_end_date = `end_date' - 1 
 		
 		gen `end_date'2= `end_date'
@@ -150,10 +148,10 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		    
 		if "`adjust'" == "full" & "`v'" == "t2dm" {
 			* remove diabetes
-		global full i.case i.male age1 age2 age3 i.stp2 i.ethnicity i.imd i.obese4cat_withmiss /// 
+		global full i.case i.male age1 age2 age3 i.stp i.ethnicity i.imd i.obese4cat_withmiss /// 
 					i.smoke htdiag chronic_respiratory_disease i.asthmacat chronic_cardiac_disease ///
 					i.cancer_exhaem_cat i.cancer_haem_cat i.reduced_kidney_function_cat2  ///
-					i.chronic_liver_disease i.stroke i.dementia i.other_neuro i.organ_transplant i.spleen ///
+					i.chronic_liver_disease i.dementia i.other_neuro i.organ_transplant i.spleen ///
 					i.ra_sle_psoriasis i.other_immunosuppression i.hist_dvt i.hist_pe i.hist_stroke i.hist_mi i.hist_aki i.hist_heart_failure	
 		}
 			

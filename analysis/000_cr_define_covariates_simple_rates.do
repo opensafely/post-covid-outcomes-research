@@ -131,14 +131,29 @@ safecount
 local pop = `r(N)'
 
 foreach out in stroke dvt pe heart_failure mi aki t2dm {
+
 * Num events
 safecount if `out'_in_hospital==1
+if `r(N)' >= 5 {
 local numEvents = `r(N)'
 local propEvents = round(100*`numEvents'/`pop', 0.1)
+}
+else {
+local numEvents = "."
+local propEvents = "."
+}
 
+* Num deaths
 safecount if  (died_date_ons >= hosp_expo_date  & died_date_ons  <= indexdate) 
+if `r(N)' >= 5 {
 local numDeaths = `r(N)'
-local propDeath = round(100*`numDeaths'/`pop', 0.1)
+local propDeaths = round(100*`numDeaths'/`pop', 0.1)
+}
+else {
+local numDeaths = "."
+local propDeaths = "."
+}
+
 
 post `inHospOutcomes' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
 
@@ -308,7 +323,11 @@ drop region_string
 **************************
 *  Categorise variables  *
 **************************
-encode stp, gen(stp2)
+* STP 
+rename stp stp_old
+bysort stp_old: gen stp = 1 if _n==1
+replace stp = sum(stp)
+drop stp_old
 
 * Create categorised age
 recode 	age 			min/49.9999=1 	///
