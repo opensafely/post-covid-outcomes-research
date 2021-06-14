@@ -124,6 +124,13 @@ actions:
         log: output/cox_models.txt
         dataset: output/tabfig/cox_model_summary.csv
 
+  cox_models_time_strat:
+    run: stata-mp:latest analysis/303_cox_models_time_stratified.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/cox_models_time_strat.txt
+        dataset: output/tabfig/cox_model_summary_time_strat.csv
 
   fine_gray:
     run: stata-mp:latest analysis/302_competing_events.do
@@ -133,3 +140,13 @@ actions:
         log: output/competing_events.txt
         dataset: output/tabfig/fine_gray_summary.csv
         figs: output/tabfig/cumInc_*.svg
+
+  fine_gray_time_strat:
+    run: stata-mp:latest analysis/303_competing_events_time_stratified.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/competing_events_time_strat.txt
+        dataset: output/tabfig/fine_gray_summary_time_strat.csv
+
+
