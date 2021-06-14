@@ -203,6 +203,32 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		graph export "$tabfigdir/cumInc_`out'.svg", as(svg) replace
 		
 		}	
+		
+	  if "`adjust'" == "full" & "`v'" == "t2dm"  {
+		
+		stset `end_date', id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out'2==1) 
+		* Adjusted cuminc 
+		stcompet cuminc = ci, by(case) compet1(2)
+		gen cumInc = cuminc if `out'2==1 // cumaltive inc of outcome accounting death as competing risk
+		separate cumInc, by(case) veryshortlabel
+		drop cuminc
+		
+		* Plot cumulative incidence functions for exp groups (accounting for death as a competing risk)
+		#delimit ;
+		twoway 	(line cumInc0 _t, sort c(J)) 
+				(line cumInc1 _t, sort c(J)) ,
+		
+			ylabel(,angle(horizontal))
+			plotregion(color(white))
+			graphregion(color(white))
+			ytitle("Cumulative Incidence")  
+			xtitle("Time (Days)") 
+		 ;
+		#delimit cr	
+			
+		graph export "$tabfigdir/cumInc_`out'.svg", as(svg) replace
+		
+		}	
 	}
 restore			
 }
