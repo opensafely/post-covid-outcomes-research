@@ -226,7 +226,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		 ;
 		#delimit cr	
 			
-		graph export "$tabfigdir/cumInc_`out'.svg", as(svg) replace
+		graph export "$tabfigdir/cumInc_`out'_`an'.svg", as(svg) replace
 		
 		}	
 	}
