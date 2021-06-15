@@ -109,7 +109,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		}
 			
 			
-				forvalues t = 30(30)120 {
+				forvalues t = 0(30)120 {
 			stcox $`adjust' if time == `t' , vce(robust)
 			matrix b = r(table)
 			local hr= b[1,2]

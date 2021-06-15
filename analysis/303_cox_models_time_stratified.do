@@ -85,7 +85,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 	i.chronic_liver_disease i.dementia i.other_neuro i.organ_transplant i.spleen ///
 	i.ra_sle_psoriasis i.other_immunosuppression i.hist_dvt i.hist_pe i.hist_stroke i.hist_mi i.hist_aki i.hist_heart_failure	
 			}
-				forvalues t = 30(30)120 {
+				forvalues t = 0(30)120 {
 			stcox $`adjust' if time == `t' , vce(robust)
 			matrix b = r(table)
 			local hr= b[1,2]
