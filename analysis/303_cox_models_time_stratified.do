@@ -75,7 +75,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		stsplit time , at(30(30)120)
 		
 		
-		foreach adjust in crude age_sex full {
+		foreach adjust in full {
 		    
 			if "`adjust'" == "full" & "`v'" == "t2dm" {
 			* remove diabetes
