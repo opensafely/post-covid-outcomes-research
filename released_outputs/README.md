@@ -1,5 +1,6 @@
 # Table of contents
 
+* [.gitignore](.gitignore)
 * output
   * [output/append_cohorts.txt](output/append_cohorts.txt)
   * [output/competing_events.txt](output/competing_events.txt)
