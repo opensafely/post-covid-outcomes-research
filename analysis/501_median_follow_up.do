@@ -36,6 +36,7 @@ gen new_patient_id = _n
 
 foreach v in stroke dvt pe heart_failure mi aki t2dm {
 
+	preserve 
 	
 	noi di "Starting analysis for `v' Outcome ..." 
 	
@@ -75,16 +76,12 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		stdescribe
 		
 		post `measures' ("`an'") ("`v'") ("`Competing Risks'") ("`r(t1_med)'") 
+		
+		restore
 			
 			}
-		}
-restore			
 }
-	
-}
-
-
-}
+		
 postclose `measures'
 
 * Change postfiles to csv
