@@ -149,7 +149,6 @@ actions:
         log: output/competing_events_time_strat.txt
         dataset: output/tabfig/fine_gray_summary_time_strat.csv
 
-
   logistic_models:
     run: stata-mp:latest analysis/500_logistic_models.do
     needs: [append_cohorts]
@@ -157,8 +156,8 @@ actions:
       moderately_sensitive:
         log: output/logistic_models.txt
         dataset: output/tabfig/logistic_summary.csv
-
-   follow_up:
+  
+  follow_up:
     run: stata-mp:latest analysis/501_median_follow_up.do
     needs: [append_cohorts]
     outputs:
