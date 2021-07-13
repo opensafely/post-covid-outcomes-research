@@ -121,6 +121,33 @@ capture confirm string variable `var'
 }
 
 
+/**** Recent DVT PE OR anticoag
+tempname recentEvents
+* In hospital descriptives
+postfile `recentEvents' str20(outcome) str7(pop) str7(numEvents) str7(propEvents) using $tabfigdir/recent_events_$group.dta, replace
+* Cohort
+safecount 
+local pop = `r(N)'
+
+foreach var in recent_pe recent_dvt anticoag_rx {
+
+* Num events
+safecount if `var'==1
+if `r(N)' >= 5 {
+local numEvents = `r(N)'
+local propEvents = round(100*`numEvents'/`pop', 0.1)
+}
+else {
+local numEvents = "."
+local propEvents = "."
+}
+
+
+post `recentEvents' ("`var'") ("`pop'") ("`numEvents'") ("`propEvents'") 
+}
+postclose `recentEvents' */
+
+
 **** In hospital counts
 if "$group" == "covid" | "$group" == "pneumonia"  { 
 tempname inHospOutcomes
@@ -158,10 +185,9 @@ local propDeaths = "."
 post `inHospOutcomes' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
 
 }
+
+postclose `inHospOutcomes'
 }
-
-
-
 
 * Clean 
 rename date_icu_admission_date icu_admission_date
@@ -685,7 +711,10 @@ save $outdir/cohort_rates_$group, replace
 
 
 if "$group" == "covid" | "$group" == "pneumonia"  { 
-postclose `inHospOutcomes'
 use $tabfigdir/outcomes_in_hosp_$group.dta, replace
 export delimited using $tabfigdir/outcomes_in_hosp_$group.csv, replace
 }
+
+
+/*use $tabfigdir/recent_events_$group.dta, replace
+export delimited using $tabfigdir/recent_events_$group.csv, replace*/
