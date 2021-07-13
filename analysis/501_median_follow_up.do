@@ -25,7 +25,7 @@ log using $outdir/follow_up_median.txt, replace t
 
 tempname measures
 	postfile `measures' ///
-		 str20(analysis) str20(outcome) str25(analysis) str10(median) ///
+		 str25(comparator) str20(outcome) str25(analysis) str10(median) ///
 		using $tabfigdir/follow_up_summary, replace
 		
 foreach an in pneumonia gen_population {
