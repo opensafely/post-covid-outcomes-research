@@ -60,7 +60,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		stdescribe
 		
-		post ("`an'") ("`v'") ("`Cox'") ("`r(t1_med)'") 
+		post `measures' ("`an'") ("`v'") ("`Cox'") ("`r(t1_med)'") 
 	
 		
 		gen act_end_date = `end_date' - 1 
@@ -74,7 +74,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 	
 		stdescribe
 		
-		post ("`an'") ("`v'") ("`Competing Risks'") ("`r(t1_med)'") 
+		post `measures' ("`an'") ("`v'") ("`Competing Risks'") ("`r(t1_med)'") 
 			
 			}
 		}
