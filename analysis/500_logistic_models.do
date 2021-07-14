@@ -86,10 +86,10 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 			logistic `out' $`adjust', vce(robust) 
 			
 			matrix b = r(table)
-		 * Check these are correct
-			local or = b[1,1]
-			local lc = b[5,1] 
-			local uc = b[6,1]
+		 
+			local or = b[1,2]
+			local lc = b[5,2] 
+			local uc = b[6,2]
 			
 
 			post `measures'  ("`an'") ("`v'") ("`out'") ("`adjust'")  ///
