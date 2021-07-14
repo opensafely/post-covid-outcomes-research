@@ -25,7 +25,7 @@ log using $outdir/follow_up_median.txt, replace t
 
 tempname measures
 	postfile `measures' ///
-		 str25(comparator) str20(outcome) str25(analysis) str10(median) ///
+		 str25(comparator) str20(outcome) str25(analysis) str2(case) str10(median) ///
 		using $tabfigdir/follow_up_summary, replace
 		
 foreach an in pneumonia gen_population {
@@ -59,9 +59,14 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		stset `end_date' , id(new_patient_id) failure(`out') enter(indexdate)  origin(indexdate)
 		
-		stdescribe
+		stdescribe if case == 1 
 		
-		post `measures' ("`an'") ("`v'") ("Cox") ("`r(t1_med)'") 
+		post `measures' ("`an'") ("`v'") ("Cox") ("1") ("`r(t1_med)'") 
+
+
+		stdescribe if case == 0
+		
+		post `measures' ("`an'") ("`v'") ("Cox") ("0") ("`r(t1_med)'") 
 	
 		
 		gen act_end_date = `end_date' - 1 
@@ -73,9 +78,16 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		
 		stset `end_date'2, id(new_patient_id) enter(indexdate)  origin(indexdate) failure(`out') 
 	
-		stdescribe
+				
+		stdescribe if case == 1 
 		
-		post `measures' ("`an'") ("`v'") ("Competing Risks") ("`r(t1_med)'") 
+		post `measures' ("`an'") ("`v'") ("Competing Risks") ("1") ("`r(t1_med)'") 
+
+
+		stdescribe if case == 0
+		
+		post `measures' ("`an'") ("`v'") ("Competing Risks") ("0") ("`r(t1_med)'") 
+	
 		
 		restore
 			
