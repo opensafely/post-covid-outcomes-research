@@ -146,8 +146,8 @@ actions:
     needs: [append_cohorts]
     outputs:
       moderately_sensitive:
-        log: output/competing_events_time_strat.txt
-        dataset: output/tabfig/fine_gray_summary_time_strat.csv
+        log: output/competing_events_time_strat_age_sex.txt
+        dataset: output/tabfig/fine_gray_summary_time_strat_age_sex.csv
 
   logistic_models:
     run: stata-mp:latest analysis/500_logistic_models.do
