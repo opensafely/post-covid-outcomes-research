@@ -21,12 +21,12 @@ clear
 do `c(pwd)'/analysis/global.do
 
 cap log close
-log using $outdir/competing_events_time_strat.txt, replace t
+log using $outdir/competing_events_time_strat_age_sex.txt, replace t
 
 tempname measures
 	postfile `measures' ///
 		str20(comparator) str20(outcome) str25(analysis) str10(adjustment) str10(time) hr lc uc ///
-		using $tabfigdir/fine_gray_summary_time_strat, replace
+		using $tabfigdir/fine_gray_summary_time_strat_age_sex, replace
 		
 		
 foreach an in pneumonia gen_population {		
@@ -96,7 +96,7 @@ foreach v in stroke dvt pe heart_failure mi aki t2dm {
 		* STSPLIT 
 		stsplit time , at(30(30)120)
 
-		foreach adjust in full {
+		foreach adjust in age_sex {
 
 		    
 		if "`adjust'" == "full" & "`v'" == "t2dm" {
@@ -131,9 +131,9 @@ restore
 postclose `measures'
 
 * Change postfiles to csv
-use $tabfigdir/fine_gray_summary_time_strat, replace
+use $tabfigdir/fine_gray_summary_time_strat_age_sex, replace
 
-export delimited using $tabfigdir/fine_gray_summary_time_strat.csv, replace
+export delimited using $tabfigdir/fine_gray_summary_time_strat_age_sex.csv, replace
 
 log close
 
