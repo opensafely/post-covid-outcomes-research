@@ -21,6 +21,7 @@
     * [output/tabfig/cumInc_stroke_cens_gp.svg](output/tabfig/cumInc_stroke_cens_gp.svg)
     * [output/tabfig/fine_gray_summary.csv](output/tabfig/fine_gray_summary.csv)
     * [output/tabfig/fine_gray_summary_time_strat.csv](output/tabfig/fine_gray_summary_time_strat.csv)
+    * [output/tabfig/fine_gray_summary_time_strat_age_sex.csv](output/tabfig/fine_gray_summary_time_strat_age_sex.csv)
     * [output/tabfig/outcomes_in_hosp_covid.csv](output/tabfig/outcomes_in_hosp_covid.csv)
     * [output/tabfig/outcomes_in_hosp_pneumonia.csv](output/tabfig/outcomes_in_hosp_pneumonia.csv)
     * [output/tabfig/rates_summary_covid.csv](output/tabfig/rates_summary_covid.csv)
