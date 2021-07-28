@@ -28,3 +28,6 @@
     * [output/tabfig/rates_summary_covid_community.csv](output/tabfig/rates_summary_covid_community.csv)
     * [output/tabfig/rates_summary_gen_population.csv](output/tabfig/rates_summary_gen_population.csv)
     * [output/tabfig/rates_summary_pneumonia.csv](output/tabfig/rates_summary_pneumonia.csv)
+    * [output/tabfig/rate_graphs_all.svg](output/tabfig/rate_graphs_all.svg)
+    * [output/tabfig/rate_graphs_cens_gp.svg](output/tabfig/rate_graphs_cens_gp.svg)
+    * [output/tabfig/rate_graphs_no_gp.svg](output/tabfig/rate_graphs_no_gp.svg)
