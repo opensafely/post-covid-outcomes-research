@@ -1,0 +1,57 @@
+comparator,outcome,analysis,case,median
+pneumonia,stroke,Cox,1,60
+pneumonia,stroke,Cox,0,128
+pneumonia,stroke,Competing Risks,1,70
+pneumonia,stroke,Competing Risks,0,171
+pneumonia,dvt,Cox,1,60
+pneumonia,dvt,Cox,0,129
+pneumonia,dvt,Competing Risks,1,71
+pneumonia,dvt,Competing Risks,0,173
+pneumonia,pe,Cox,1,59
+pneumonia,pe,Cox,0,128
+pneumonia,pe,Competing Risks,1,70
+pneumonia,pe,Competing Risks,0,171
+pneumonia,heart_failure,Cox,1,55
+pneumonia,heart_failure,Cox,0,107
+pneumonia,heart_failure,Competing Risks,1,65
+pneumonia,heart_failure,Competing Risks,0,138
+pneumonia,mi,Cox,1,60
+pneumonia,mi,Cox,0,128
+pneumonia,mi,Competing Risks,1,71
+pneumonia,mi,Competing Risks,0,172
+pneumonia,aki,Cox,1,56
+pneumonia,aki,Cox,0,115
+pneumonia,aki,Competing Risks,1,67
+pneumonia,aki,Competing Risks,0,151
+pneumonia,t2dm,Cox,1,60
+pneumonia,t2dm,Cox,0,128
+pneumonia,t2dm,Competing Risks,1,70
+pneumonia,t2dm,Competing Risks,0,172
+gen_population,stroke,Cox,1,60
+gen_population,stroke,Cox,0,366
+gen_population,stroke,Competing Risks,1,70
+gen_population,stroke,Competing Risks,0,366
+gen_population,dvt,Cox,1,60
+gen_population,dvt,Cox,0,366
+gen_population,dvt,Competing Risks,1,71
+gen_population,dvt,Competing Risks,0,366
+gen_population,pe,Cox,1,59
+gen_population,pe,Cox,0,366
+gen_population,pe,Competing Risks,1,70
+gen_population,pe,Competing Risks,0,366
+gen_population,heart_failure,Cox,1,55
+gen_population,heart_failure,Cox,0,366
+gen_population,heart_failure,Competing Risks,1,65
+gen_population,heart_failure,Competing Risks,0,366
+gen_population,mi,Cox,1,60
+gen_population,mi,Cox,0,366
+gen_population,mi,Competing Risks,1,71
+gen_population,mi,Competing Risks,0,366
+gen_population,aki,Cox,1,56
+gen_population,aki,Cox,0,366
+gen_population,aki,Competing Risks,1,67
+gen_population,aki,Competing Risks,0,366
+gen_population,t2dm,Cox,1,60
+gen_population,t2dm,Cox,0,366
+gen_population,t2dm,Competing Risks,1,70
+gen_population,t2dm,Competing Risks,0,366
