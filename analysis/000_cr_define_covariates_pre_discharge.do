@@ -48,6 +48,9 @@ format indexdate %td
 drop if indexdate ==.
 drop patient_index_date
 
+gen hosp_expo_date = date(exposure_hospitalisation, "YMD")
+format hosp_expo_date %td
+
 * remove any patient discharged after end date
 drop if indexdate > `end_date'
 
@@ -487,14 +490,10 @@ label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab
 
 
 * dialysis
-if "$group" == "covid" | "$group" == "pneumonia"  { 
+
 gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
 replace dialysis_flag = 0 if dialysis_flag ==.
-}
-if "$group" == "gen_population" | "$group" == "covid_community"{
-gen dialysis_flag = 1 if dialysis_date < indexdate
-replace dialysis_flag = 0 if dialysis_flag ==.
-}
+
 
 gen aki_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
 replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
