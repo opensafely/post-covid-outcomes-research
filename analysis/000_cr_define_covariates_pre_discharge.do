@@ -38,15 +38,6 @@ local end_date td(01/02/2020)
 
 import delimited $outdir/input_$group.csv
 
-
-if "$group" == "covid" {
-global group = "pre_covid_discharged" 
-
-}
-else {
-global group = "pre_pneum_discharged"
-}
-
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
 
@@ -620,7 +611,13 @@ drop min_end_date
 
 }
 
+if "$group" == "covid" {
+global group = "pre_covid_discharged" 
 
+}
+else {
+global group = "pre_pneum_discharged"
+}
 
 **** Tidy dataset
 
