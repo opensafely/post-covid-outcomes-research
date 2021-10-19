@@ -48,7 +48,7 @@ actions:
         figs: output/tabfig/length_of_stay_covid.svg
 
   covid_rates_pre_dis:
-    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pre_covid_discharged"
+    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "covid"
     needs: [generate_covid_cohort]
     outputs:
       highly_sensitive:
@@ -72,7 +72,7 @@ actions:
         figs: output/tabfig/length_of_stay_pneumonia.svg
 
   pneumonia_rates_pre_dis:
-    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pre_pneum_discharged"
+    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pneumonia"
     needs: [generate_pneumonia_cohort]
     outputs:
       highly_sensitive:

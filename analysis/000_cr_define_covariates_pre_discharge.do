@@ -20,7 +20,7 @@ clear
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-if "$group" == "pre_covid_discharged"   { 
+if "$group" == "covid"   { 
 local start_date  td(01/02/2020)
 local last_year   td(01/02/2019)
 local four_years_ago td(01/02/2015)	 
@@ -36,6 +36,16 @@ local fifteen_months_ago td(01/09/2018)
 local end_date td(01/02/2020)
 }
 
+import delimited $outdir/input_$group.csv
+
+
+if "$group" == "covid" {
+global group = "pre_covid_discharged" 
+
+}
+else {
+global group = "pre_pneum_discharged"
+}
 
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
