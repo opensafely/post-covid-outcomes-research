@@ -73,7 +73,7 @@ actions:
 
   pneumonia_rates_pre_dis:
     run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pre_pneum_discharged"
-    needs: [generate_covid_cohort]
+    needs: [generate_pneumonia_cohort]
     outputs:
       highly_sensitive:
         analysis_dataset: output/cohort_rates_pre_pneum_discharged.dta
