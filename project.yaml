@@ -47,6 +47,13 @@ actions:
         out_dist: output/tabfig/outcomes_in_hosp_covid.csv
         figs: output/tabfig/length_of_stay_covid.svg
 
+  covid_rates_pre_dis:
+    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pre_covid_discharged"
+    needs: [generate_covid_cohort]
+    outputs:
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_pre_covid_discharged.dta
+
   covid_community_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid_community"
     needs: [generate_covid_community_cohort]
@@ -63,6 +70,13 @@ actions:
       moderately_sensitive:
         out_dist: output/tabfig/outcomes_in_hosp_pneumonia.csv
         figs: output/tabfig/length_of_stay_pneumonia.svg
+
+  pneumonia_rates_pre_dis:
+    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pre_pneum_discharged"
+    needs: [generate_covid_cohort]
+    outputs:
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_pre_pneum_discharged.dta
 
   gen_pop_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "matched_combined_general_population"
@@ -101,7 +115,7 @@ actions:
 
   baseline_characteristics:
     run: stata-mp:latest analysis/400_baseline_characteristics.do
-    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort]
+    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort, covid_rates_pre_dis, pneumonia_rates_pre_dis]
     outputs:
       moderately_sensitive:
         tables: output/tabfig/an_descriptiveTable_*.txt

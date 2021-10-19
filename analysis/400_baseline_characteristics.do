@@ -51,7 +51,7 @@ end
 
 *******************************************************************************
 
-foreach v in covid covid_community pneumonia gen_population  {
+foreach v in covid covid_community pneumonia gen_population pre_covid_discharged pre_pneum_discharged {
 *Set up output file
 cap file close tablecontent
 file open tablecontent using $tabfigdir/an_descriptiveTable_`v'.txt, write text replace
@@ -141,10 +141,13 @@ file write tablecontent _n
 tabulatevariable, variable(previous_diabetes) start(1) end(1)
 
 
-cou if bmicat==.
+safecount if bmicat==.
 file write tablecontent _n _n ("*missing due to bmi  ") (r(N)) 
-cou if smoke==. 
+safecount if smoke==. 
 file write tablecontent ("missing smoking in never: ") (r(N)) 
+
+summ age, detail
+file write tablecontent("median age is: ") (r(p50))
 
 
 file close tablecontent
