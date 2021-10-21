@@ -90,4 +90,4 @@ hist_heart_failure	==1	35233 (27.5)
 previous_diabetes	==1	37766 (29.5)
 
 
-*missing due to bmi  7418missing smoking in never: 701
+*missing due to bmi  7418missing smoking in never: 701median age is: 76
