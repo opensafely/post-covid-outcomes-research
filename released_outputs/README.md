@@ -11,6 +11,8 @@
     * [output/tabfig/an_descriptiveTable_covid_community.txt](output/tabfig/an_descriptiveTable_covid_community.txt)
     * [output/tabfig/an_descriptiveTable_gen_population.txt](output/tabfig/an_descriptiveTable_gen_population.txt)
     * [output/tabfig/an_descriptiveTable_pneumonia.txt](output/tabfig/an_descriptiveTable_pneumonia.txt)
+    * [output/tabfig/an_descriptiveTable_pre_covid_discharged.txt](output/tabfig/an_descriptiveTable_pre_covid_discharged.txt)
+    * [output/tabfig/an_descriptiveTable_pre_pneum_discharged.txt](output/tabfig/an_descriptiveTable_pre_pneum_discharged.txt)
     * [output/tabfig/cox_model_summary.csv](output/tabfig/cox_model_summary.csv)
     * [output/tabfig/cox_model_summary_time_strat.csv](output/tabfig/cox_model_summary_time_strat.csv)
     * [output/tabfig/cumInc_aki_cens_gp.svg](output/tabfig/cumInc_aki_cens_gp.svg)
