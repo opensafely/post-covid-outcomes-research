@@ -27,7 +27,7 @@ def plot_rates(outcome_group, rows):
     for i, ax in enumerate(axes.flat):
         df_to_plot = df.loc[df.index.isin(rows, level=1)]
         df_to_plot = df_to_plot.loc[groups[i]]
-        df_to_plot = df_to_plot * 100
+        df_to_plot = df_to_plot * 120
         df_to_plot = df_to_plot.unstack(level=-1)
         errlo = df_to_plot["rate_ppm"] - df_to_plot["lc_ppm"]
         errhi = df_to_plot["uc_ppm"] - df_to_plot["rate_ppm"]
