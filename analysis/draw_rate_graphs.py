@@ -40,7 +40,7 @@ def plot_rates(outcome_group, rows):
         ax.set_title(titles[i], loc="left")
         ax.legend(loc=2).set_title("Time since hospital discharge")
         ax.set_xticklabels(labels)
-        ax.set_ylabel("Rate of each outcome (per 10,000 person months)")
+        ax.set_ylabel("Rate of each outcome (per 1,000 person years)")
         ax.grid(b=True, axis="y", color="#666666", linestyle="-", alpha=0.1)
         plt.tight_layout()
     plt.savefig(f"output/rate_graphs{outcome_group}.svg")
