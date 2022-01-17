@@ -15,7 +15,7 @@ titles = [
 
 df = pd.DataFrame()
 for f in groups:
-    df = df.append(pd.read_csv(f"released_output/rates_summary_{f}.csv"))
+    df = df.append(pd.read_csv(f"released_outputs/output/tabfig/rates_summary_{f}.csv"))
 df = df.replace(to_replace=dict(zip(old_names, new_names)))
 df = df.set_index(["group", "outcome", "time"])
 df = df.loc[df["variable"] == "Overall"]
