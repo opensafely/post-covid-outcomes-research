@@ -6,7 +6,7 @@ covid_df = pd.read_csv(
     "output/input_covid.csv", parse_dates=["patient_index_date", "died_date_ons"]
 )
 covid_df = covid_df.loc[covid_df["patient_index_date"].notnull()]
-covid_df = covid_df.loc[covid_df["patient_index_date"] <= "2020-11-01"]
+covid_df = covid_df.loc[covid_df["patient_index_date"] <= "2021-02-01"]
 covid_df = covid_df.loc[~(covid_df["died_date_ons"] <= covid_df["patient_index_date"])]
 covid_df.to_csv("output/input_covid_with_exclusions.csv", index=False)
 

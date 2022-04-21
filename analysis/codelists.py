@@ -27,6 +27,11 @@ doac_codes = codelist_from_csv(
     column="id",
 )
 
+diabetes_codes = codelist_from_csv(
+    "codelists/opensafely-diabetes.csv", system="ctv3", column="CTV3ID"
+)
+
+
 diabetes_t1_codes = codelist_from_csv(
     "codelists/opensafely-type-1-diabetes.csv", system="ctv3", column="CTV3ID"
 )
@@ -147,3 +152,168 @@ dialysis_codes = codelist_from_csv(
 )
 
 placeholder_codelist = codelist(["12345"], system="ctv3")
+
+
+# Covariates for fully-adjusted comparision
+# Neuro
+
+dementia_codes = codelist_from_csv(
+    "codelists/opensafely-dementia-complete.csv", system="ctv3", column="code"
+)
+
+
+other_neuro_codes = codelist_from_csv(
+    "codelists/opensafely-other-neurological-conditions.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+# respiratory
+
+chronic_respiratory_disease_codes = codelist_from_csv(
+    "codelists/opensafely-chronic-respiratory-disease.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+asthma_codes = codelist_from_csv(
+    "codelists/opensafely-asthma-diagnosis.csv", system="ctv3", column="CTV3ID"
+)
+
+salbutamol_codes = codelist_from_csv(
+    "codelists/opensafely-asthma-inhaler-salbutamol-medication.csv",
+    system="snomed",
+    column="id",
+)
+
+ics_codes = codelist_from_csv(
+    "codelists/opensafely-asthma-inhaler-steroid-medication.csv",
+    system="snomed",
+    column="id",
+)
+
+prednisolone_codes = codelist_from_csv(
+    "codelists/opensafely-asthma-oral-prednisolone-medication.csv",
+    system="snomed",
+    column="snomed_id",
+)
+
+
+clear_smoking_codes = codelist_from_csv(
+    "codelists/opensafely-smoking-clear.csv",
+    system="ctv3",
+    column="CTV3Code",
+    category_column="Category",
+)
+
+
+# cardiovascular 
+
+chronic_cardiac_disease_codes = codelist_from_csv(
+    "codelists/opensafely-chronic-cardiac-disease.csv", system="ctv3", column="CTV3ID"
+)
+
+
+systolic_blood_pressure_codes = codelist(["2469."], system="ctv3")
+diastolic_blood_pressure_codes = codelist(["246A."], system="ctv3")
+
+
+stroke_for_dementia_defn_codes = codelist_from_csv(
+    "codelists/opensafely-stroke-updated.csv", system="ctv3", column="CTV3ID"
+)
+
+
+
+# cancer
+
+lung_cancer_codes = codelist_from_csv(
+    "codelists/opensafely-lung-cancer.csv", system="ctv3", column="CTV3ID"
+)
+
+haem_cancer_codes = codelist_from_csv(
+    "codelists/opensafely-haematological-cancer.csv", system="ctv3", column="CTV3ID"
+)
+
+other_cancer_codes = codelist_from_csv(
+    "codelists/opensafely-cancer-excluding-lung-and-haematological.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+
+chronic_liver_disease_codes = codelist_from_csv(
+    "codelists/opensafely-chronic-liver-disease.csv", system="ctv3", column="CTV3ID"
+)
+inflammatory_bowel_disease_codes = codelist_from_csv(
+    "codelists/opensafely-inflammatory-bowel-disease.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+# immuno
+
+chemo_radio_therapy_codes = codelist_from_csv(
+    "codelists/opensafely-chemotherapy-or-radiotherapy-updated.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+hiv_codes = codelist_from_csv(
+    "codelists/opensafely-hiv.csv", system="ctv3", column="CTV3ID", category_column="CTV3ID"
+)
+
+permanent_immune_codes = codelist_from_csv(
+    "codelists/opensafely-permanent-immunosuppression.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+temp_immune_codes = codelist_from_csv(
+    "codelists/opensafely-temporary-immunosuppression.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+aplastic_codes = codelist_from_csv(
+    "codelists/opensafely-aplastic-anaemia.csv", system="ctv3", column="CTV3ID"
+)
+
+
+spleen_codes = codelist_from_csv(
+    "codelists/opensafely-asplenia.csv", system="ctv3", column="CTV3ID"
+)
+
+bone_marrow_transplant_codes = codelist_from_csv(
+    "codelists/opensafely-bone-marrow-transplant.csv", system="ctv3", column="CTV3ID"
+)
+
+organ_transplant_codes = codelist_from_csv(
+    "codelists/opensafely-solid-organ-transplantation.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+sickle_cell_codes = codelist_from_csv(
+    "codelists/opensafely-sickle-cell-disease.csv", system="ctv3", column="CTV3ID"
+)
+
+ra_sle_psoriasis_codes = codelist_from_csv(
+    "codelists/opensafely-ra-sle-psoriasis.csv", system="ctv3", column="CTV3ID"
+)
+
+
+# gastro
+
+chronic_liver_disease_codes = codelist_from_csv(
+    "codelists/opensafely-chronic-liver-disease.csv", system="ctv3", column="CTV3ID"
+)
+gi_bleed_and_ulcer_codes = codelist_from_csv(
+    "codelists/opensafely-gi-bleed-or-ulcer.csv", system="ctv3", column="CTV3ID"
+)
+inflammatory_bowel_disease_codes = codelist_from_csv(
+    "codelists/opensafely-inflammatory-bowel-disease.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+

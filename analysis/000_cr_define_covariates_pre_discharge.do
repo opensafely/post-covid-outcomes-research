@@ -12,7 +12,7 @@
 *
 ********************************************************************************
 *
-*	Purpose:		T
+*	Purpose:		In response to reviewer comments about pre-discharge characteristics
 *
 *	Note:			
 ********************************************************************************
@@ -20,7 +20,7 @@ clear
 do `c(pwd)'/analysis/global.do
 global group `1'
 
-if "$group" == "covid"  | "$group" == "covid_community" { 
+if "$group" == "covid"   { 
 local start_date  td(01/02/2020)
 local last_year   td(01/02/2019)
 local four_years_ago td(01/02/2015)	 
@@ -36,15 +36,7 @@ local fifteen_months_ago td(01/09/2018)
 local end_date td(01/02/2020)
 }
 
-if "$group" == "matched_combined_general_population" {
-import delimited $outdir/$group.csv
-drop if case == 1 
-global group "gen_population"
-}
-else{
 import delimited $outdir/input_$group.csv
-}
-
 
 di "STARTING COUNT FROM IMPORT:"
 noi safecount
@@ -56,22 +48,11 @@ format indexdate %td
 drop if indexdate ==.
 drop patient_index_date
 
-* remove any patient discharged after end date
-drop if indexdate > `end_date'
-
-if "$group" == "covid" | "$group" == "pneumonia"  { 
 gen hosp_expo_date = date(exposure_hospitalisation, "YMD")
 format hosp_expo_date %td
-* Length of stay
-gen length_of_stay = indexdate - hosp_expo_date + 1
-label var length_of_stay "Length of stay in hospital (days)"
-hist length , graphregion(color(white)) col(navy%50) ylab(,angle(h)) lcol(navy%20)
-graph export "$tabfigdir/length_of_stay_$group.svg" , as(svg) replace
 
-* Create flag for patients staying in hospital longer than the median length
-summ length, detail
-gen long_hosp_stay = cond(length_of_stay >= `r(p50)' , 1, 0)
-}
+* remove any patient discharged after end date
+drop if indexdate > `end_date'
 
 ******************************
 *  Convert strings to dates  *
@@ -120,80 +101,11 @@ capture confirm string variable `var'
 	format `var'_date %td
 }
 
-
-/**** Recent DVT PE OR anticoag
-tempname recentEvents
-* In hospital descriptives
-postfile `recentEvents' str20(outcome) str7(pop) str7(numEvents) str7(propEvents) using $tabfigdir/recent_events_$group.dta, replace
-* Cohort
-safecount 
-local pop = `r(N)'
-
-foreach var in recent_pe recent_dvt anticoag_rx {
-
-* Num events
-safecount if `var'==1
-if `r(N)' >= 5 {
-local numEvents = `r(N)'
-local propEvents = round(100*`numEvents'/`pop', 0.1)
-}
-else {
-local numEvents = "."
-local propEvents = "."
-}
-
-
-post `recentEvents' ("`var'") ("`pop'") ("`numEvents'") ("`propEvents'") 
-}
-postclose `recentEvents' */
-
-
-**** In hospital counts
-if "$group" == "covid" | "$group" == "pneumonia"  { 
-tempname inHospOutcomes
-* In hospital descriptives
-postfile `inHospOutcomes' str20(outcome) str7(pop) str7(numEvents) str7(numDeaths) str7(propEvents) str7(propDeaths) using $tabfigdir/outcomes_in_hosp_$group.dta, replace
-* Cohort
-safecount 
-local pop = `r(N)'
-
-foreach out in stroke dvt pe heart_failure mi aki t2dm {
-
-* Num events
-safecount if `out'_in_hospital==1
-if `r(N)' >= 5 {
-local numEvents = `r(N)'
-local propEvents = round(100*`numEvents'/`pop', 0.1)
-}
-else {
-local numEvents = "."
-local propEvents = "."
-}
-
-* Num deaths
-safecount if  (died_date_ons >= hosp_expo_date  & died_date_ons  <= indexdate) 
-if `r(N)' >= 5 {
-local numDeaths = `r(N)'
-local propDeaths = round(100*`numDeaths'/`pop', 0.1)
-}
-else {
-local numDeaths = "."
-local propDeaths = "."
-}
-
-
-post `inHospOutcomes' ("`out'") ("`pop'") ("`numEvents'") ("`numDeaths'") ("`propEvents'") ("`propDeaths'")
-
-}
-
-postclose `inHospOutcomes'
-}
-
 * Clean 
 rename date_icu_admission_date icu_admission_date
 
 * drop if died before discharge date
-drop if died_date_ons <= indexdate
+* drop if died_date_ons <= indexdate // KEEP ALL PATIENTS
 
 * Note: There may be deaths recorded after end of our study 
 * Set these to missing
@@ -578,14 +490,10 @@ label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab
 
 
 * dialysis
-if "$group" == "covid" | "$group" == "pneumonia"  { 
+
 gen dialysis_flag = 1 if dialysis_date < hosp_expo_date
 replace dialysis_flag = 0 if dialysis_flag ==.
-}
-if "$group" == "gen_population" | "$group" == "covid_community"{
-gen dialysis_flag = 1 if dialysis_date < indexdate
-replace dialysis_flag = 0 if dialysis_flag ==.
-}
+
 
 gen aki_exclusion_flag = 1 if egfr < 15 | dialysis_flag==1
 replace aki_exclusion_flag = 0 if aki_exclusion_flag ==.
@@ -702,18 +610,18 @@ drop min_end_date
 
 }
 
+if "$group" == "covid" {
+global group = "pre_covid_discharged" 
 
+}
+else {
+global group = "pre_pneum_discharged"
+}
 
 **** Tidy dataset
 
 
 save $outdir/cohort_rates_$group, replace 
-
-
-if "$group" == "covid" | "$group" == "pneumonia"  { 
-use $tabfigdir/outcomes_in_hosp_$group.dta, replace
-export delimited using $tabfigdir/outcomes_in_hosp_$group.csv, replace
-}
 
 
 /*use $tabfigdir/recent_events_$group.dta, replace

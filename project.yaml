@@ -43,6 +43,16 @@ actions:
     outputs:
       highly_sensitive:
         analysis_dataset: output/cohort_rates_covid.dta
+      moderately_sensitive:
+        out_dist: output/tabfig/outcomes_in_hosp_covid.csv
+        figs: output/tabfig/length_of_stay_covid.svg
+
+  covid_rates_pre_dis:
+    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "covid"
+    needs: [generate_covid_cohort]
+    outputs:
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_pre_covid_discharged.dta
 
   covid_community_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "covid_community"
@@ -57,6 +67,16 @@ actions:
     outputs:
       highly_sensitive:
         analysis_dataset: output/cohort_rates_pneumonia.dta
+      moderately_sensitive:
+        out_dist: output/tabfig/outcomes_in_hosp_pneumonia.csv
+        figs: output/tabfig/length_of_stay_pneumonia.svg
+
+  pneumonia_rates_pre_dis:
+    run: stata-mp:latest analysis/000_cr_define_covariates_pre_discharge.do "pneumonia"
+    needs: [generate_pneumonia_cohort]
+    outputs:
+      highly_sensitive:
+        analysis_dataset: output/cohort_rates_pre_pneum_discharged.dta
 
   gen_pop_rates_cohort:
     run: stata-mp:latest analysis/000_cr_define_covariates_simple_rates.do "matched_combined_general_population"
@@ -95,7 +115,7 @@ actions:
 
   baseline_characteristics:
     run: stata-mp:latest analysis/400_baseline_characteristics.do
-    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort]
+    needs: [covid_rates_cohort, covid_community_rates_cohort, pneumonia_rates_cohort, gen_pop_rates_cohort, covid_rates_pre_dis, pneumonia_rates_pre_dis]
     outputs:
       moderately_sensitive:
         tables: output/tabfig/an_descriptiveTable_*.txt
@@ -118,4 +138,43 @@ actions:
         log: output/cox_models.txt
         dataset: output/tabfig/cox_model_summary.csv
 
+  cox_models_time_strat:
+    run: stata-mp:latest analysis/303_cox_models_time_stratified.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/cox_models_time_strat.txt
+        dataset: output/tabfig/cox_model_summary_time_strat.csv
 
+  fine_gray:
+    run: stata-mp:latest analysis/302_competing_events.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/competing_events.txt
+        dataset: output/tabfig/fine_gray_summary.csv
+        figs: output/tabfig/cumInc_*.svg
+
+  fine_gray_time_strat:
+    run: stata-mp:latest analysis/303_competing_events_time_stratified.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/competing_events_time_strat_age_sex.txt
+        dataset: output/tabfig/fine_gray_summary_time_strat_age_sex.csv
+
+  logistic_models:
+    run: stata-mp:latest analysis/500_logistic_models.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/logistic_models.txt
+        dataset: output/tabfig/logistic_summary.csv
+  
+  follow_up:
+    run: stata-mp:latest analysis/501_median_follow_up.do
+    needs: [append_cohorts]
+    outputs:
+      moderately_sensitive:
+        log: output/follow_up_median.txt
+        dataset: output/tabfig/follow_up_summary.csv       
