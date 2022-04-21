@@ -1,0 +1,93 @@
+cons	==1	386669 (100.0)
+
+agegroup	==1	78200 (20.2)
+agegroup	==2	59878 (15.5)
+agegroup	==3	62862 (16.3)
+agegroup	==4	77979 (20.2)
+agegroup	==5	107750 (27.9)
+
+male	==0	187656 (48.5)
+male	==1	199013 (51.5)
+
+ethnicity	==1	249671 (64.6)
+ethnicity	==2	2511 (0.6)
+ethnicity	==3	19528 (5.1)
+ethnicity	==4	6717 (1.7)
+ethnicity	==5	4667 (1.2)
+ethnicity	==6	103575 (26.8)
+
+ethnicity	==1	249671 (64.6)
+ethnicity	==2	2511 (0.6)
+ethnicity	==3	19528 (5.1)
+ethnicity	==4	6717 (1.7)
+ethnicity	==5	4667 (1.2)
+ethnicity	==6	103575 (26.8)
+ethnicity	==7	0 (0.0)
+
+obese4cat	==1	293263 (75.8)
+obese4cat	==2	63349 (16.4)
+obese4cat	==3	21051 (5.4)
+obese4cat	==4	9006 (2.3)
+
+smoke_nomiss	==1	172500 (44.6)
+smoke_nomiss	==2	166214 (43.0)
+smoke_nomiss	==3	47955 (12.4)
+
+imd	==1	77594 (20.1)
+imd	==2	78028 (20.2)
+imd	==3	77010 (19.9)
+imd	==4	77054 (19.9)
+imd	==5	76983 (19.9)
+
+
+htdiag_or_highbp	==1	213942 (55.3)
+hypertension	==1	160834 (41.6)
+chronic_respiratory_disease	==1	31526 (8.2)
+asthmacat	==0	0 (0.0)
+asthmacat	==1	333549 (86.3)
+asthmacat	==2	45910 (11.9)
+chronic_cardiac_disease	==1	61886 (16.0)
+diabcat	==2	46677 (12.1)
+diabcat	==3	16809 (4.3)
+diabcat	==4	3888 (1.0)
+
+cancer_exhaem_cat	==2	3512 (0.9)
+cancer_exhaem_cat	==3	9463 (2.4)
+cancer_exhaem_cat	==4	25033 (6.5)
+
+cancer_haem_cat	==2	379 (0.1)
+cancer_haem_cat	==3	1201 (0.3)
+cancer_haem_cat	==4	2459 (0.6)
+
+reduced_kidney_function_cat2	==2	66214 (17.1)
+reduced_kidney_function_cat2	==3	5338 (1.4)
+reduced_kidney_function_cat2	==4	778 (0.2)
+
+chronic_liver_disease	==1	2677 (0.7)
+
+dementia	==1	16968 (4.4)
+
+other_neuro	==1	5987 (1.5)
+
+spleen	==1	803 (0.2)
+
+ra_sle_psoriasis	==1	23762 (6.1)
+
+other_immunosuppression	==1	900 (0.2)
+
+hist_dvt	==1	9459 (2.4)
+
+hist_stroke	==1	16394 (4.2)
+
+hist_pe	==1	6229 (1.6)
+
+hist_mi	==1	18835 (4.9)
+
+hist_aki	==1	14449 (3.7)
+
+hist_heart_failure	==1	22784 (5.9)
+
+previous_diabetes	==1	67243 (17.4)
+
+
+*missing due to bmi  30343missing smoking in never: 6488median age is: 68

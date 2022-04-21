@@ -15,7 +15,7 @@ titles = [
 
 df = pd.DataFrame()
 for f in groups:
-    df = df.append(pd.read_csv(f"released_output/rates_summary_{f}.csv"))
+    df = df.append(pd.read_csv(f"released_outputs/output/tabfig/rates_summary_{f}.csv"))
 df = df.replace(to_replace=dict(zip(old_names, new_names)))
 df = df.set_index(["group", "outcome", "time"])
 df = df.loc[df["variable"] == "Overall"]
@@ -27,7 +27,7 @@ def plot_rates(outcome_group, rows):
     for i, ax in enumerate(axes.flat):
         df_to_plot = df.loc[df.index.isin(rows, level=1)]
         df_to_plot = df_to_plot.loc[groups[i]]
-        df_to_plot = df_to_plot * 100
+        df_to_plot = df_to_plot * 120
         df_to_plot = df_to_plot.unstack(level=-1)
         errlo = df_to_plot["rate_ppm"] - df_to_plot["lc_ppm"]
         errhi = df_to_plot["uc_ppm"] - df_to_plot["rate_ppm"]
@@ -40,7 +40,7 @@ def plot_rates(outcome_group, rows):
         ax.set_title(titles[i], loc="left")
         ax.legend(loc=2).set_title("Time since hospital discharge")
         ax.set_xticklabels(labels)
-        ax.set_ylabel("Rate of each outcome (per 10,000 person months)")
+        ax.set_ylabel("Rate of each outcome (per 1,000 person years)")
         ax.grid(b=True, axis="y", color="#666666", linestyle="-", alpha=0.1)
         plt.tight_layout()
     plt.savefig(f"output/rate_graphs{outcome_group}.svg")
